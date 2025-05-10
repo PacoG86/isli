@@ -1,0 +1,42 @@
+from pydantic import BaseModel, Field, condecimal
+from typing import List, Literal, Optional, Annotated
+from datetime import datetime
+from decimal import Decimal
+
+
+class DefectoMedido(BaseModel):
+    area: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
+    clasificacion: Literal['ok', 'nok']
+
+
+class DeteccionIA(BaseModel):
+    coord_x: int
+    coord_y: int
+    coord_w: int = Field(..., gt=0)
+    coord_h: int = Field(..., gt=0)
+
+
+class ImagenDefecto(BaseModel):
+    nombre_archivo: str
+    fecha_captura: datetime
+    max_dim_defecto_medido: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
+    clasificacion: Literal['ok', 'nok']
+    defectos: Optional[List[DefectoMedido]] = []
+    detecciones: Optional[List[DeteccionIA]] = []
+
+
+class RolloControladoInput(BaseModel):
+    ruta_local_rollo: str
+    num_defectos_rollo: int
+    total_defectos_intolerables_rollo: int
+    resultado_rollo: Literal['ok', 'nok']
+    orden_analisis: int
+
+
+class ControlCalidadInput(BaseModel):
+    id_usuario: int
+    umbral_tamano_defecto: Annotated[Decimal, condecimal(gt=0, max_digits=5, decimal_places=2)]
+    num_defectos_tolerables_por_tamano: int
+    fecha_control: datetime
+    rollo: RolloControladoInput
+    imagenes: List[ImagenDefecto]
