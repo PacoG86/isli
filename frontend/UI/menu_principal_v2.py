@@ -91,10 +91,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.pushButton_7)
 
-        self.pushButton = QPushButton(self.barra_izq_frame)
-        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton_pcontrol = QPushButton(self.barra_izq_frame)
+        self.pushButton_pcontrol.setObjectName(u"pushButton_pcontrol")
 
-        self.verticalLayout_5.addWidget(self.pushButton)
+        self.verticalLayout_5.addWidget(self.pushButton_pcontrol)
 
         self.pushButton_14 = QPushButton(self.barra_izq_frame)
         self.pushButton_14.setObjectName(u"pushButton_14")
@@ -343,7 +343,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(QCoreApplication.translate("MainWindow", u"ID CONTROL", None))
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"ref_control", None))
         self.pushButton_7.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico de controles", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Panel de Control", None))
+        self.pushButton_pcontrol.setText(QCoreApplication.translate("MainWindow", u"Panel de Control", None))
         self.pushButton_14.setText(QCoreApplication.translate("MainWindow", u"Manual Usuario", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"TOLERANCIA DEFECTOS", None))
