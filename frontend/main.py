@@ -38,11 +38,11 @@ class LoginWindow(QMainWindow):
             QMessageBox.critical(self, "Error de conexión", str(e))
 
     def abrir_menu_principal(self, result):
-        # Oculta la ventana de login
         self.hide()
         nombre = result.get("nombre_usuario", "Desconocido")
         rol = result.get("rol", "N/A")
-        self.menu_window = MainWindow(BASE_FOLDER, nombre, rol)
+        token = result.get("access_token", "")
+        self.menu_window = MainWindow(BASE_FOLDER, nombre, rol, token)
         self.menu_window.show()
 
 

@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
+import webbrowser
 
 
 class HighQualityImageView(QGraphicsView):
@@ -72,18 +73,20 @@ class HighQualityImageView(QGraphicsView):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, base_folder, nombre_usuario, rol_usuario):
+    def __init__(self, base_folder, nombre_usuario, rol_usuario, token_jwt):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("ISLI - Control de Calidad")
 
+        self.nombre_usuario = nombre_usuario
+        self.rol_usuario = rol_usuario
+        self.token_jwt = token_jwt
+        self.ui.label_3.setText(f"{nombre_usuario} ({rol_usuario})")
+
         self.ui.comboBox.installEventFilter(self)
         self.ui.spinBox.valueChanged.connect(self.configurar_combobox)
         
-        self.nombre_usuario = nombre_usuario
-        self.rol_usuario = rol_usuario
-        self.ui.label_3.setText(f"{nombre_usuario} ({rol_usuario})")
         self.obtener_siguiente_id_control()
 
         # Directorio base donde se encuentran las subcarpetas
@@ -116,6 +119,15 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.clicked.connect(self.confirmar_interrumpir)  # Botón "Interrumpir control"
         self.ui.pushButton_8.clicked.connect(self.guardar_resultados)
         self.ui.pushButton_3.clicked.connect(self.logout)
+        # Deshabilitar botón de Panel de Control si no es administrador
+        if self.rol_usuario != "administrador":
+            self.ui.pushButton_pcontrol.setEnabled(False)
+        else:
+            self.ui.pushButton_pcontrol.clicked.connect(self.abrir_panel_admin)
+
+    def abrir_panel_admin(self):
+        url = f"http://localhost:8000/admin?token={self.token_jwt}"
+        webbrowser.open(url)
 
     def obtener_siguiente_id_control(self): 
         try:
@@ -626,14 +638,16 @@ class MainWindow(QMainWindow):
             self.login_window = LoginWindow()
             self.login_window.show()
 
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+# ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
+# porque el flujo completo comienza desde LoginWindow (main.py).
+# Se conserva aquí solo como referencia:
+#if __name__ == "__main__":
+#    app = QApplication(sys.argv)
     
     # Directorio base donde se encuentran las subcarpetas con imágenes
-    base_folder = r"C:\Users\pgago\Desktop\arboles"
+#    base_folder = r"C:\Users\pgago\Desktop\arboles"
+#    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."  # <- Sustituye con token real
+#    ventana = MainWindow(base_folder, "admin2@isli.com", "administrador", dummy_token)
+#    ventana.show()
     
-    ventana = MainWindow(base_folder)
-    ventana.show()
-    
-    sys.exit(app.exec())
+#    sys.exit(app.exec())"""

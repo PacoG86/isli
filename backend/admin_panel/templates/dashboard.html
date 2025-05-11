@@ -3,9 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel de Administración - ISLI</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2 { color: #2C7873; }
+        form { margin-bottom: 30px; }
+        input, select, button { margin: 5px 0; padding: 5px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        hr { margin: 40px 0; }
+    </style>
 </head>
 <body>
-    <h1>Bienvenido al Panel de Control ISLI</h1>
-    <p>Esta sección solo está disponible para usuarios con rol <strong>administrador</strong>.</p>
+    <h1>Panel de Control ISLI</h1>
+    <p>Esta sección está disponible solo para usuarios con rol <strong>administrador</strong>.</p>
+
+    <hr>
+
+    <!-- 👤 Gestión de Usuarios -->
+    <h2>Gestión de usuarios</h2>
+    <form method="post" action="/admin/usuarios/crear">
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre_usuario"><br>
+        <label>Email:</label><br>
+        <input type="email" name="email_usuario"><br>
+        <label>Contraseña:</label><br>
+        <input type="password" name="password"><br>
+        <input type="hidden" name="token" value="{{ token }}">
+        <label>Rol:</label><br>
+        <select name="rol">
+            <option value="operario">Operario</option>
+            <option value="administrador">Administrador</option>
+        </select><br>
+        <button type="submit">Crear usuario</button>
+    </form>
+
+    <!-- Aquí irá una tabla dinámica de usuarios (más adelante) -->
+<h3>Lista de usuarios</h3>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Activo</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in usuarios %}
+        <tr>
+            <td>{{ user.id_usuario }}</td>
+            <td>{{ user.nombre_usuario }}</td>
+            <td>{{ user.email_usuario }}</td>
+            <td>{{ user.rol }}</td>
+            <td>
+                {% if user.activo %}
+                    <span style="color: green; font-weight: bold;">✔️</span>
+                {% else %}
+                    <span style="color: red; font-weight: bold;">❌</span>
+                {% endif %}
+            </td>
+            <td>
+                <form method="post" action="/admin/usuarios/toggle_activo" style="display:inline;">
+                    <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit">{{ 'Desactivar' if user.activo else 'Activar' }}</button>
+                </form>
+
+                <form method="post" action="/admin/usuarios/cambiar_rol" style="display:inline;">
+                    <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit">Cambiar rol</button>
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+    <hr>
+
+    <!-- 🧪 Gestión de Rollos -->
+    <h2>Gestión de rollos</h2>
+    <p>Aquí podrás cambiar manualmente el estado de los rollos ya registrados.</p>
+    <!-- Aquí irá una tabla con los rollos y su estado + botones (más adelante) -->
+
+    <hr>
+
+    <!-- 📝 Configuración de informes -->
+    <h2>Configuración de informes</h2>
+    <form method="post" action="/admin/configuracion/guardar">
+        <label><input type="checkbox" name="incluir_nombre" checked> Incluir nombre de usuario</label><br>
+        <label><input type="checkbox" name="incluir_fecha" checked> Incluir fecha de análisis</label><br>
+        <label><input type="checkbox" name="incluir_resultados" checked> Incluir resultados y defectos</label><br>
+        <button type="submit">Guardar configuración</button>
+    </form>
+
 </body>
 </html>
