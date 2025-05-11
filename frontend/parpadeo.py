@@ -6,12 +6,14 @@ import requests
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QSizePolicy, QGraphicsView,
     QGraphicsScene, QVBoxLayout, QFrame, QGraphicsTextItem,
-    QTableWidgetItem, QMessageBox
+    QTableWidgetItem, QMessageBox, QFileDialog
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
 import webbrowser
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 
 class HighQualityImageView(QGraphicsView):
@@ -78,6 +80,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.setWindowTitle("ISLI - Control de Calidad")
+        self.setupUiConnections()
 
         self.nombre_usuario = nombre_usuario
         self.rol_usuario = rol_usuario
@@ -410,7 +413,11 @@ class MainWindow(QMainWindow):
         self.image_view1.setImage(ruta_imagen)
         self.image_view2.setImage(ruta_imagen)
 
-        # Buscar la dimensión máxima desde el JSON si está disponible
+        # Almacenar imágenes reales procesadas para el informe
+        if not hasattr(self, 'imagenes_procesadas'):
+            self.imagenes_procesadas = []
+        self.imagenes_procesadas.append(ruta_imagen)
+
         nombre = os.path.basename(ruta_imagen)
         json_path = os.path.join(self.folder, f"{os.path.splitext(nombre)[0]}.json")
         dim_max = self.obtener_dim_maxima_desde_json(json_path)
@@ -419,14 +426,32 @@ class MainWindow(QMainWindow):
             self.ui.label_5.setText(f"MAYOR DEFECTO ENCONTRADO: {dim_max:.2f} mm")
         else:
             self.ui.label_5.setText("MAYOR DEFECTO ENCONTRADO: -- mm")
-        
-        self.ui.label_6.setText(f"Imagen: {nombre}")
 
+        self.ui.label_6.setText(f"Imagen: {nombre}")
         self.ui.progressBar.setValue(self.index + 1)
         self.agregar_registro_a_tabla(ruta_imagen)
-        
+
         print(f"🔄 Mostrando imagen: {nombre} ({self.index + 1}/{len(self.images)})")
         self.index += 1
+
+    def _agregar_imagenes_procesadas_a_pdf(self, c, width, height):
+        y = height - 80
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(40, y, "Imágenes Analizadas")
+        y -= 20
+
+        for img_path in getattr(self, 'imagenes_procesadas', [])[:6]:
+            if y < 120:
+                c.showPage()
+                y = height - 50
+            if os.path.exists(img_path):
+                try:
+                    c.drawImage(img_path, 40, y - 100, width=200, height=100)
+                    c.drawString(250, y - 60, os.path.basename(img_path))
+                    y -= 120
+                except Exception as e:
+                    print(f"❌ Error al insertar imagen en PDF: {e}")
+
 
     def obtener_dim_maxima_desde_json(self, json_path): #REVISAR AL INCLUIR LAS IMÁGENES FINALES
         try:
@@ -637,6 +662,152 @@ class MainWindow(QMainWindow):
             from main import LoginWindow  # Importa aquí para evitar import circular
             self.login_window = LoginWindow()
             self.login_window.show()
+
+    def generar_informe_pdf(self):
+        if not self.analisis_completado:
+            QMessageBox.warning(self, "Advertencia", "Debe finalizar un análisis antes de generar el informe.")
+            return
+
+        now = datetime.now()
+        timestamp_str = now.strftime("%Y-%m-%d_%H-%M")
+        id_control = self.ui.label_11.text()
+        nombre_pdf = f"informe_control_{id_control}_{timestamp_str}.pdf"
+
+        # Guardar automáticamente en carpeta histórico
+        ruta_hist = os.path.join(os.path.expanduser("~"), "Desktop", "historico")
+        os.makedirs(ruta_hist, exist_ok=True)
+        ruta_hist_pdf = os.path.join(ruta_hist, nombre_pdf)
+
+        try:
+            self._crear_pdf_en(ruta_hist_pdf)
+            QMessageBox.information(self, "Informe generado", f"Informe guardado en:\n{ruta_hist_pdf}")
+
+            # ✅ Abrir el PDF automáticamente
+            import subprocess
+            if sys.platform.startswith("darwin"):  # macOS
+                subprocess.call(("open", ruta_hist_pdf))
+            elif os.name == "nt":  # Windows
+                os.startfile(ruta_hist_pdf)
+            elif os.name == "posix":  # Linux
+                subprocess.call(("xdg-open", ruta_hist_pdf))
+        except Exception as e:
+            QMessageBox.critical(self, "Error al generar informe", f"Se produjo un error al crear el informe PDF:\n\n{str(e)}")
+
+
+    def _crear_pdf_en(self, filepath):
+        c = canvas.Canvas(filepath, pagesize=A4)
+        width, height = A4
+        y = height - 50
+
+        logo_path = r"C:\\Users\\pgago\\Documents\\isli\\logo_isli.png"
+        if os.path.exists(logo_path):
+            c.drawImage(logo_path, 40, y - 60, width=100, height=40)
+
+        c.setFont("Helvetica-Bold", 14)
+        c.drawString(150, y, "Informe de Control de Calidad")
+        y -= 30
+
+        c.setFont("Helvetica", 10)
+        datos = [
+            f"ID Control: {self.ui.label_11.text()}",
+            f"Operario: {self.nombre_usuario} ({self.rol_usuario})",
+            f"Fecha de informe: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+            f"Tolerancia máxima tamaño: {self.ui.doubleSpinBox.value()} mm",
+            f"Tolerancia máxima cantidad: {self.ui.spinBox.value()} imágenes",
+        ]
+        for d in datos:
+            c.drawString(40, y, d)
+            y -= 15
+
+        y -= 10
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(40, y, "Resumen del análisis")
+        y -= 20
+
+        c.setFont("Helvetica", 9)
+        for row in range(self.ui.tableWidget.rowCount()):
+            if y < 100:
+                c.showPage()
+                y = height - 50
+            linea = []
+            for col in range(self.ui.tableWidget.columnCount()):
+                item = self.ui.tableWidget.item(row, col)
+                linea.append(item.text() if item else "")
+            c.drawString(40, y, " | ".join(linea))
+            y -= 12
+
+        y -= 20
+        c.setFont("Helvetica-Bold", 11)
+        c.drawString(40, y, "Visores de análisis")
+        y -= 20
+
+        self._agregar_imagenes_procesadas_a_pdf(c, width, height)
+
+        c.save()
+
+    def setupUiConnections(self):
+        self.ui.pushButton_report.clicked.connect(self.generar_informe_pdf)
+        self.ui.pushButton_report.setEnabled(False)  # Deshabilitado por defecto
+
+        # También deshabilitar al limpiar o interrumpir
+        self.ui.pushButton_2.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # limpiar_pantalla
+        self.ui.pushButton_4.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # interrumpir_control  # Deshabilitado por defecto
+
+    def mostrar_analisis_completado(self, mensaje="Análisis completado", color="#2E7D32"):
+        if self.analisis_completado:
+            return
+
+        print("✅ Análisis de imágenes completado")
+
+        if self.timer and self.timer.isActive():
+            self.timer.stop()
+
+        self.blink_timer.stop()
+        self.ui.pushButton_5.setStyleSheet("")
+
+        self.image_view1.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
+        self.image_view2.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
+
+        self.ui.label_5.setText("Análisis finalizado")
+        self.ui.label_6.setText("Análisis finalizado")
+        self.ui.pushButton_5.setText("Iniciar Control de Calidad")
+
+        if self.images:
+            self.ui.progressBar.setValue(len(self.images))
+
+            mayor_defecto = 0.0
+            for i in range(self.ui.tableWidget.rowCount()):
+                item = self.ui.tableWidget.item(i, 3)
+                if item and item.text().replace('.', '', 1).isdigit():
+                    try:
+                        valor = float(item.text())
+                        mayor_defecto = max(mayor_defecto, valor)
+                    except ValueError:
+                        pass
+
+            umbral_usuario = float(self.ui.doubleSpinBox.value())
+            resultado_global = "nok" if mayor_defecto > umbral_usuario else "ok"
+
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            fila_actual = self.ui.tableWidget.rowCount()
+            self.ui.tableWidget.insertRow(fila_actual)
+
+            self.ui.tableWidget.setItem(fila_actual, 0, QTableWidgetItem(timestamp))
+            self.ui.tableWidget.setItem(fila_actual, 1, QTableWidgetItem("RESUMEN"))
+            self.ui.tableWidget.setItem(fila_actual, 2, QTableWidgetItem(f"Total: {len(self.images)} imágenes"))
+            self.ui.tableWidget.setItem(fila_actual, 3, QTableWidgetItem(f"LÍMITE: {mayor_defecto:.2f} mm"))
+            self.ui.tableWidget.setItem(fila_actual, 4, QTableWidgetItem(resultado_global))
+
+            for col in range(3):
+                item = self.ui.tableWidget.item(fila_actual, col)
+                item.setBackground(QBrush(QColor("#C8E6C9")))
+                item.setFont(QFont("Arial", 10, QFont.Bold))
+
+            self.ui.tableWidget.scrollToBottom()
+
+        self.analisis_completado = True
+        self.ui.pushButton_report.setEnabled(True)
+
 
 # ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).

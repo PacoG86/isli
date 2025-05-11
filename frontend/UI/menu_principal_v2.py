@@ -303,11 +303,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_6.addWidget(self.pushButton_8)
 
-        self.pushButton_6 = QPushButton(self.frame_4)
-        self.pushButton_6.setObjectName(u"pushButton_6")
-        self.pushButton_6.setMinimumSize(QSize(0, 50))
+        self.pushButton_report = QPushButton(self.frame_4)
+        self.pushButton_report.setObjectName(u"pushButton_report")
+        self.pushButton_report.setMinimumSize(QSize(0, 50))
 
-        self.horizontalLayout_6.addWidget(self.pushButton_6)
+        self.horizontalLayout_6.addWidget(self.pushButton_report)
 
 
         self.verticalLayout_3.addWidget(self.frame_4)
@@ -366,6 +366,6 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"Reiniciar", None))
         self.pushButton_8.setText(QCoreApplication.translate("MainWindow", u"Guardar resultados", None))
-        self.pushButton_6.setText(QCoreApplication.translate("MainWindow", u"Generar informe", None))
+        self.pushButton_report.setText(QCoreApplication.translate("MainWindow", u"Generar informe", None))
     # retranslateUi
 
