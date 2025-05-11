@@ -62,12 +62,17 @@ def mostrar_panel_admin(request: Request, token: str = Query(None)):
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT id_usuario, nombre_usuario, email_usuario, rol, activo FROM usuario")
     usuarios = cursor.fetchall()
+    
+    cursor.execute("SELECT id_rollo, ruta_local_rollo, estado_rollo FROM rollo WHERE estado_rollo = 'controlado'")
+    rollos = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "usuarios": usuarios,
+        "rollos": rollos,
         "token": token
     })
 
@@ -144,3 +149,14 @@ async def cambiar_rol_usuario(id_usuario: int = Form(...), token: str = Form(...
     conn.close()
     return RedirectResponse(url=f"/admin?token={token}", status_code=303)
 
+@admin_router.post("/admin/rollos/devolver")
+async def devolver_rollo_al_almacen(id_rollo: int = Form(...), token: str = Form(...)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE rollo SET estado_rollo = 'disponible' WHERE id_rollo = %s", (id_rollo,))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    return RedirectResponse(url=f"/admin?token={token}", status_code=303)

@@ -21,6 +21,7 @@
 
     <!-- 👤 Gestión de Usuarios -->
     <h2>Gestión de usuarios</h2>
+    <p>Crea usuarios nuevos y asignales el rol correspondiente.</p>
     <form method="post" action="/admin/usuarios/crear">
         <label>Nombre:</label><br>
         <input type="text" name="nombre_usuario"><br>
@@ -37,8 +38,8 @@
         <button type="submit">Crear usuario</button>
     </form>
 
-    <!-- Aquí irá una tabla dinámica de usuarios (más adelante) -->
-<h3>Lista de usuarios</h3>
+<h3>Registro de usuarios</h3>
+<p>Visualiza usuarios, dalos de baja y/o asignales un nuevo rol.</p>
 <table>
     <thead>
         <tr>
@@ -88,8 +89,39 @@
 
     <!-- 🧪 Gestión de Rollos -->
     <h2>Gestión de rollos</h2>
-    <p>Aquí podrás cambiar manualmente el estado de los rollos ya registrados.</p>
-    <!-- Aquí irá una tabla con los rollos y su estado + botones (más adelante) -->
+    <p>Devuelve rollos al almacén para volver a pasar el control de calidad.</p>
+<h3>Rollos controlados</h3>
+
+{% if rollos %}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ruta local</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rollo in rollos %}
+        <tr>
+            <td>{{ rollo.id_rollo }}</td>
+            <td>{{ rollo.ruta_local_rollo }}</td>
+            <td>{{ rollo.estado_rollo }}</td>
+            <td>
+                <form method="post" action="/admin/rollos/devolver">
+                    <input type="hidden" name="id_rollo" value="{{ rollo.id_rollo }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit">Devolver a control</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p style="color: gray; font-style: italic;">No hay rollos CONTROLADOS que mostrar.</p>
+{% endif %}
 
     <hr>
 

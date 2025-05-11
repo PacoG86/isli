@@ -106,6 +106,10 @@ def guardar_control_calidad(control: ControlCalidadInput):
                     bbox["coord_w"],
                     bbox["coord_h"]
                 ))
+        cursor.execute(
+            "UPDATE rollo SET estado_rollo = 'controlado' WHERE ruta_local_rollo = %s",
+            (control.rollo.ruta_local_rollo,)
+        )
 
         conn.commit()
         return {"msg": "Control de calidad guardado exitosamente", "id_control": id_control}
