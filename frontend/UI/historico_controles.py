@@ -187,6 +187,10 @@ class Ui_Form_historico(object):
 
         self.horizontalLayout_7.addWidget(self.comboBox_listaUsuarios)
 
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
+
         self.horizontalLayout_7.setStretch(0, 2)
 
         self.verticalLayout_3.addWidget(self.frame_ComboBoxUsuarios)
@@ -197,10 +201,6 @@ class Ui_Form_historico(object):
         self.frame_fecha.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout = QHBoxLayout(self.frame_fecha)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.horizontalSpacer_fecha = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_fecha)
-
         self.label_desde = QLabel(self.frame_fecha)
         self.label_desde.setObjectName(u"label_desde")
 
@@ -223,27 +223,20 @@ class Ui_Form_historico(object):
 
         self.horizontalLayout.addWidget(self.dateEdit_hasta)
 
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.verticalLayout_3.addWidget(self.frame_fecha)
+        self.horizontalLayout.addItem(self.horizontalSpacer_2)
 
-        self.frame_btnFiltrar = QFrame(self.ventana_dcha)
-        self.frame_btnFiltrar.setObjectName(u"frame_btnFiltrar")
-        self.frame_btnFiltrar.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_btnFiltrar.setFrameShadow(QFrame.Shadow.Raised)
-        self.horizontalLayout_3 = QHBoxLayout(self.frame_btnFiltrar)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_3.addItem(self.horizontalSpacer_4)
-
-        self.pushButton_filtrar = QPushButton(self.frame_btnFiltrar)
+        self.pushButton_filtrar = QPushButton(self.frame_fecha)
         self.pushButton_filtrar.setObjectName(u"pushButton_filtrar")
         self.pushButton_filtrar.setMinimumSize(QSize(0, 50))
 
-        self.horizontalLayout_3.addWidget(self.pushButton_filtrar)
+        self.horizontalLayout.addWidget(self.pushButton_filtrar)
 
+        self.horizontalLayout.setStretch(4, 1)
+        self.horizontalLayout.setStretch(5, 2)
 
-        self.verticalLayout_3.addWidget(self.frame_btnFiltrar)
+        self.verticalLayout_3.addWidget(self.frame_fecha)
 
         self.frame_tablaResults = QFrame(self.ventana_dcha)
         self.frame_tablaResults.setObjectName(u"frame_tablaResults")

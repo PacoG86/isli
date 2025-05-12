@@ -280,13 +280,26 @@
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_7" stretch="2,0">
            <item>
             <widget class="QComboBox" name="comboBox_listaUsuarios">
              <property name="placeholderText">
               <string>-- Filtra por usuario --</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
@@ -299,20 +312,7 @@
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <spacer name="horizontalSpacer_fecha">
-             <property name="orientation">
-              <enum>Qt::Orientation::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
+          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,1,2">
            <item>
             <widget class="QLabel" name="label_desde">
              <property name="text">
@@ -341,20 +341,8 @@
              </property>
             </widget>
            </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="frame_btnFiltrar">
-          <property name="frameShape">
-           <enum>QFrame::Shape::StyledPanel</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Shadow::Raised</enum>
-          </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_3">
            <item>
-            <spacer name="horizontalSpacer_4">
+            <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Orientation::Horizontal</enum>
              </property>
