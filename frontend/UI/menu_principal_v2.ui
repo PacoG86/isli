@@ -116,7 +116,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_7">
+          <widget class="QPushButton" name="pushButton_historico">
            <property name="text">
             <string>Histórico de controles</string>
            </property>
