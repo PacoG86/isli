@@ -699,7 +699,8 @@ class MainWindow(QMainWindow):
         width, height = A4
         y = height - 50
 
-        logo_path = r"C:\\Users\\pgago\\Documents\\isli\\logo_isli.png"
+        #logo_path = r"C:\\Users\\pgago\\Documents\\isli\\logo_isli.png"
+        logo_path = r"/Users/pacomunozgago/Documents/isli_project/isli/logo_isli.png"
         if os.path.exists(logo_path):
             c.drawImage(logo_path, 40, y - 60, width=100, height=40)
 
@@ -812,13 +813,13 @@ class MainWindow(QMainWindow):
 # ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).
 # Se conserva aquí solo como referencia:
-#if __name__ == "__main__":
-#    app = QApplication(sys.argv)
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
     
     # Directorio base donde se encuentran las subcarpetas con imágenes
-#    base_folder = r"C:\Users\pgago\Desktop\arboles"
-#    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."  # <- Sustituye con token real
-#    ventana = MainWindow(base_folder, "admin2@isli.com", "administrador", dummy_token)
-#    ventana.show()
+    base_folder = r"/Users/pacomunozgago/Downloads/arboles"
+    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."  # <- Sustituye con token real
+    ventana = MainWindow(base_folder, "admin2@isli.com", "administrador", dummy_token)
+    ventana.show()
     
-#    sys.exit(app.exec())"""
+    sys.exit(app.exec())

@@ -5,7 +5,8 @@ from UI.login_window import Ui_Form
 from parpadeo import MainWindow  # <-- importa la ventana de menú principal
 
 API_URL = "http://localhost:8000"
-BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
+#BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
+BASE_FOLDER = r"/Users/pacomunozgago/Downloads/arboles"
 
 class LoginWindow(QMainWindow):
     def __init__(self):
