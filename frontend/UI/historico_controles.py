@@ -239,8 +239,8 @@ class Ui_Form_historico(object):
         self.horizontalLayout_2 = QHBoxLayout(self.frame_tablaResults)
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.tableWidget_results = QTableWidget(self.frame_tablaResults)
-        if (self.tableWidget_results.columnCount() < 5):
-            self.tableWidget_results.setColumnCount(5)
+        if (self.tableWidget_results.columnCount() < 6):
+            self.tableWidget_results.setColumnCount(6)
         __qtablewidgetitem = QTableWidgetItem()
         self.tableWidget_results.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -251,6 +251,8 @@ class Ui_Form_historico(object):
         self.tableWidget_results.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         __qtablewidgetitem4 = QTableWidgetItem()
         self.tableWidget_results.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.tableWidget_results.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.tableWidget_results.setObjectName(u"tableWidget_results")
 
         self.horizontalLayout_2.addWidget(self.tableWidget_results)
@@ -297,5 +299,7 @@ class Ui_Form_historico(object):
         ___qtablewidgetitem3.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
         ___qtablewidgetitem4 = self.tableWidget_results.horizontalHeaderItem(4)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
+        ___qtablewidgetitem5 = self.tableWidget_results.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
     # retranslateUi
 
