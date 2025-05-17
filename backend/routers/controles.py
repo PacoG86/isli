@@ -1,7 +1,9 @@
 import os, json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
+from datetime import datetime, time
 from schemas.schemas_controles import ControlCalidadInput
 from db import get_connection
+from typing import List, Optional
 
 router = APIRouter(prefix="/controles", tags=["Controles"])
 
@@ -129,6 +131,73 @@ def obtener_ultimo_id_control():
         resultado = cursor.fetchone()
         ultimo_id = resultado[0] if resultado and resultado[0] is not None else 0
         return {"siguiente_id": ultimo_id + 1}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+# backend/rutas/controles.py
+@router.get("/historico", response_model=List[dict])
+def obtener_historico_controles(
+    max_defectos: Optional[int] = Query(None),
+    max_dim: Optional[float] = Query(None),
+    usuario: Optional[str] = Query(None),
+    desde: Optional[datetime] = Query(None),
+    hasta: Optional[datetime] = Query(None)
+):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+            SELECT c.id_control, u.nombre_usuario, c.fecha_control,
+                   c.umbral_tamano_defecto, c.num_defectos_tolerables_por_tamano,
+                   c.observacs
+            FROM CONTROL_CALIDAD c
+            JOIN USUARIO u ON c.id_usuario = u.id_usuario
+            WHERE 1=1
+        """
+        params = []
+
+        if max_defectos is not None:
+            query += " AND c.num_defectos_tolerables_por_tamano <= %s"
+            params.append(max_defectos)
+
+        if max_dim is not None:
+            query += " AND c.umbral_tamano_defecto <= %s"
+            params.append(max_dim)
+
+        if usuario is not None:
+            query += " AND u.nombre_usuario LIKE %s"
+            params.append(f"%{usuario}%")
+
+        if desde is not None:
+            query += " AND c.fecha_control >= %s"
+            params.append(desde)
+
+        if hasta is not None:
+            query += " AND c.fecha_control <= %s"
+            params.append(hasta)
+
+        query += " ORDER BY c.fecha_control DESC"
+
+        cursor.execute(query, params)
+        controles = cursor.fetchall()
+        return controles
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/usuarios", response_model=List[str])
+def obtener_lista_usuarios():
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT DISTINCT nombre_usuario FROM USUARIO ORDER BY nombre_usuario ASC")
+        usuarios = [fila[0] for fila in cursor.fetchall()]
+        return usuarios
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:

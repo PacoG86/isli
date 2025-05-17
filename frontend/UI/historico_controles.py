@@ -223,6 +223,12 @@ class Ui_Form_historico(object):
 
         self.horizontalLayout.addWidget(self.pushButton_filtrar)
 
+        self.pushButton_limpiarFiltros = QPushButton(self.frame_fecha)
+        self.pushButton_limpiarFiltros.setObjectName(u"pushButton_limpiarFiltros")
+        self.pushButton_limpiarFiltros.setMinimumSize(QSize(0, 50))
+
+        self.horizontalLayout.addWidget(self.pushButton_limpiarFiltros)
+
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout.addItem(self.horizontalSpacer_3)
@@ -254,11 +260,48 @@ class Ui_Form_historico(object):
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget_results.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.tableWidget_results.setObjectName(u"tableWidget_results")
+        self.tableWidget_results.setStyleSheet(u"QTableWidget::item {\n"
+"    padding: 5px;\n"
+"}")
+        self.tableWidget_results.horizontalHeader().setCascadingSectionResizes(True)
+        self.tableWidget_results.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget_results.verticalHeader().setCascadingSectionResizes(True)
+        self.tableWidget_results.verticalHeader().setStretchLastSection(False)
 
         self.horizontalLayout_2.addWidget(self.tableWidget_results)
 
 
         self.verticalLayout_3.addWidget(self.frame_tablaResults)
+
+        self.frame_btnsDown = QFrame(self.ventana_dcha)
+        self.frame_btnsDown.setObjectName(u"frame_btnsDown")
+        self.frame_btnsDown.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_btnsDown.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_3 = QHBoxLayout(self.frame_btnsDown)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalSpacer_down = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_down)
+
+        self.pushButton_saveObs = QPushButton(self.frame_btnsDown)
+        self.pushButton_saveObs.setObjectName(u"pushButton_saveObs")
+        self.pushButton_saveObs.setMinimumSize(QSize(0, 50))
+
+        self.horizontalLayout_3.addWidget(self.pushButton_saveObs)
+
+        self.pushButton_report = QPushButton(self.frame_btnsDown)
+        self.pushButton_report.setObjectName(u"pushButton_report")
+        self.pushButton_report.setMinimumSize(QSize(0, 50))
+
+        self.horizontalLayout_3.addWidget(self.pushButton_report)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_3.addItem(self.horizontalSpacer_4)
+
+        self.horizontalLayout_3.setStretch(0, 1)
+
+        self.verticalLayout_3.addWidget(self.frame_btnsDown)
 
 
         self.horizontalLayout_ventanaPpal.addWidget(self.ventana_dcha)
@@ -289,6 +332,7 @@ class Ui_Form_historico(object):
         self.label_desde.setText(QCoreApplication.translate("Form_historico", u"Desde", None))
         self.label_hasta.setText(QCoreApplication.translate("Form_historico", u"Hasta", None))
         self.pushButton_filtrar.setText(QCoreApplication.translate("Form_historico", u"Filtrar", None))
+        self.pushButton_limpiarFiltros.setText(QCoreApplication.translate("Form_historico", u"Limpiar", None))
         ___qtablewidgetitem = self.tableWidget_results.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
         ___qtablewidgetitem1 = self.tableWidget_results.horizontalHeaderItem(1)
@@ -301,5 +345,7 @@ class Ui_Form_historico(object):
         ___qtablewidgetitem4.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
         ___qtablewidgetitem5 = self.tableWidget_results.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
+        self.pushButton_saveObs.setText(QCoreApplication.translate("Form_historico", u"Guardar comentarios", None))
+        self.pushButton_report.setText(QCoreApplication.translate("Form_historico", u"Generar Informe", None))
     # retranslateUi
 
