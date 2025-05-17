@@ -223,6 +223,10 @@ class Ui_Form_historico(object):
 
         self.horizontalLayout.addWidget(self.pushButton_filtrar)
 
+        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout.addItem(self.horizontalSpacer_3)
+
         self.horizontalLayout.setStretch(4, 1)
         self.horizontalLayout.setStretch(5, 2)
 

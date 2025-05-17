@@ -92,7 +92,11 @@ class MainWindow(QMainWindow):
         self.ui.comboBox.installEventFilter(self)
         self.ui.spinBox.valueChanged.connect(self.configurar_combobox)
         
-        mostrar_siguiente_id_control(self.ui)
+        #mostrar_siguiente_id_control(self.ui)
+        # Diferir carga pesada tras mostrar la interfaz
+
+        QTimer.singleShot(100, self.cargar_datos_iniciales)
+
 
         # Directorio base donde se encuentran las subcarpetas
         self.base_folder = base_folder
@@ -113,7 +117,7 @@ class MainWindow(QMainWindow):
         self.boton_color_original = self.ui.pushButton_5.styleSheet()
         
         # Configurar UI
-        self.configurar_combobox()
+        #self.configurar_combobox()
         self.configurar_tabla()
         self.reemplazar_qlabels()
         self.ui.progressBar.setValue(0)
@@ -133,6 +137,13 @@ class MainWindow(QMainWindow):
             self.token_jwt
         )
         self.historial_window.show()
+
+    def cargar_datos_iniciales(self):
+        mostrar_siguiente_id_control(self.ui)
+        self.configurar_combobox()
+        self.image_view1.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
+        self.image_view2.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
+
 
 
     def configurar_combobox(self):

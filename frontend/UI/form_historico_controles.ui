@@ -298,7 +298,7 @@
           <property name="frameShadow">
            <enum>QFrame::Shadow::Raised</enum>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,1,2">
+          <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0,0,1,2,0">
            <item>
             <widget class="QLabel" name="label_desde">
              <property name="text">
@@ -352,6 +352,19 @@
               <string>Filtrar</string>
              </property>
             </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>
