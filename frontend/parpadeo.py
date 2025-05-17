@@ -147,14 +147,11 @@ class MainWindow(QMainWindow):
         self.image_view1.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
         self.image_view2.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
 
-
-
     def configurar_combobox(self):
         """Configura el ComboBox con las subcarpetas del directorio base, filtrando por el número máximo de imágenes"""
         self.ui.comboBox.blockSignals(True)
         self.ui.comboBox.clear()
         
-
         try:
             max_imgs = self.ui.spinBox.value()
             if max_imgs <= 0:
@@ -532,6 +529,14 @@ class MainWindow(QMainWindow):
             ruta_rollo = self.folder  # Carpeta actual seleccionada
             num_defectos_en_rollo = len(self.images)  # Número total de imágenes cargadas
             timestamp_actual = datetime.now().isoformat()
+            orden_analisis = 1
+            print(f"Ruta enviada como rollo: {ruta_rollo}")
+            try:
+                resp_orden = requests.get("http://localhost:8000/controles/rollo/orden_analisis", params={"ruta_rollo": ruta_rollo})
+                if resp_orden.status_code == 200:
+                    orden_analisis = resp_orden.json().get("siguiente_orden", 1)
+            except Exception as e:
+                print(f"No se pudo obtener orden de análisis: {e}")
 
             # Compilar estructura del payload
             data = {
@@ -544,7 +549,7 @@ class MainWindow(QMainWindow):
                     "num_defectos_rollo": num_defectos_en_rollo,
                     "total_defectos_intolerables_rollo": 0,  # Se calculará más abajo
                     "resultado_rollo": "ok",  # Se modificará si se detectan defectos no tolerables
-                    "orden_analisis": 1  # O el número correspondiente si haces múltiples controles por sesión
+                    "orden_analisis": orden_analisis  # O el número correspondiente si haces múltiples controles por sesión
                 },
                 "imagenes": []
             }

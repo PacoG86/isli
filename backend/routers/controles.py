@@ -227,3 +227,26 @@ def guardar_informe_control(informe: InformeControlInput):
     finally:
         cursor.close()
         conn.close()
+
+@router.get("/rollo/orden_analisis")
+def obtener_orden_analisis(ruta_rollo: str):
+    """
+    Devuelve el siguiente valor de orden_analisis para un rollo dado.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT COUNT(rc.id_rollo) 
+            FROM ROLLO_CONTROLADO rc
+            JOIN ROLLO r ON rc.id_rollo = r.id_rollo
+            WHERE r.ruta_local_rollo = %s
+        """, (ruta_rollo,))
+        resultado = cursor.fetchone()
+        cantidad = resultado[0] if resultado else 0
+        return {"siguiente_orden": cantidad + 1}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()

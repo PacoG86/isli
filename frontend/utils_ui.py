@@ -52,9 +52,8 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
 
 
 def logout(parent):
-    """
-    Muestra un diálogo de cierre de sesión con tres opciones.
-    """
+    from main import LoginWindow
+
     msg_box = QMessageBox(parent)
     msg_box.setWindowTitle("Cerrar sesión")
     msg_box.setText("¿Está seguro que desea cerrar sesión?")
@@ -85,7 +84,8 @@ def logout(parent):
         return
 
     elif clicked_button == btn_new_session:
-        parent.close()
-        from main import LoginWindow
-        login_window = LoginWindow()
-        login_window.show()
+        parent.hide()
+
+        # ⬇️ Guardar como atributo persistente para que no se destruya
+        parent.login_window = LoginWindow()
+        parent.login_window.show()
