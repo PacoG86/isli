@@ -30,7 +30,7 @@
        <property name="frameShadow">
         <enum>QFrame::Shadow::Raised</enum>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0">
         <item>
          <widget class="QPushButton" name="pushButton_16">
           <property name="text">
@@ -72,23 +72,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label_nombreUsuarioBD">
+         <widget class="QLabel" name="label_3">
           <property name="text">
            <string>nombre_usuario</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_titIdControl">
-          <property name="text">
-           <string>ID CONTROL</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_idControlBD">
-          <property name="text">
-           <string>ref_control</string>
           </property>
          </widget>
         </item>
@@ -106,21 +92,21 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_ControlHist">
+         <widget class="QPushButton" name="pushButton_menuPpal">
           <property name="text">
-           <string>Control de Calidad</string>
+           <string>Control de calidad</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_pcontrolHist">
+         <widget class="QPushButton" name="pushButton_pcontrol">
           <property name="text">
            <string>Panel de Control</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_manHist">
+         <widget class="QPushButton" name="pushButton_manual">
           <property name="minimumSize">
            <size>
             <width>2</width>
@@ -146,7 +132,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_logoutHist">
+         <widget class="QPushButton" name="pushButton_3">
           <property name="text">
            <string>Logout</string>
           </property>

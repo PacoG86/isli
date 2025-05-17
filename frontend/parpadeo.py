@@ -4,16 +4,17 @@ import json
 from datetime import datetime
 import requests
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QSizePolicy, QGraphicsView,
-    QGraphicsScene, QVBoxLayout, QFrame, QGraphicsTextItem,
-    QTableWidgetItem, QMessageBox, QFileDialog
+    QMainWindow, QSizePolicy, QGraphicsView,
+    QGraphicsScene, QFrame, QGraphicsTextItem,
+    QTableWidgetItem, QMessageBox
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
-import webbrowser
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
+from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control
+from historico_controles_app import HistoricoControlesWindow
 
 
 class HighQualityImageView(QGraphicsView):
@@ -85,12 +86,13 @@ class MainWindow(QMainWindow):
         self.nombre_usuario = nombre_usuario
         self.rol_usuario = rol_usuario
         self.token_jwt = token_jwt
-        self.ui.label_3.setText(f"{nombre_usuario} ({rol_usuario})")
+        mostrar_datos_usuario(self.ui, nombre_usuario, rol_usuario)
+        configurar_botones_comunes(self, self.ui, self.rol_usuario, self.token_jwt)
 
         self.ui.comboBox.installEventFilter(self)
         self.ui.spinBox.valueChanged.connect(self.configurar_combobox)
         
-        self.obtener_siguiente_id_control()
+        mostrar_siguiente_id_control(self.ui)
 
         # Directorio base donde se encuentran las subcarpetas
         self.base_folder = base_folder
@@ -121,41 +123,16 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.clicked.connect(self.limpiar_pantalla)  # Botón "Limpiar pantalla"
         self.ui.pushButton_4.clicked.connect(self.confirmar_interrumpir)  # Botón "Interrumpir control"
         self.ui.pushButton_8.clicked.connect(self.guardar_resultados)
-        self.ui.pushButton_3.clicked.connect(self.logout)
-        # Deshabilitar botón de Panel de Control si no es administrador
-        if self.rol_usuario != "administrador":
-            self.ui.pushButton_pcontrol.setEnabled(False)
-        else:
-            self.ui.pushButton_pcontrol.clicked.connect(self.abrir_panel_admin)
-
-    def abrir_panel_admin(self):
-        url = f"http://localhost:8000/admin?token={self.token_jwt}"
-        webbrowser.open(url)
-
-    def obtener_siguiente_id_control(self): 
-        try:
-            response = requests.get("http://localhost:8000/controles/ultimo_id_control")
-            if response.status_code == 200:
-                data = response.json()
-                siguiente_id = data.get("siguiente_id")
-
-                print(f"📥 ID recibido desde backend: {siguiente_id}")
-
-                if isinstance(siguiente_id, int):  # comprobamos que sea un entero válido
-                    self.ui.label_11.setText(f"{siguiente_id:05d}")
-                    return True
-                else:
-                    print("⚠️ ID de control inválido o ausente en la respuesta.")
-                    self.ui.label_11.setText("-----")
-                    return False
-            else:
-                print(f"❌ Error HTTP: {response.status_code}")
-                self.ui.label_11.setText("Error")
-                return False
-        except Exception as e:
-            print(f"❌ Excepción al obtener ID control: {e}")
-            self.ui.label_11.setText("N/A")
-            return False
+        self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
+    
+    def abrir_ventana_historico(self):
+        self.hide()  # Oculta la ventana actual
+        self.historial_window = HistoricoControlesWindow(
+            self.nombre_usuario,
+            self.rol_usuario,
+            self.token_jwt
+        )
+        self.historial_window.show()
 
 
     def configurar_combobox(self):
@@ -622,46 +599,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error inesperado", str(e))
 
 
-    def logout(self):
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("Cerrar sesión")
-        msg_box.setText("¿Está seguro que desea cerrar sesión?")
-        msg_box.setIcon(QMessageBox.Question)
-
-        btn_yes = msg_box.addButton("Sí", QMessageBox.YesRole)
-        btn_no = msg_box.addButton("No", QMessageBox.NoRole)
-        btn_new_session = msg_box.addButton("Abrir nueva sesión", QMessageBox.AcceptRole)
-
-        msg_box.exec()
-
-        clicked_button = msg_box.clickedButton()
-
-        if clicked_button == btn_yes:
-            despedida = QMessageBox(self)
-            despedida.setWindowTitle("Gracias")
-            despedida.setText("Muchas gracias por confiar en ISLI.\n¡Hasta pronto!")
-            despedida.setIcon(QMessageBox.Information)
-            despedida.setStandardButtons(QMessageBox.NoButton)
-
-            # Cerrar la app después de 2 segundos
-            # Mostrar el diálogo y cerrarlo tras 2 segundos
-            def cerrar_y_salir():
-                despedida.done(0)  # Cierra el diálogo
-                QApplication.instance().quit()
-
-            QTimer.singleShot(2000, cerrar_y_salir)
-            despedida.exec()  # Ejecutar como modal y esperar los 2 segundos
-
-        elif clicked_button == btn_no:
-            # No hacer nada, simplemente cerrar el diálogo
-            return
-
-        elif clicked_button == btn_new_session:
-            # Cerrar ventana actual y volver a mostrar la de login
-            self.close()
-            from main import LoginWindow  # Importa aquí para evitar import circular
-            self.login_window = LoginWindow()
-            self.login_window.show()
+    
 
     def generar_informe_pdf(self):
         if not self.analisis_completado:
@@ -813,13 +751,13 @@ class MainWindow(QMainWindow):
 # ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).
 # Se conserva aquí solo como referencia:
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+#if __name__ == "__main__":
+#    app = QApplication(sys.argv)
     
     # Directorio base donde se encuentran las subcarpetas con imágenes
-    base_folder = r"/Users/pacomunozgago/Downloads/arboles"
-    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."  # <- Sustituye con token real
-    ventana = MainWindow(base_folder, "admin2@isli.com", "administrador", dummy_token)
-    ventana.show()
+#    base_folder = r"/Users/pacomunozgago/Downloads/arboles"
+#    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."  # <- Sustituye con token real
+#    ventana = MainWindow(base_folder, "admin2@isli.com", "administrador", dummy_token)
+#    ventana.show()
     
-    sys.exit(app.exec())
+#    sys.exit(app.exec())

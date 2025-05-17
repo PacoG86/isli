@@ -62,49 +62,39 @@ class Ui_Form_historico(object):
 
         self.verticalLayout_6.addWidget(self.label_titUsuario)
 
-        self.label_nombreUsuarioBD = QLabel(self.barra_izq_frame)
-        self.label_nombreUsuarioBD.setObjectName(u"label_nombreUsuarioBD")
+        self.label_3 = QLabel(self.barra_izq_frame)
+        self.label_3.setObjectName(u"label_3")
 
-        self.verticalLayout_6.addWidget(self.label_nombreUsuarioBD)
-
-        self.label_titIdControl = QLabel(self.barra_izq_frame)
-        self.label_titIdControl.setObjectName(u"label_titIdControl")
-
-        self.verticalLayout_6.addWidget(self.label_titIdControl)
-
-        self.label_idControlBD = QLabel(self.barra_izq_frame)
-        self.label_idControlBD.setObjectName(u"label_idControlBD")
-
-        self.verticalLayout_6.addWidget(self.label_idControlBD)
+        self.verticalLayout_6.addWidget(self.label_3)
 
         self.verticalSpacer_barraLatIzqda = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_6.addItem(self.verticalSpacer_barraLatIzqda)
 
-        self.pushButton_ControlHist = QPushButton(self.barra_izq_frame)
-        self.pushButton_ControlHist.setObjectName(u"pushButton_ControlHist")
+        self.pushButton_menuPpal = QPushButton(self.barra_izq_frame)
+        self.pushButton_menuPpal.setObjectName(u"pushButton_menuPpal")
 
-        self.verticalLayout_6.addWidget(self.pushButton_ControlHist)
+        self.verticalLayout_6.addWidget(self.pushButton_menuPpal)
 
-        self.pushButton_pcontrolHist = QPushButton(self.barra_izq_frame)
-        self.pushButton_pcontrolHist.setObjectName(u"pushButton_pcontrolHist")
+        self.pushButton_pcontrol = QPushButton(self.barra_izq_frame)
+        self.pushButton_pcontrol.setObjectName(u"pushButton_pcontrol")
 
-        self.verticalLayout_6.addWidget(self.pushButton_pcontrolHist)
+        self.verticalLayout_6.addWidget(self.pushButton_pcontrol)
 
-        self.pushButton_manHist = QPushButton(self.barra_izq_frame)
-        self.pushButton_manHist.setObjectName(u"pushButton_manHist")
-        self.pushButton_manHist.setMinimumSize(QSize(2, 9))
+        self.pushButton_manual = QPushButton(self.barra_izq_frame)
+        self.pushButton_manual.setObjectName(u"pushButton_manual")
+        self.pushButton_manual.setMinimumSize(QSize(2, 9))
 
-        self.verticalLayout_6.addWidget(self.pushButton_manHist)
+        self.verticalLayout_6.addWidget(self.pushButton_manual)
 
         self.verticalSpacer_barraLatIzqda2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.verticalLayout_6.addItem(self.verticalSpacer_barraLatIzqda2)
 
-        self.pushButton_logoutHist = QPushButton(self.barra_izq_frame)
-        self.pushButton_logoutHist.setObjectName(u"pushButton_logoutHist")
+        self.pushButton_3 = QPushButton(self.barra_izq_frame)
+        self.pushButton_3.setObjectName(u"pushButton_3")
 
-        self.verticalLayout_6.addWidget(self.pushButton_logoutHist)
+        self.verticalLayout_6.addWidget(self.pushButton_3)
 
 
         self.horizontalLayout_ventanaPpal.addWidget(self.barra_izq_frame)
@@ -281,13 +271,11 @@ class Ui_Form_historico(object):
         self.pushButton_16.setText("")
         self.label_titBarraIzqda.setText(QCoreApplication.translate("Form_historico", u"HIST\u00d3RICO CONTROLES", None))
         self.label_titUsuario.setText(QCoreApplication.translate("Form_historico", u"OPERARIO", None))
-        self.label_nombreUsuarioBD.setText(QCoreApplication.translate("Form_historico", u"nombre_usuario", None))
-        self.label_titIdControl.setText(QCoreApplication.translate("Form_historico", u"ID CONTROL", None))
-        self.label_idControlBD.setText(QCoreApplication.translate("Form_historico", u"ref_control", None))
-        self.pushButton_ControlHist.setText(QCoreApplication.translate("Form_historico", u"Control de Calidad", None))
-        self.pushButton_pcontrolHist.setText(QCoreApplication.translate("Form_historico", u"Panel de Control", None))
-        self.pushButton_manHist.setText(QCoreApplication.translate("Form_historico", u"Manual Usuario", None))
-        self.pushButton_logoutHist.setText(QCoreApplication.translate("Form_historico", u"Logout", None))
+        self.label_3.setText(QCoreApplication.translate("Form_historico", u"nombre_usuario", None))
+        self.pushButton_menuPpal.setText(QCoreApplication.translate("Form_historico", u"Control de calidad", None))
+        self.pushButton_pcontrol.setText(QCoreApplication.translate("Form_historico", u"Panel de Control", None))
+        self.pushButton_manual.setText(QCoreApplication.translate("Form_historico", u"Manual Usuario", None))
+        self.pushButton_3.setText(QCoreApplication.translate("Form_historico", u"Logout", None))
         self.label_umbralDefectos.setText(QCoreApplication.translate("Form_historico", u"TOLERANCIA DEFECTOS", None))
         self.label_numDefectos.setText(QCoreApplication.translate("Form_historico", u"Cantidad m\u00e1x rollo", None))
         self.label_dimDefectos.setText(QCoreApplication.translate("Form_historico", u"Tama\u00f1o m\u00e1x en mm", None))
