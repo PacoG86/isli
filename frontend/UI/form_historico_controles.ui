@@ -489,7 +489,7 @@
               </size>
              </property>
              <property name="text">
-              <string>Generar Informe</string>
+              <string>Mostrar informe</string>
              </property>
             </widget>
            </item>

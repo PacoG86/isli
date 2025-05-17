@@ -77,8 +77,9 @@ def login(usuario: dict):
     
     # Generar token JWT
     token = crear_token({
-        "sub": usuario["correo"],
-        "rol": user["rol"]
+        "sub": user["id_usuario"],
+        "rol": user["rol"],
+        "nombre": user["nombre_usuario"]
     })
     
     # Devolver respuesta
@@ -86,5 +87,6 @@ def login(usuario: dict):
         "access_token": token,
         "token_type": "bearer",
         "nombre_usuario": user["nombre_usuario"],
-        "rol": user["rol"]
+        "rol": user["rol"],
+        "id_usuario": user["id_usuario"]
     }

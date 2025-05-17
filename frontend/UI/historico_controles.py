@@ -346,6 +346,6 @@ class Ui_Form_historico(object):
         ___qtablewidgetitem5 = self.tableWidget_results.horizontalHeaderItem(5)
         ___qtablewidgetitem5.setText(QCoreApplication.translate("Form_historico", u"New Column", None));
         self.pushButton_saveObs.setText(QCoreApplication.translate("Form_historico", u"Guardar comentarios", None))
-        self.pushButton_report.setText(QCoreApplication.translate("Form_historico", u"Generar Informe", None))
+        self.pushButton_report.setText(QCoreApplication.translate("Form_historico", u"Mostrar informe", None))
     # retranslateUi
 

@@ -1,7 +1,7 @@
 import os, json
 from fastapi import APIRouter, HTTPException, Query
 from datetime import datetime, time
-from schemas.schemas_controles import ControlCalidadInput
+from schemas.schemas_controles import ControlCalidadInput, InformeControlInput
 from db import get_connection
 from typing import List, Optional
 
@@ -199,6 +199,30 @@ def obtener_lista_usuarios():
         usuarios = [fila[0] for fila in cursor.fetchall()]
         return usuarios
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.post("/informe/nuevo")
+def guardar_informe_control(informe: InformeControlInput):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO INFORME_CONTROL (id_control, ruta_pdf, generado_por, fecha_generacion, notas)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (
+            informe.id_control,
+            informe.ruta_pdf,
+            informe.generado_por,
+            informe.fecha_generacion,
+            informe.notas or ""
+        ))
+        conn.commit()
+        return {"msg": "Informe guardado correctamente"}
+    except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()

@@ -40,3 +40,10 @@ class ControlCalidadInput(BaseModel):
     fecha_control: datetime
     rollo: RolloControladoInput
     imagenes: List[ImagenDefecto]
+
+class InformeControlInput(BaseModel):
+    id_control: int
+    ruta_pdf: str
+    generado_por: int
+    fecha_generacion: datetime
+    notas: Optional[str] = None

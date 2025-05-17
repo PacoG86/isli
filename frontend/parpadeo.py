@@ -15,6 +15,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control
 from historico_controles_app import HistoricoControlesWindow
+from utils_informes import generar_pdf_completo, guardar_registro_informe
+
 
 
 class HighQualityImageView(QGraphicsView):
@@ -76,7 +78,7 @@ class HighQualityImageView(QGraphicsView):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, base_folder, nombre_usuario, rol_usuario, token_jwt):
+    def __init__(self, base_folder, nombre_usuario, rol_usuario, token_jwt, id_usuario):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -86,6 +88,7 @@ class MainWindow(QMainWindow):
         self.nombre_usuario = nombre_usuario
         self.rol_usuario = rol_usuario
         self.token_jwt = token_jwt
+        self.id_usuario = id_usuario
         mostrar_datos_usuario(self.ui, nombre_usuario, rol_usuario)
         configurar_botones_comunes(self, self.ui, self.rol_usuario, self.token_jwt)
 
@@ -178,12 +181,12 @@ class MainWindow(QMainWindow):
 
             if carpetas_validas:
                 self.ui.comboBox.addItems(carpetas_validas)
-                print(f"📁 Cargadas {len(carpetas_validas)} carpetas con ≤ {max_imgs} imágenes")
+                print(f"Cargadas {len(carpetas_validas)} carpetas con ≤ {max_imgs} imágenes")
             else:
                 self.ui.comboBox.addItem("-- No hay rollos que cumplan con el umbral indicado --")
-                print("⚠️ No se encontraron carpetas que cumplan con el criterio.")
+                print("No se encontraron carpetas que cumplan con el criterio.")
         except Exception as e:
-            print(f"❌ Error al cargar subcarpetas: {e}")
+            print(f"Error al cargar subcarpetas: {e}")
             QMessageBox.warning(self, "Error", f"No se pudo acceder al directorio: {self.base_folder}\n{str(e)}")
 
         self.ui.comboBox.blockSignals(False)
@@ -224,7 +227,7 @@ class MainWindow(QMainWindow):
                 
             return archivos
         except Exception as e:
-            print(f"❌ Error al cargar imágenes: {e}")
+            print(f"Error al cargar imágenes: {e}")
             QMessageBox.warning(self, "Error", f"Error al cargar imágenes: {str(e)}")
             return []
 
@@ -532,7 +535,7 @@ class MainWindow(QMainWindow):
 
             # Compilar estructura del payload
             data = {
-                "id_usuario": 1,  # Sustituye esto cuando tengas login real
+                "id_usuario": self.id_usuario,  # Sustituye esto cuando tengas login real
                 "umbral_tamano_defecto": umbral,
                 "num_defectos_tolerables_por_tamano": max_defectos,
                 "fecha_control": timestamp_actual,
@@ -598,6 +601,7 @@ class MainWindow(QMainWindow):
                 respuesta = response.json()
                 nuevo_id = respuesta.get("id_control")
                 if nuevo_id is not None:
+                    self.id_control_confirmado = nuevo_id
                     self.ui.label_11.setText(f"{int(nuevo_id) + 1:05d}")
                 else:
                     print("⚠️ No se recibió un id_control válido desde el backend.")
@@ -609,9 +613,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error inesperado", str(e))
 
-
-    
-
     def generar_informe_pdf(self):
         if not self.analisis_completado:
             QMessageBox.warning(self, "Advertencia", "Debe finalizar un análisis antes de generar el informe.")
@@ -619,81 +620,35 @@ class MainWindow(QMainWindow):
 
         now = datetime.now()
         timestamp_str = now.strftime("%Y-%m-%d_%H-%M")
-        id_control = self.ui.label_11.text()
+        id_control = getattr(self, "id_control_confirmado", None)
+        if not id_control:
+            QMessageBox.warning(self, "Error", "Primero debes guardar los resultados antes de generar el informe.")
+            return
         nombre_pdf = f"informe_control_{id_control}_{timestamp_str}.pdf"
 
-        # Guardar automáticamente en carpeta histórico
         ruta_hist = os.path.join(os.path.expanduser("~"), "Desktop", "historico")
         os.makedirs(ruta_hist, exist_ok=True)
         ruta_hist_pdf = os.path.join(ruta_hist, nombre_pdf)
 
-        try:
-            self._crear_pdf_en(ruta_hist_pdf)
-            QMessageBox.information(self, "Informe generado", f"Informe guardado en:\n{ruta_hist_pdf}")
+        generar_pdf_completo(
+            id_control=id_control,
+            nombre_usuario=self.nombre_usuario,
+            rol_usuario=self.rol_usuario,
+            tablewidget=self.ui.tableWidget,
+            imagenes_procesadas=self.imagenes_procesadas,
+            tolerancia_tamano=self.ui.doubleSpinBox.value(),
+            tolerancia_cantidad=self.ui.spinBox.value(),
+            ruta_destino=ruta_hist_pdf,
+            logo_path= "logo_isli.png",
+            parent_widget=self
+        )
 
-            # ✅ Abrir el PDF automáticamente
-            import subprocess
-            if sys.platform.startswith("darwin"):  # macOS
-                subprocess.call(("open", ruta_hist_pdf))
-            elif os.name == "nt":  # Windows
-                os.startfile(ruta_hist_pdf)
-            elif os.name == "posix":  # Linux
-                subprocess.call(("xdg-open", ruta_hist_pdf))
-        except Exception as e:
-            QMessageBox.critical(self, "Error al generar informe", f"Se produjo un error al crear el informe PDF:\n\n{str(e)}")
-
-
-    def _crear_pdf_en(self, filepath):
-        c = canvas.Canvas(filepath, pagesize=A4)
-        width, height = A4
-        y = height - 50
-
-        #logo_path = r"C:\\Users\\pgago\\Documents\\isli\\logo_isli.png"
-        logo_path = r"/Users/pacomunozgago/Documents/isli_project/isli/logo_isli.png"
-        if os.path.exists(logo_path):
-            c.drawImage(logo_path, 40, y - 60, width=100, height=40)
-
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(150, y, "Informe de Control de Calidad")
-        y -= 30
-
-        c.setFont("Helvetica", 10)
-        datos = [
-            f"ID Control: {self.ui.label_11.text()}",
-            f"Operario: {self.nombre_usuario} ({self.rol_usuario})",
-            f"Fecha de informe: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
-            f"Tolerancia máxima tamaño: {self.ui.doubleSpinBox.value()} mm",
-            f"Tolerancia máxima cantidad: {self.ui.spinBox.value()} imágenes",
-        ]
-        for d in datos:
-            c.drawString(40, y, d)
-            y -= 15
-
-        y -= 10
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(40, y, "Resumen del análisis")
-        y -= 20
-
-        c.setFont("Helvetica", 9)
-        for row in range(self.ui.tableWidget.rowCount()):
-            if y < 100:
-                c.showPage()
-                y = height - 50
-            linea = []
-            for col in range(self.ui.tableWidget.columnCount()):
-                item = self.ui.tableWidget.item(row, col)
-                linea.append(item.text() if item else "")
-            c.drawString(40, y, " | ".join(linea))
-            y -= 12
-
-        y -= 20
-        c.setFont("Helvetica-Bold", 11)
-        c.drawString(40, y, "Visores de análisis")
-        y -= 20
-
-        self._agregar_imagenes_procesadas_a_pdf(c, width, height)
-
-        c.save()
+        # Registrar el informe en la base de datos
+        guardar_registro_informe(
+            id_control=int(id_control),           # asegúrate que sea int
+            ruta_pdf=ruta_hist_pdf,
+            generado_por=self.id_usuario                        # o usa self.id_usuario si lo tienes
+        )
 
     def setupUiConnections(self):
         self.ui.pushButton_report.clicked.connect(self.generar_informe_pdf)

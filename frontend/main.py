@@ -40,10 +40,11 @@ class LoginWindow(QMainWindow):
 
     def abrir_menu_principal(self, result):
         self.hide()
+        id_usuario = result.get("id_usuario", 1)
         nombre = result.get("nombre_usuario", "Desconocido")
         rol = result.get("rol", "N/A")
         token = result.get("access_token", "")
-        self.menu_window = MainWindow(BASE_FOLDER, nombre, rol, token)
+        self.menu_window = MainWindow(BASE_FOLDER, nombre, rol, token, id_usuario)
         self.menu_window.show()
 
 
