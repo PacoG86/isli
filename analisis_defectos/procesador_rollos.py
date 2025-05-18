@@ -5,7 +5,7 @@ import shutil
 import json
 import cv2
 import numpy as np
-from blackspots_segmentation import BlackSpotsSegmentation
+from analisis_defectos.blackspots_segmentation import BlackSpotsSegmentation
 
 def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_test_black_dots.json", area_umbral: float = 1.0, pixel_to_mm: float = 0.13379797308):
     """
@@ -86,6 +86,23 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
                     continue
                 area_mm = area * pixel_to_mm * pixel_to_mm
                 f_medidas.write(f"{idx} {area_mm:.2f}mm2\n")
+        
+        # Crear estructura con tipos de defecto
+        tipos_detectados = []
+
+        for crop in entrada.get("crops", []):
+            tipo = crop.get("imageObjectId")
+            if tipo in ["punto-negro", "pegote-cascarilla"]:
+                tipos_detectados.append(tipo)
+
+        # Guardar solo los tipos únicos
+        tipos_unicos = list(set(tipos_detectados))
+
+        # Guardar JSON con tipos
+        json_tipo_path = os.path.join(carpeta_procesado, nombre_img + ".json")
+        with open(json_tipo_path, "w", encoding="utf-8") as f_json:
+            json.dump({"tipos": tipos_unicos}, f_json, indent=2, ensure_ascii=False)
+
 
         # Mover imagen original
         shutil.move(ruta_img, os.path.join(carpeta_originales, nombre_img))

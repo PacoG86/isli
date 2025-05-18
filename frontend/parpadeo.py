@@ -1,5 +1,8 @@
 import sys
 import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 from datetime import datetime
 import requests
@@ -16,6 +19,7 @@ from reportlab.pdfgen import canvas
 from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control
 from historico_controles_app import HistoricoControlesWindow
 from utils_informes import generar_pdf_completo, guardar_registro_informe
+from analisis_defectos.procesador_rollos import analizar_rollo
 
 
 
@@ -228,7 +232,7 @@ class MainWindow(QMainWindow):
 
     def configurar_tabla(self):
         self.ui.tableWidget.setHorizontalHeaderLabels([
-        "Fecha/ Hora", "REF Rollo", "REF Defecto Img", "Dim. Defecto mm", "Resultado"
+        "Fecha/ Hora", "Tipo Defecto", "REF Defecto Img", "Dim. Defecto mm", "Resultado"
         ])
     
         header = self.ui.tableWidget.horizontalHeader()
@@ -237,24 +241,44 @@ class MainWindow(QMainWindow):
 
         self.ui.tableWidget.setRowCount(0)
 
-    def agregar_registro_a_tabla(self, ruta_imagen):
+    def agregar_registro_a_tabla(self, ruta_imagen_original, ruta_imagen_procesada):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        carpeta = os.path.basename(os.path.dirname(ruta_imagen))  # ID Rollo
-        archivo = os.path.basename(ruta_imagen)                   # Ref. Img Defecto
-        dim_defecto = "4.23"  # 🧪 Sustituye por lógica real o variable
+        carpeta = os.path.basename(os.path.dirname(ruta_imagen_original))  # ID Rollo
+        archivo = os.path.basename(ruta_imagen_original)                  # Ref. Img Defecto
+
+        # Leer el mayor defecto desde el .txt de la imagen procesada
+        _, dim_defecto, _ = self.leer_defectos_txt(ruta_imagen_procesada)
+        dim_defecto = dim_defecto if dim_defecto is not None else 0.0
+
         umbral_usuario = float(self.ui.doubleSpinBox.value())
-        result_analisis = "nok" if float(dim_defecto) > umbral_usuario else "ok"
+        result_analisis = "nok" if dim_defecto > umbral_usuario else "ok"
 
         fila = self.ui.tableWidget.rowCount()
         self.ui.tableWidget.insertRow(fila)
+
         self.ui.tableWidget.setItem(fila, 0, QTableWidgetItem(timestamp))
-        self.ui.tableWidget.setItem(fila, 1, QTableWidgetItem(carpeta))
+        tipos = self.leer_tipos_defecto_json(ruta_imagen_procesada)
+        tipos_str = ", ".join(tipos) if tipos else "—"
+        self.ui.tableWidget.setItem(fila, 1, QTableWidgetItem(tipos_str))
         self.ui.tableWidget.setItem(fila, 2, QTableWidgetItem(archivo))
-        self.ui.tableWidget.setItem(fila, 3, QTableWidgetItem(dim_defecto))
-        self.ui.tableWidget.setItem(fila, 4, QTableWidgetItem(result_analisis))
-        
+
+        item_dim = QTableWidgetItem(f"{dim_defecto:.2f}")
+        item_result = QTableWidgetItem(result_analisis)
+
+        # 🎨 Estilo condicional: rojo para NOK, verde para OK
+        if result_analisis == "nok":
+            item_dim.setBackground(QColor("#FFCDD2"))      # rojo claro
+            item_result.setBackground(QColor("#FFCDD2"))
+        else:
+            item_dim.setBackground(QColor("#C8E6C9"))      # verde claro
+            item_result.setBackground(QColor("#C8E6C9"))
+
+        self.ui.tableWidget.setItem(fila, 3, item_dim)
+        self.ui.tableWidget.setItem(fila, 4, item_result)
+
         # Desplazarse a la última fila
         self.ui.tableWidget.scrollToBottom()
+
         
     def parpadear_boton(self):
         """Controla el parpadeo del botón de iniciar control"""
@@ -265,62 +289,59 @@ class MainWindow(QMainWindow):
         self.blink_state = not self.blink_state
 
     def iniciar_control_calidad(self):
-        """Inicia el proceso de control de calidad con la carpeta seleccionada"""
-        # Si ya hay un control en curso, detenerlo primero
         if self.timer and self.timer.isActive():
             self.interrumpir_control()
             return
-            
-        # Obtener la carpeta seleccionada
+
         seleccion = self.ui.comboBox.currentText()
-        
-        # Verificar si se ha seleccionado una carpeta válida
-        if seleccion == "-- Seleccione una carpeta --":
+
+        if seleccion == "-- Seleccione un rollo --":
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione una carpeta primero.")
             return
-        
-        # Determinar la ruta completa de la carpeta seleccionada
-        if seleccion == os.path.basename(self.base_folder):
-            self.folder = self.base_folder
-        else:
-            self.folder = os.path.join(self.base_folder, seleccion)
-        
-        # Actualizar el texto del botón
-        self.ui.pushButton_5.setText("Iniciar Control de Calidad")
-        
-        # Cargar imágenes de la carpeta seleccionada
-        self.images = self.cargar_imagenes(self.folder)
-        
-        # Resetear variables de control
+
+        self.folder = os.path.join(self.base_folder, seleccion)
+
+        # Ejecutar el análisis de imágenes antes de cargarlas
+        try:
+            analizar_rollo(base_path=self.base_folder, rollo=seleccion)
+        except Exception as e:
+            print(f"❌ Error al analizar el rollo: {e}")
+            QMessageBox.critical(self, "Error", f"Ocurrió un error al analizar el rollo seleccionado:\n{e}")
+            return
+
+        # Cargar imágenes desde 'originales' y 'procesado'
+        carpeta_originales = os.path.join(self.folder, "originales")
+        carpeta_procesadas = os.path.join(self.folder, "procesado")
+        self.imagenes_originales = self.cargar_imagenes(carpeta_originales)
+        self.imagenes_procesadas = self.cargar_imagenes(carpeta_procesadas)
+
+        # Validar que ambos conjuntos estén sincronizados
+        if len(self.imagenes_originales) != len(self.imagenes_procesadas):
+            QMessageBox.warning(self, "Advertencia", "El número de imágenes originales y procesadas no coincide.")
+            return
+
+        self.images = list(zip(self.imagenes_originales, self.imagenes_procesadas))
         self.index = 0
         self.analisis_completado = False
-        
-        # Limpiar la tabla y restablecer la barra de progreso
+
         self.ui.tableWidget.setRowCount(0)
-        if self.images:
-            self.ui.progressBar.setMaximum(len(self.images))
-        else:
-            self.ui.progressBar.setMaximum(1)
+        self.ui.progressBar.setMaximum(len(self.images) if self.images else 1)
         self.ui.progressBar.setValue(0)
-        
-        # Mostrar mensaje si no hay imágenes
+
         if not self.images:
             self.image_view1.showMessage("No se encontraron\nimágenes en la carpeta", "#D32F2F")
             self.image_view2.showMessage("No se encontraron\nimágenes en la carpeta", "#D32F2F")
             self.ui.label_5.setText("Sin imágenes")
             self.ui.label_6.setText("Sin imágenes")
             return
-            
-        # Iniciar el temporizador para mostrar imágenes
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.mostrar_siguiente_imagen)
-        self.timer.start(2000)  # 2000 ms = 2 segundos
-        
-        # Iniciar parpadeo del botón
+        self.timer.start(2000)
+
         self.blink_timer.start(500)
-        
-        # Mostrar la primera imagen inmediatamente
         self.mostrar_siguiente_imagen()
+
 
     def limpiar_pantalla(self):
         """Limpia los visores de imágenes y detiene cualquier procesamiento"""
@@ -395,30 +416,29 @@ class MainWindow(QMainWindow):
                 self.mostrar_analisis_completado()
             return
 
-        ruta_imagen = self.images[self.index]
-        self.image_view1.setImage(ruta_imagen)
-        self.image_view2.setImage(ruta_imagen)
+        ruta_original, ruta_procesada = self.images[self.index]
+        self.image_view1.setImage(ruta_original)     # Visor izquierdo: original
+        self.image_view2.setImage(ruta_procesada)    # Visor derecho: procesada
 
-        # Almacenar imágenes reales procesadas para el informe
         if not hasattr(self, 'imagenes_procesadas'):
             self.imagenes_procesadas = []
-        self.imagenes_procesadas.append(ruta_imagen)
+        self.imagenes_procesadas.append(ruta_procesada)
 
-        nombre = os.path.basename(ruta_imagen)
-        json_path = os.path.join(self.folder, f"{os.path.splitext(nombre)[0]}.json")
-        dim_max = self.obtener_dim_maxima_desde_json(json_path)
+        nombre = os.path.basename(ruta_original)
 
-        if dim_max:
-            self.ui.label_5.setText(f"MAYOR DEFECTO ENCONTRADO: {dim_max:.2f} mm")
+        minimo, maximo, _ = self.leer_defectos_txt(ruta_procesada)
+        if minimo is not None and maximo is not None:
+            self.ui.label_5.setText(f"Rango de defectos: {minimo:.2f} - {maximo:.2f} mm")
         else:
-            self.ui.label_5.setText("MAYOR DEFECTO ENCONTRADO: -- mm")
+            self.ui.label_5.setText("Rango de defectos: -- mm")
 
         self.ui.label_6.setText(f"Imagen: {nombre}")
         self.ui.progressBar.setValue(self.index + 1)
-        self.agregar_registro_a_tabla(ruta_imagen)
+        self.agregar_registro_a_tabla(ruta_original, ruta_procesada)
 
         print(f"🔄 Mostrando imagen: {nombre} ({self.index + 1}/{len(self.images)})")
         self.index += 1
+
 
     def _agregar_imagenes_procesadas_a_pdf(self, c, width, height):
         y = height - 80
@@ -439,81 +459,49 @@ class MainWindow(QMainWindow):
                     print(f"❌ Error al insertar imagen en PDF: {e}")
 
 
-    def obtener_dim_maxima_desde_json(self, json_path): #REVISAR AL INCLUIR LAS IMÁGENES FINALES
+    def leer_defectos_txt(self, ruta_imagen_procesada):
+        """
+        Lee el archivo .txt correspondiente a una imagen procesada.
+        Devuelve:
+        - área mínima
+        - área máxima
+        - lista completa de áreas
+        """
+        try:
+            txt_path = ruta_imagen_procesada + ".txt"
+            if not os.path.exists(txt_path):
+                return None, None, []
+
+            areas = []
+            with open(txt_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    partes = line.strip().split()
+                    if len(partes) == 2 and partes[1].endswith("mm2"):
+                        valor = float(partes[1].replace("mm2", ""))
+                        areas.append(valor)
+
+            if not areas:
+                return None, None, []
+
+            return min(areas), max(areas), areas
+        except Exception as e:
+            print(f"❌ Error al leer defectos desde TXT: {e}")
+            return None, None, []
+        
+    def leer_tipos_defecto_json(self, ruta_imagen_procesada):
+        """Lee el archivo .json generado por procesador_rollos.py y devuelve la lista de tipos de defecto"""
+        json_path = ruta_imagen_procesada + ".json"
+        if not os.path.exists(json_path):
+            return []
+
         try:
             with open(json_path, "r", encoding="utf-8") as f:
-                contenido = json.load(f)
-                defectos = contenido.get("defectos", [])
-                if defectos:
-                    return max(d["area"] for d in defectos)
+                data = json.load(f)
+                return data.get("tipos", [])
         except Exception as e:
-            print(f"❌ Error leyendo JSON para dimensión máxima: {e}")
-        return None
+            print(f"❌ Error leyendo tipos de defecto desde JSON: {e}")
+            return []
 
-    
-    def mostrar_analisis_completado(self, mensaje="Análisis completado", color="#2E7D32"):
-        if self.analisis_completado:
-            return
-        
-        print("✅ Análisis de imágenes completado")
-        
-        if self.timer and self.timer.isActive():
-            self.timer.stop()
-            
-        # Detener parpadeo del botón y restaurar estilo original
-        self.blink_timer.stop()
-        self.ui.pushButton_5.setStyleSheet("")  # Restaurar estilo original
-            
-        # Mostrar mensaje en ambos visores
-        self.image_view1.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
-        self.image_view2.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
-        
-        # Actualizar las etiquetas de detalles
-        self.ui.label_5.setText("Análisis finalizado")
-        self.ui.label_6.setText("Análisis finalizado")
-        
-        # Restaurar el texto del botón
-        self.ui.pushButton_5.setText("Iniciar Control de Calidad")
-        
-        # Asegurar que la barra de progreso esté al 100%
-        if self.images:
-            self.ui.progressBar.setValue(len(self.images))
-        
-        # Agregar una fila de resumen a la tabla
-        if self.images:
-            # Calcular mayor defecto
-            mayor_defecto = 0.0
-            for i in range(self.ui.tableWidget.rowCount()):
-                item = self.ui.tableWidget.item(i, 3)
-                if item and item.text().replace('.', '', 1).isdigit():
-                    try:
-                        valor = float(item.text())
-                        mayor_defecto = max(mayor_defecto, valor)
-                    except ValueError:
-                        pass
-
-            umbral_usuario = float(self.ui.doubleSpinBox.value())
-            resultado_global = "nok" if mayor_defecto > umbral_usuario else "ok"
-
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            fila_actual = self.ui.tableWidget.rowCount()
-            self.ui.tableWidget.insertRow(fila_actual)
-            
-            self.ui.tableWidget.setItem(fila_actual, 0, QTableWidgetItem(timestamp))
-            self.ui.tableWidget.setItem(fila_actual, 1, QTableWidgetItem("RESUMEN"))
-            self.ui.tableWidget.setItem(fila_actual, 2, QTableWidgetItem(f"Total: {len(self.images)} imágenes"))
-            self.ui.tableWidget.setItem(fila_actual, 3, QTableWidgetItem(f"LÍMITE: {mayor_defecto:.2f} mm"))
-            self.ui.tableWidget.setItem(fila_actual, 4, QTableWidgetItem(resultado_global))
-
-            # Hacer la fila de resumen destacada (fondo verde claro)
-            for col in range(3):
-                item = self.ui.tableWidget.item(fila_actual, col)
-                item.setBackground(QBrush(QColor("#C8E6C9")))
-                item.setFont(QFont("Arial", 10, QFont.Bold))
-            
-            self.ui.tableWidget.scrollToBottom()
-        
-        self.analisis_completado = True
 
     def guardar_resultados(self):
         if not self.analisis_completado:
@@ -704,21 +692,38 @@ class MainWindow(QMainWindow):
             fila_actual = self.ui.tableWidget.rowCount()
             self.ui.tableWidget.insertRow(fila_actual)
 
-            self.ui.tableWidget.setItem(fila_actual, 0, QTableWidgetItem(timestamp))
-            self.ui.tableWidget.setItem(fila_actual, 1, QTableWidgetItem("RESUMEN"))
-            self.ui.tableWidget.setItem(fila_actual, 2, QTableWidgetItem(f"Total: {len(self.images)} imágenes"))
-            self.ui.tableWidget.setItem(fila_actual, 3, QTableWidgetItem(f"LÍMITE: {mayor_defecto:.2f} mm"))
-            self.ui.tableWidget.setItem(fila_actual, 4, QTableWidgetItem(resultado_global))
+            # Crear items
+            item_fecha = QTableWidgetItem(timestamp)
+            item_resumen = QTableWidgetItem("RESUMEN")
+            item_total = QTableWidgetItem(f"Total: {len(self.images)} imágenes")
+            item_limite = QTableWidgetItem(f"LÍMITE: {mayor_defecto:.2f} mm")
+            item_resultado = QTableWidgetItem(resultado_global)
 
-            for col in range(3):
-                item = self.ui.tableWidget.item(fila_actual, col)
-                item.setBackground(QBrush(QColor("#C8E6C9")))
+            items = [item_fecha, item_resumen, item_total, item_limite, item_resultado]
+
+            # Fuente en negrita para todos
+            for item in items:
                 item.setFont(QFont("Arial", 10, QFont.Bold))
+
+            # Fondo verde por defecto
+            for item in items:
+                item.setBackground(QColor("#C8E6C9"))
+
+            # Si resultado es NOK, sobrescribir color de límite y resultado a rojo
+            if resultado_global == "nok":
+                item_limite.setBackground(QColor("#FFCDD2"))
+                item_resultado.setBackground(QColor("#FFCDD2"))
+
+            # Insertar fila
+            for col, item in enumerate(items):
+                self.ui.tableWidget.setItem(fila_actual, col, item)
 
             self.ui.tableWidget.scrollToBottom()
 
         self.analisis_completado = True
         self.ui.pushButton_report.setEnabled(True)
+
+
 
 
 # ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
