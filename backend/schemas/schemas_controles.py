@@ -48,3 +48,8 @@ class InformeControlInput(BaseModel):
     generado_por: int
     fecha_generacion: datetime
     notas: Optional[str] = None
+
+
+class ActualizarNotasInput(BaseModel):
+    id_control: int
+    notas: str

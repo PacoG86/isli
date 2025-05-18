@@ -2,7 +2,7 @@ import os, json
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from datetime import datetime, time
-from schemas.schemas_controles import ControlCalidadInput, InformeControlInput
+from schemas.schemas_controles import ControlCalidadInput, InformeControlInput, ActualizarNotasInput
 from db import get_connection
 from typing import List, Optional
 
@@ -156,11 +156,19 @@ def obtener_historico_controles(
     cursor = conn.cursor(dictionary=True)
     try:
         query = """
-            SELECT c.id_control, u.nombre_usuario, c.fecha_control,
-                   c.umbral_tamano_defecto, c.num_defectos_tolerables_por_tamano,
-                   c.observacs
+            SELECT c.id_control,
+                   u.nombre_usuario,
+                   c.fecha_control,
+                   c.umbral_tamano_defecto,
+                   c.num_defectos_tolerables_por_tamano,
+                   c.observacs,
+                   i.notas,
+                   CASE WHEN i.id_informe IS NOT NULL THEN 1 ELSE 0 END AS tiene_informe,
+                   rc.resultado_rollo
             FROM CONTROL_CALIDAD c
             JOIN USUARIO u ON c.id_usuario = u.id_usuario
+            LEFT JOIN INFORME_CONTROL i ON c.id_control = i.id_control
+            LEFT JOIN ROLLO_CONTROLADO rc ON c.id_control = rc.id_control
             WHERE 1=1
         """
         params = []
@@ -190,11 +198,13 @@ def obtener_historico_controles(
         cursor.execute(query, params)
         controles = cursor.fetchall()
         return controles
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
+
 
 @router.get("/usuarios", response_model=List[str])
 def obtener_lista_usuarios():
@@ -277,6 +287,25 @@ def verificar_existencia_informe(id_control: int):
         else:
             return {"existe": False}
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.post("/informe/actualizar_notas")
+def actualizar_notas_informe(datos: ActualizarNotasInput):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE INFORME_CONTROL
+            SET notas = %s
+            WHERE id_control = %s
+        """, (datos.notas, datos.id_control))
+        conn.commit()
+        return {"msg": "Notas actualizadas correctamente"}
+    except Exception as e:
+        conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
