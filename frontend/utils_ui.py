@@ -48,6 +48,7 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
     if rol_usuario != "administrador":
         ui.pushButton_pcontrol.setEnabled(False)
     else:
+        print(f"🌐 Abriendo panel admin con token: {token_jwt}")
         ui.pushButton_pcontrol.clicked.connect(lambda: webbrowser.open(f"http://localhost:8000/admin?token={token_jwt}"))
 
 

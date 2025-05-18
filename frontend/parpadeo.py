@@ -95,11 +95,8 @@ class MainWindow(QMainWindow):
         self.ui.comboBox.installEventFilter(self)
         self.ui.spinBox.valueChanged.connect(self.configurar_combobox)
         
-        #mostrar_siguiente_id_control(self.ui)
         # Diferir carga pesada tras mostrar la interfaz
-
         QTimer.singleShot(100, self.cargar_datos_iniciales)
-
 
         # Directorio base donde se encuentran las subcarpetas
         self.base_folder = base_folder
@@ -137,7 +134,8 @@ class MainWindow(QMainWindow):
         self.historial_window = HistoricoControlesWindow(
             self.nombre_usuario,
             self.rol_usuario,
-            self.token_jwt
+            self.token_jwt,
+            self.id_usuario
         )
         self.historial_window.show()
 
@@ -526,13 +524,15 @@ class MainWindow(QMainWindow):
             # Extraer valores del formulario
             umbral = float(self.ui.doubleSpinBox.value())
             max_defectos = int(self.ui.spinBox.value())
-            ruta_rollo = self.folder  # Carpeta actual seleccionada
             num_defectos_en_rollo = len(self.images)  # Número total de imágenes cargadas
             timestamp_actual = datetime.now().isoformat()
+            ruta_rollo = self.folder  # Carpeta actual seleccionada
+            nombre_rollo = os.path.basename(ruta_rollo).strip().lower()
+            print(f"📤 nombre_rollo enviado desde frontend: '{nombre_rollo}'")
             orden_analisis = 1
             print(f"Ruta enviada como rollo: {ruta_rollo}")
             try:
-                resp_orden = requests.get("http://localhost:8000/controles/rollo/orden_analisis", params={"ruta_rollo": ruta_rollo})
+                resp_orden = requests.get("http://localhost:8000/controles/rollo/orden_analisis", params={"nombre_rollo": nombre_rollo})
                 if resp_orden.status_code == 200:
                     orden_analisis = resp_orden.json().get("siguiente_orden", 1)
             except Exception as e:
@@ -546,6 +546,7 @@ class MainWindow(QMainWindow):
                 "fecha_control": timestamp_actual,
                 "rollo": {
                     "ruta_local_rollo": ruta_rollo,
+                    "nombre_rollo": nombre_rollo,
                     "num_defectos_rollo": num_defectos_en_rollo,
                     "total_defectos_intolerables_rollo": 0,  # Se calculará más abajo
                     "resultado_rollo": "ok",  # Se modificará si se detectan defectos no tolerables
@@ -581,7 +582,7 @@ class MainWindow(QMainWindow):
                             defectos = contenido.get("defectos", [])
                             detecciones = contenido.get("detecciones", [])
                     except Exception as e:
-                        print(f"❌ Error leyendo JSON {json_path}: {e}")
+                        print(f"Error leyendo JSON {json_path}: {e}")
 
                 data["imagenes"].append({
                     "nombre_archivo": nombre_archivo,
@@ -597,6 +598,7 @@ class MainWindow(QMainWindow):
             data["rollo"]["resultado_rollo"] = "nok" if defectos_intolerables > 0 else "ok"
 
             # Enviar al backend
+            print(f"📤 Payload enviado al backend:\n{json.dumps(data, indent=2)}")
             response = requests.post("http://localhost:8000/controles/nuevo", json=data)
 
             if response.status_code == 200:

@@ -3,7 +3,7 @@
 import sys
 import requests
 from PySide6.QtWidgets import QApplication, QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QPushButton
-from PySide6.QtCore import QDate
+from PySide6.QtCore import QDate, QTimer
 from datetime import datetime, time
 from UI.historico_controles import Ui_Form_historico
 from utils_ui import mostrar_datos_usuario, configurar_botones_comunes
@@ -108,20 +108,69 @@ class HistoricoControlesWindow(QWidget):
     def volver_a_menu_principal(self):
         from parpadeo import MainWindow
         from main import BASE_FOLDER  # Asegúrate de tener esta variable disponible o pásala por parámetro
-        self.close()
-        self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt)
+        self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
         self.menu_window.show()
+        self.hide()
 
     def configurar_tabla(self):
         header = self.ui.tableWidget_results.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.ResizeToContents)  # Ajusta ancho al contenido
         header.setStretchLastSection(True)  # Última columna ocupa espacio restante
 
+    def mostrar_o_generar_informe(self):
+        fila = self.ui.tableWidget_results.currentRow()
+        if fila == -1:
+            QMessageBox.warning(self, "Sin selección", "Seleccione una fila para mostrar el informe.")
+            return
+
+        id_control = self.ui.tableWidget_results.item(fila, 0).text()
+        try:
+            response = requests.get(f"http://localhost:8000/controles/informe/existe?id_control={id_control}")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("existe"):
+                    ruta_pdf = data["ruta_pdf"]
+                    from utils_informes import abrir_pdf
+                    abrir_pdf(ruta_pdf)
+                else:
+                    # No existe, generar uno
+                    ruta_destino = f"C:/Users/pgago/Desktop/historico/informe_{id_control}.pdf"
+
+                    # Extraer datos necesarios de la tabla
+                    nombre_usuario = self.ui.tableWidget_results.item(fila, 1).text()
+                    fecha = self.ui.tableWidget_results.item(fila, 2).text()
+                    tolerancia_tamano = float(self.ui.tableWidget_results.item(fila, 3).text())
+                    tolerancia_cantidad = int(self.ui.tableWidget_results.item(fila, 4).text())
+
+                    # Imágenes de ejemplo para el visor
+                    imagenes_procesadas = []  # Opcionalmente, podrías recuperar imágenes asociadas al control
+
+                    from utils_informes import generar_pdf_completo, guardar_registro_informe
+                    generar_pdf_completo(
+                        id_control=id_control,
+                        nombre_usuario=nombre_usuario,
+                        rol_usuario=self.rol_usuario,
+                        tablewidget=self.ui.tableWidget_results,
+                        imagenes_procesadas=imagenes_procesadas,
+                        tolerancia_tamano=tolerancia_tamano,
+                        tolerancia_cantidad=tolerancia_cantidad,
+                        ruta_destino=ruta_destino,
+                        parent_widget=self
+                    )
+                    guardar_registro_informe(id_control, ruta_destino, self.id_usuario)
+
+            else:
+                QMessageBox.warning(self, "Error", f"No se pudo verificar el informe: {response.text}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+
     
-    def __init__(self, nombre_usuario, rol_usuario, token_jwt):
+    def __init__(self, nombre_usuario, rol_usuario, token_jwt, id_usuario):
         super().__init__()
         self.ui = Ui_Form_historico()
         self.ui.setupUi(self)
+        self.id_usuario = id_usuario
         self.configurar_tabla()
         self.cargar_usuarios()
         # Establecer fecha actual al iniciar
@@ -141,23 +190,26 @@ class HistoricoControlesWindow(QWidget):
         # Configurar botones comunes
         configurar_botones_comunes(self, self.ui, rol_usuario, token_jwt)
 
-        self.cargar_datos_historico()
+        # Retrasar carga de histórico para que UI abra rápido
+        QTimer.singleShot(300, self.cargar_datos_historico)
 
-        # Conectar botón para volver
+        # Conectar botones
         self.ui.pushButton_menuPpal.clicked.connect(self.volver_a_menu_principal)
         self.ui.pushButton_filtrar.clicked.connect(self.aplicar_filtros)
         self.ui.pushButton_limpiarFiltros.clicked.connect(self.limpiar_filtros)
+        self.ui.pushButton_report.clicked.connect(self.mostrar_o_generar_informe)
 
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+
+#if __name__ == "__main__":
+#    app = QApplication(sys.argv)
 
     # Test manual con datos ficticios
-    dummy_user = "Pepa Gutiérrez"
-    dummy_rol = "administrador"
-    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+#    dummy_user = "Pepa Gutiérrez"
+#    dummy_rol = "administrador"
+#    dummy_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
-    ventana = HistoricoControlesWindow(dummy_user, dummy_rol, dummy_token)
-    ventana.show()
-    sys.exit(app.exec())
+#    ventana = HistoricoControlesWindow(dummy_user, dummy_rol, dummy_token)
+#    ventana.show()
+#    sys.exit(app.exec())

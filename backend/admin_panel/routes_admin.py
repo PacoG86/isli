@@ -24,37 +24,20 @@ ALGORITHM = "HS256"
 
 admin_router = APIRouter()
 
-# Alternativa de seguridad basada en cabecera HTTP Authorization, pensada para producción.
-"""
-def obtener_rol_desde_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    print("🪪 Token recibido:", credentials.credentials)
-    try:
-        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
-        print("✅ Payload decodificado:", payload)
-        rol = payload.get("rol")
-        if rol != "administrador":
-            raise HTTPException(status_code=403, detail="Acceso restringido a administradores")
-        return rol
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Token inválido o expirado")
-
-
-#@admin_router.get("/admin", response_class=HTMLResponse)
-#def mostrar_panel_admin(request: Request, rol: str = Depends(obtener_rol_desde_token)):
-#    return templates.TemplateResponse("dashboard.html", {"request": request})
-"""
 @admin_router.get("/admin", response_class=HTMLResponse)
 def mostrar_panel_admin(request: Request, token: str = Query(None)):
     if not token:
         raise HTTPException(status_code=401, detail="Token requerido en la URL")
 
     try:
+        token = token.strip()  # eliminar espacios invisibles
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         print("✅ Payload decodificado:", payload)
         rol = payload.get("rol")
         if rol != "administrador":
             raise HTTPException(status_code=403, detail="Acceso restringido a administradores")
-    except JWTError:
+    except JWTError as e:
+        print(f"❌ Error al decodificar token: {e}")
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
 
     # 🔹 Obtener usuarios desde la base de datos

@@ -27,6 +27,7 @@ class ImagenDefecto(BaseModel):
 
 class RolloControladoInput(BaseModel):
     ruta_local_rollo: str
+    nombre_rollo: str
     num_defectos_rollo: int
     total_defectos_intolerables_rollo: int
     resultado_rollo: Literal['ok', 'nok']

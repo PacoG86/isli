@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 import bcrypt  # Importar bcrypt directamente
+from unidecode import unidecode
 
 load_dotenv()
 
@@ -46,11 +47,19 @@ def hashear_contrasena(plain_password):
 
 def crear_token(data: dict):
     """
-    Crea un token JWT con los datos proporcionados.
+    Crea un token JWT con los datos proporcionados, eliminando acentos o caracteres no ASCII.
     """
-    to_encode = data.copy()
+    to_encode = {}
+
+    for key, value in data.items():
+        if isinstance(value, str):
+            to_encode[key] = unidecode(value)  # elimina acentos como é → e
+        else:
+            to_encode[key] = value
+
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
+
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 @login_router.post("/login")
@@ -77,7 +86,7 @@ def login(usuario: dict):
     
     # Generar token JWT
     token = crear_token({
-        "sub": user["id_usuario"],
+        "sub": str(user["id_usuario"]),
         "rol": user["rol"],
         "nombre": user["nombre_usuario"]
     })

@@ -1,5 +1,6 @@
 import os, json
 from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import FileResponse
 from datetime import datetime, time
 from schemas.schemas_controles import ControlCalidadInput, InformeControlInput
 from db import get_connection
@@ -25,25 +26,33 @@ def guardar_control_calidad(control: ControlCalidadInput):
         ))
         id_control = cursor.lastrowid
 
-        # Insertar ROLLO si es necesario (verificar existencia por ruta)
-        cursor.execute("SELECT id_rollo FROM ROLLO WHERE ruta_local_rollo = %s", (control.rollo.ruta_local_rollo,))
+        # Extraer nombre del rollo desde la ruta
+        nombre_rollo = os.path.basename(control.rollo.ruta_local_rollo).strip().lower()
+
+        print(f"🔎 Buscando id_rollo para nombre_rollo='{nombre_rollo}'")
+        # Buscar ROLLO por nombre_rollo en lugar de ruta
+        cursor.execute("SELECT id_rollo FROM ROLLO WHERE TRIM(LOWER(nombre_rollo)) = %s", (nombre_rollo.strip().lower(),))
         rollo_existente = cursor.fetchone()
+        print(f"📦 Resultado de búsqueda en ROLLO: {rollo_existente}")
 
         if rollo_existente:
             id_rollo = rollo_existente[0]
         else:
             cursor.execute("""
-                INSERT INTO ROLLO (ruta_local_rollo, num_defectos_rollo, estado_rollo)
-                VALUES (%s, %s, %s)
+                INSERT INTO ROLLO (ruta_local_rollo, nombre_rollo, num_defectos_rollo, estado_rollo)
+                VALUES (%s, %s, %s, %s)
             """, (
                 control.rollo.ruta_local_rollo,
+                nombre_rollo,  # ⬅️ usamos el normalizado
                 control.rollo.num_defectos_rollo,
                 "controlado"
             ))
             id_rollo = cursor.lastrowid
 
+
         # Insertar ROLLO_CONTROLADO
         rollo = control.rollo
+        print(f"🧩 Insertando ROLLO_CONTROLADO con orden_analisis = {rollo.orden_analisis}")
         cursor.execute("""
             INSERT INTO ROLLO_CONTROLADO (id_rollo, id_control, total_defectos_intolerables_rollo, resultado_rollo, orden_analisis)
             VALUES (%s, %s, %s, %s, %s)
@@ -108,10 +117,7 @@ def guardar_control_calidad(control: ControlCalidadInput):
                     bbox["coord_w"],
                     bbox["coord_h"]
                 ))
-        cursor.execute(
-            "UPDATE rollo SET estado_rollo = 'controlado' WHERE ruta_local_rollo = %s",
-            (control.rollo.ruta_local_rollo,)
-        )
+        cursor.execute("UPDATE rollo SET estado_rollo = 'controlado' WHERE id_rollo = %s", (id_rollo,))
 
         conn.commit()
         return {"msg": "Control de calidad guardado exitosamente", "id_control": id_control}
@@ -229,22 +235,47 @@ def guardar_informe_control(informe: InformeControlInput):
         conn.close()
 
 @router.get("/rollo/orden_analisis")
-def obtener_orden_analisis(ruta_rollo: str):
-    """
-    Devuelve el siguiente valor de orden_analisis para un rollo dado.
-    """
+def obtener_orden_analisis(nombre_rollo: str):
+    nombre_rollo = nombre_rollo.strip().lower()
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # Verificar si el rollo existe
+        cursor.execute("SELECT id_rollo FROM ROLLO WHERE LOWER(TRIM(nombre_rollo)) = %s", (nombre_rollo,))
+        row = cursor.fetchone()
+        
+        if not row:
+            raise HTTPException(status_code=404, detail=f"No existe ningún rollo con nombre '{nombre_rollo}'")
+
+        id_rollo = row[0]
+
+        # Contar cuántos controles tiene ese rollo
+        cursor.execute("SELECT COUNT(*) FROM ROLLO_CONTROLADO WHERE id_rollo = %s", (id_rollo,))
+        count_row = cursor.fetchone()
+        cantidad = count_row[0] if count_row else 0
+
+        return {"siguiente_orden": cantidad + 1}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    finally:
+        cursor.close()
+        conn.close()
+
+@router.get("/informe/existe")
+def verificar_existencia_informe(id_control: int):
     conn = get_connection()
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            SELECT COUNT(rc.id_rollo) 
-            FROM ROLLO_CONTROLADO rc
-            JOIN ROLLO r ON rc.id_rollo = r.id_rollo
-            WHERE r.ruta_local_rollo = %s
-        """, (ruta_rollo,))
-        resultado = cursor.fetchone()
-        cantidad = resultado[0] if resultado else 0
-        return {"siguiente_orden": cantidad + 1}
+            SELECT ruta_pdf FROM INFORME_CONTROL WHERE id_control = %s
+        """, (id_control,))
+        row = cursor.fetchone()
+        if row:
+            return {"existe": True, "ruta_pdf": row[0]}
+        else:
+            return {"existe": False}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
