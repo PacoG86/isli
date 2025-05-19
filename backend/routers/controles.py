@@ -2,7 +2,7 @@ import os, json
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from datetime import datetime, time
-from schemas.schemas_controles import ControlCalidadInput, InformeControlInput, ActualizarNotasInput
+from schemas.schemas_controles import ControlCalidadInput, InformeControlInput, ActualizarNotasInput, SolicitudCambioPassword
 from db import get_connection
 from typing import List, Optional
 
@@ -64,9 +64,7 @@ def guardar_control_calidad(control: ControlCalidadInput):
             rollo.orden_analisis
         ))
 
-        # Insertar IMG_DEFECTO y relaciones
-        
-
+        # Insertar IMG_DEFECTO y relaciones 
         for img in control.imagenes:
             cursor.execute("""
                 INSERT INTO IMG_DEFECTO (id_rollo, id_control, nombre_archivo, fecha_captura, max_dim_defecto_medido, clasificacion)
@@ -86,13 +84,11 @@ def guardar_control_calidad(control: ControlCalidadInput):
             nombre_json = os.path.splitext(img.nombre_archivo)[0] + ".json"
             json_path = os.path.join(carpeta_json, nombre_json)
             defectos = []
-            detecciones = []
             if os.path.exists(json_path):
                 try:
                     with open(json_path, "r", encoding="utf-8") as f:
                         contenido = json.load(f)
                         defectos = contenido.get("defectos", [])
-                        detecciones = contenido.get("detecciones", [])
                 except Exception as e:
                     print(f"❌ Error leyendo JSON {json_path}: {e}")
 
@@ -104,18 +100,6 @@ def guardar_control_calidad(control: ControlCalidadInput):
                     id_imagen,
                     defecto["area"],
                     defecto["clasificacion"]
-                ))
-
-            for bbox in detecciones:
-                cursor.execute("""
-                    INSERT INTO DETECCION_IA (id_imagen, coord_x, coord_y, coord_w, coord_h)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (
-                    id_imagen,
-                    bbox["coord_x"],
-                    bbox["coord_y"],
-                    bbox["coord_w"],
-                    bbox["coord_h"]
                 ))
         cursor.execute("UPDATE rollo SET estado_rollo = 'controlado' WHERE id_rollo = %s", (id_rollo,))
 
@@ -307,6 +291,36 @@ def actualizar_notas_informe(datos: ActualizarNotasInput):
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.post("/solicitud_password")
+def registrar_solicitud_cambio(solicitud: SolicitudCambioPassword):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # Validar existencia del correo
+        cursor.execute("SELECT COUNT(*) FROM USUARIO WHERE email_usuario = %s", (solicitud.email_usuario,))
+        existe = cursor.fetchone()[0]
+
+        if not existe:
+            raise HTTPException(status_code=404, detail="Correo no registrado")
+
+        cursor.execute("""
+            INSERT INTO SOLICITUD_CAMBIO_PASSWORD (email_usuario, motivo, timestamp)
+            VALUES (%s, %s, %s)
+        """, (
+            solicitud.email_usuario,
+            solicitud.motivo,
+            solicitud.timestamp.isoformat()
+        ))
+        conn.commit()
+        return {"mensaje": "Solicitud para cambio de contraseña registrada correctamente"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=f"Error: {e}")
     finally:
         cursor.close()
         conn.close()

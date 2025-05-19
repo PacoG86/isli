@@ -561,14 +561,12 @@ class MainWindow(QMainWindow):
                 print(json_path)
 
                 defectos = []
-                detecciones = []
 
                 if os.path.exists(json_path):
                     try:
                         with open(json_path, "r", encoding="utf-8") as f:
                             contenido = json.load(f)
                             defectos = contenido.get("defectos", [])
-                            detecciones = contenido.get("detecciones", [])
                     except Exception as e:
                         print(f"Error leyendo JSON {json_path}: {e}")
 
@@ -578,7 +576,6 @@ class MainWindow(QMainWindow):
                     "max_dim_defecto_medido": dim_defecto,
                     "clasificacion": clasificacion,
                     "defectos": defectos, #ojo sobre cómo se obtienen del json
-                    "detecciones": detecciones
                 })
 
             # Ajustar total de defectos intolerables y resultado del rollo

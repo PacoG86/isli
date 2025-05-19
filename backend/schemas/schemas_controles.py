@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, condecimal
+from pydantic import BaseModel, Field, condecimal, EmailStr
 from typing import List, Literal, Optional, Annotated
 from datetime import datetime
 from decimal import Decimal
@@ -9,20 +9,12 @@ class DefectoMedido(BaseModel):
     clasificacion: Literal['ok', 'nok']
 
 
-class DeteccionIA(BaseModel):
-    coord_x: int
-    coord_y: int
-    coord_w: int = Field(..., gt=0)
-    coord_h: int = Field(..., gt=0)
-
-
 class ImagenDefecto(BaseModel):
     nombre_archivo: str
     fecha_captura: datetime
     max_dim_defecto_medido: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
     clasificacion: Literal['ok', 'nok']
     defectos: Optional[List[DefectoMedido]] = []
-    detecciones: Optional[List[DeteccionIA]] = []
 
 
 class RolloControladoInput(BaseModel):
@@ -53,3 +45,8 @@ class InformeControlInput(BaseModel):
 class ActualizarNotasInput(BaseModel):
     id_control: int
     notas: str
+
+class SolicitudCambioPassword(BaseModel):
+    email_usuario: EmailStr
+    motivo: str = ""
+    timestamp: datetime
