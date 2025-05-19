@@ -300,10 +300,11 @@ class MainWindow(QMainWindow):
             return
 
         self.folder = os.path.join(self.base_folder, seleccion)
+        umbral_usuario = float(self.ui.doubleSpinBox.value())
 
         # Ejecutar el análisis de imágenes antes de cargarlas
         try:
-            analizar_rollo(base_path=self.base_folder, rollo=seleccion)
+            analizar_rollo(base_path=self.base_folder, rollo=seleccion, area_umbral=umbral_usuario)
         except Exception as e:
             print(f"❌ Error al analizar el rollo: {e}")
             QMessageBox.critical(self, "Error", f"Ocurrió un error al analizar el rollo seleccionado:\n{e}")

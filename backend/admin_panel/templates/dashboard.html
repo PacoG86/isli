@@ -77,6 +77,18 @@
                     <input type="hidden" name="token" value="{{ token }}">
                     <button type="submit">Cambiar rol</button>
                 </form>
+                <form method="post" action="/admin/usuarios/reiniciar_password" style="display:inline;">
+                    <input type="hidden" name="email_usuario" value="{{ user.email_usuario }}">
+                    <input type="hidden" name="token" value="{{ token }}">
+                    <button type="submit"
+                            {% if not user.tiene_solicitud_pendiente %}
+                                disabled style="opacity: 0.4;"
+                            {% else %}
+                                style="background-color: orange; font-weight: bold;"
+                            {% endif %}
+                    >Reiniciar Contraseña</button>
+                </form>
+
             </td>
 
         </tr>

@@ -309,11 +309,12 @@ def registrar_solicitud_cambio(solicitud: SolicitudCambioPassword):
             raise HTTPException(status_code=404, detail="Correo no registrado")
 
         cursor.execute("""
-            INSERT INTO SOLICITUD_CAMBIO_PASSWORD (email_usuario, motivo, timestamp)
-            VALUES (%s, %s, %s)
+            INSERT INTO SOLICITUD_CAMBIO_PASSWORD (email_usuario, motivo, password_nueva, estado_solicitud, timestamp)
+            VALUES (%s, %s, %s, 'pendiente', %s)
         """, (
             solicitud.email_usuario,
             solicitud.motivo,
+            solicitud.password_nueva,
             solicitud.timestamp.isoformat()
         ))
         conn.commit()

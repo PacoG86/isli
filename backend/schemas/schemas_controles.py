@@ -46,7 +46,9 @@ class ActualizarNotasInput(BaseModel):
     id_control: int
     notas: str
 
+
 class SolicitudCambioPassword(BaseModel):
     email_usuario: EmailStr
     motivo: str = ""
+    password_nueva: str
     timestamp: datetime

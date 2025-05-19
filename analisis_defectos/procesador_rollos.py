@@ -61,6 +61,7 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
             y2 = min(imagen.shape[0], y1 + crop["rect"]["h"])
 
             subimg = imagen[y1:y2, x1:x2].copy()
+            print(f"🎯 Aplicando umbral dinámico de usuario: {area_umbral} mm²")
             blackspots, _ = procesador.blackspot_segmentation_and_classification_by_size(
                 subimg, area_umbral, pixel_to_mm, return_visualization=False)
 

@@ -43,11 +43,26 @@ def mostrar_panel_admin(request: Request, token: str = Query(None)):
     # 🔹 Obtener usuarios desde la base de datos
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id_usuario, nombre_usuario, email_usuario, rol, activo FROM usuario")
+    # Obtener usuarios y verificar si tienen solicitudes pendientes
+    cursor.execute("""
+        SELECT u.id_usuario, u.nombre_usuario, u.email_usuario, u.rol, u.activo,
+            EXISTS (
+                SELECT 1 FROM SOLICITUD_CAMBIO_PASSWORD s
+                WHERE s.email_usuario = u.email_usuario AND s.estado_solicitud = 'pendiente'
+            ) AS tiene_solicitud_pendiente
+        FROM usuario u
+    """)
     usuarios = cursor.fetchall()
+
     
     cursor.execute("SELECT id_rollo, ruta_local_rollo, estado_rollo FROM rollo WHERE estado_rollo = 'controlado'")
     rollos = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT email_usuario FROM SOLICITUD_CAMBIO_PASSWORD
+        WHERE estado_solicitud = 'pendiente'
+    """)
+    solicitudes_pendientes = {row["email_usuario"] for row in cursor.fetchall()}
 
     cursor.close()
     conn.close()
@@ -56,7 +71,8 @@ def mostrar_panel_admin(request: Request, token: str = Query(None)):
         "request": request,
         "usuarios": usuarios,
         "rollos": rollos,
-        "token": token
+        "token": token,
+        "solicitudes_pendientes": solicitudes_pendientes
     })
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -142,4 +158,50 @@ async def devolver_rollo_al_almacen(id_rollo: int = Form(...), token: str = Form
     finally:
         cursor.close()
         conn.close()
+    return RedirectResponse(url=f"/admin?token={token}", status_code=303)
+
+@admin_router.post("/admin/usuarios/reiniciar_password")
+async def reiniciar_contrasena_usuario(email_usuario: str = Form(...), token: str = Form(...)):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        # Buscar la última solicitud pendiente para ese email
+        cursor.execute("""
+            SELECT id_solicitud, password_nueva
+            FROM SOLICITUD_CAMBIO_PASSWORD
+            WHERE email_usuario = %s AND estado_solicitud = 'pendiente'
+            ORDER BY id_solicitud DESC
+            LIMIT 1
+        """, (email_usuario,))
+        solicitud = cursor.fetchone()
+
+        if not solicitud:
+            raise HTTPException(status_code=404, detail="No hay solicitud pendiente para este usuario")
+
+        id_solicitud, password_nueva = solicitud
+
+        # Hashear la nueva contraseña
+        hashed = pwd_context.hash(password_nueva)
+
+        # Actualizar la contraseña del usuario
+        cursor.execute("""
+            UPDATE USUARIO SET password = %s WHERE email_usuario = %s
+        """, (hashed, email_usuario))
+
+        # Marcar la solicitud como atendida
+        cursor.execute("""
+            UPDATE SOLICITUD_CAMBIO_PASSWORD SET estado_solicitud = 'atendida'
+            WHERE id_solicitud = %s
+        """, (id_solicitud,))
+
+        conn.commit()
+        print(f"🔐 Contraseña reiniciada para: {email_usuario}")
+    except Exception as e:
+        conn.rollback()
+        print(f"❌ Error al reiniciar contraseña: {e}")
+        raise HTTPException(status_code=500, detail="Error al reiniciar la contraseña")
+    finally:
+        cursor.close()
+        conn.close()
+
     return RedirectResponse(url=f"/admin?token={token}", status_code=303)

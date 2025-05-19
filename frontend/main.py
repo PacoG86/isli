@@ -3,6 +3,8 @@ import requests
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from UI.login_window import Ui_Form
 from parpadeo import MainWindow  # <-- importa la ventana de menú principal
+from solicitud_password_window import SolicitudPasswordWindow
+
 
 API_URL = "http://localhost:8000"
 BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
@@ -13,7 +15,9 @@ class LoginWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        
         self.ui.pushButton_login.clicked.connect(self.login)
+        self.ui.pushButton_login_2.clicked.connect(self.abrir_ventana_password)
 
     def login(self):
         email = self.ui.lineEdit.text().strip()
@@ -46,6 +50,10 @@ class LoginWindow(QMainWindow):
         token = result.get("access_token", "")
         self.menu_window = MainWindow(BASE_FOLDER, nombre, rol, token, id_usuario)
         self.menu_window.show()
+
+    def abrir_ventana_password(self):
+        self.solicitud_window = SolicitudPasswordWindow(self)
+        self.solicitud_window.exec()
 
 
 if __name__ == "__main__":
