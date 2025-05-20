@@ -1,5 +1,6 @@
 import sys
 import os
+import shutil
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -366,6 +367,37 @@ class MainWindow(QMainWindow):
         
         # Opcional: limpiar la tabla
         self.ui.tableWidget.setRowCount(0)
+
+        # Restablecer valores de los spinboxes
+        self.ui.spinBox.setValue(0)
+        self.ui.doubleSpinBox.setValue(0.00)
+
+        # 🔁 Revertir todas las carpetas de rollos al estado original
+        for carpeta in os.listdir(self.base_folder):
+            ruta_rollo = os.path.join(self.base_folder, carpeta)
+            if not os.path.isdir(ruta_rollo):
+                continue
+
+            ruta_originales = os.path.join(ruta_rollo, "originales")
+            ruta_procesado = os.path.join(ruta_rollo, "procesado")
+
+            # Solo actuar si existen ambas carpetas
+            if os.path.exists(ruta_originales) and os.path.exists(ruta_procesado):
+                try:
+                    # Mover imágenes desde 'originales/' a la raíz
+                    for archivo in os.listdir(ruta_originales):
+                        origen = os.path.join(ruta_originales, archivo)
+                        destino = os.path.join(ruta_rollo, archivo)
+                        shutil.move(origen, destino)
+
+                    # Borrar carpetas originales y procesado
+                    shutil.rmtree(ruta_originales)
+                    shutil.rmtree(ruta_procesado)
+                    print(f"♻️ Rollo restaurado: {carpeta}")
+                except Exception as e:
+                    print(f"❌ Error al restaurar {carpeta}: {e}")
+
+
     
     def confirmar_interrumpir(self):
         """Muestra diálogo de confirmación antes de interrumpir el control"""
