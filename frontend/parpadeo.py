@@ -232,8 +232,10 @@ class MainWindow(QMainWindow):
 
     def configurar_tabla(self):
         self.ui.tableWidget.setHorizontalHeaderLabels([
-        "Fecha/ Hora", "Tipo Defecto", "REF Defecto Img", "Dim. Defecto mm", "Resultado"
+        "Fecha/ Hora", "Tipo Defecto", "REF Defecto Img", "Dim. Defecto mm", "Resultado",  "Min_defecto"
         ])
+
+        self.ui.tableWidget.setColumnHidden(5, True)
     
         header = self.ui.tableWidget.horizontalHeader()
         for col in range(5):
@@ -252,6 +254,7 @@ class MainWindow(QMainWindow):
 
         umbral_usuario = float(self.ui.doubleSpinBox.value())
         result_analisis = "nok" if dim_defecto > umbral_usuario else "ok"
+        minimo, maximo, _ = self.leer_defectos_txt(ruta_imagen_procesada)
 
         fila = self.ui.tableWidget.rowCount()
         self.ui.tableWidget.insertRow(fila)
@@ -262,8 +265,10 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(fila, 1, QTableWidgetItem(tipos_str))
         self.ui.tableWidget.setItem(fila, 2, QTableWidgetItem(archivo))
 
+
         item_dim = QTableWidgetItem(f"{dim_defecto:.2f}")
         item_result = QTableWidgetItem(result_analisis)
+
 
         # 🎨 Estilo condicional: rojo para NOK, verde para OK
         if result_analisis == "nok":
@@ -275,6 +280,8 @@ class MainWindow(QMainWindow):
 
         self.ui.tableWidget.setItem(fila, 3, item_dim)
         self.ui.tableWidget.setItem(fila, 4, item_result)
+        item_min = QTableWidgetItem(f"{minimo:.2f}" if minimo is not None else "0.00")
+        self.ui.tableWidget.setItem(fila, 5, item_min)  # columna oculta
 
         # Desplazarse a la última fila
         self.ui.tableWidget.scrollToBottom()
@@ -551,32 +558,32 @@ class MainWindow(QMainWindow):
                     continue
 
                 nombre_archivo = self.ui.tableWidget.item(row, 2).text()
-                dim_defecto = float(self.ui.tableWidget.item(row, 3).text())
+                max_defecto = float(self.ui.tableWidget.item(row, 3).text())
                 clasificacion = self.ui.tableWidget.item(row, 4).text().lower()
+                tipo_defecto = self.ui.tableWidget.item(row, 1).text().strip()
+
+                min_defecto = 0.0
+                min_item = self.ui.tableWidget.item(row, 5)
+                if min_item and min_item.text().replace('.', '', 1).isdigit():
+                    try:
+                        min_defecto = float(min_item.text())
+                    except ValueError:
+                        pass
 
                 if clasificacion == "nok":
                     defectos_intolerables += 1
 
-                # Ruta al JSON con datos adicionales (mismo nombre que la imagen)
-                json_path = os.path.join(self.folder, f"{os.path.splitext(nombre_archivo)[0]}.json")
-                print(json_path)
-
-                defectos = []
-
-                if os.path.exists(json_path):
-                    try:
-                        with open(json_path, "r", encoding="utf-8") as f:
-                            contenido = json.load(f)
-                            defectos = contenido.get("defectos", [])
-                    except Exception as e:
-                        print(f"Error leyendo JSON {json_path}: {e}")
 
                 data["imagenes"].append({
                     "nombre_archivo": nombre_archivo,
                     "fecha_captura": timestamp_actual,
-                    "max_dim_defecto_medido": dim_defecto,
+                    "max_dim_defecto_medido": max_defecto,
+                    "min_dim_defecto_medido": min_defecto,
                     "clasificacion": clasificacion,
-                    "defectos": defectos, #ojo sobre cómo se obtienen del json
+                    "defectos": [
+                        {"area": min_defecto, "tipo_valor": "min", "tipo_defecto": tipo_defecto},
+                        {"area": max_defecto, "tipo_valor": "max", "tipo_defecto": tipo_defecto}
+                    ]
                 })
 
             # Ajustar total de defectos intolerables y resultado del rollo

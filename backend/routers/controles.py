@@ -1,4 +1,4 @@
-import os, json
+import os
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
 from datetime import datetime, time
@@ -26,14 +26,10 @@ def guardar_control_calidad(control: ControlCalidadInput):
         ))
         id_control = cursor.lastrowid
 
-        # Extraer nombre del rollo desde la ruta
+        # Buscar o insertar ROLLO
         nombre_rollo = os.path.basename(control.rollo.ruta_local_rollo).strip().lower()
-
-        print(f"🔎 Buscando id_rollo para nombre_rollo='{nombre_rollo}'")
-        # Buscar ROLLO por nombre_rollo en lugar de ruta
-        cursor.execute("SELECT id_rollo FROM ROLLO WHERE TRIM(LOWER(nombre_rollo)) = %s", (nombre_rollo.strip().lower(),))
+        cursor.execute("SELECT id_rollo FROM ROLLO WHERE TRIM(LOWER(nombre_rollo)) = %s", (nombre_rollo,))
         rollo_existente = cursor.fetchone()
-        print(f"📦 Resultado de búsqueda en ROLLO: {rollo_existente}")
 
         if rollo_existente:
             id_rollo = rollo_existente[0]
@@ -43,16 +39,14 @@ def guardar_control_calidad(control: ControlCalidadInput):
                 VALUES (%s, %s, %s, %s)
             """, (
                 control.rollo.ruta_local_rollo,
-                nombre_rollo,  # ⬅️ usamos el normalizado
+                nombre_rollo,
                 control.rollo.num_defectos_rollo,
                 "controlado"
             ))
             id_rollo = cursor.lastrowid
 
-
         # Insertar ROLLO_CONTROLADO
         rollo = control.rollo
-        print(f"🧩 Insertando ROLLO_CONTROLADO con orden_analisis = {rollo.orden_analisis}")
         cursor.execute("""
             INSERT INTO ROLLO_CONTROLADO (id_rollo, id_control, total_defectos_intolerables_rollo, resultado_rollo, orden_analisis)
             VALUES (%s, %s, %s, %s, %s)
@@ -64,7 +58,7 @@ def guardar_control_calidad(control: ControlCalidadInput):
             rollo.orden_analisis
         ))
 
-        # Insertar IMG_DEFECTO y relaciones 
+        # Insertar IMG_DEFECTO y DEFECTO_MEDIDO
         for img in control.imagenes:
             cursor.execute("""
                 INSERT INTO IMG_DEFECTO (id_rollo, id_control, nombre_archivo, fecha_captura, max_dim_defecto_medido, clasificacion)
@@ -75,42 +69,34 @@ def guardar_control_calidad(control: ControlCalidadInput):
                 img.nombre_archivo,
                 img.fecha_captura,
                 img.max_dim_defecto_medido,
-                img.clasificacion
+                img.clasificacion  # ok / nok
             ))
             id_imagen = cursor.lastrowid
 
-            # Leer JSON con detalles si existe
-            carpeta_json = control.rollo.ruta_local_rollo  # asumimos que esto es la ruta
-            nombre_json = os.path.splitext(img.nombre_archivo)[0] + ".json"
-            json_path = os.path.join(carpeta_json, nombre_json)
-            defectos = []
-            if os.path.exists(json_path):
-                try:
-                    with open(json_path, "r", encoding="utf-8") as f:
-                        contenido = json.load(f)
-                        defectos = contenido.get("defectos", [])
-                except Exception as e:
-                    print(f"❌ Error leyendo JSON {json_path}: {e}")
-
-            for defecto in defectos:
+            for defecto in img.defectos:
+                # Este bloque ahora guarda tipo y valor del defecto (min o max)
                 cursor.execute("""
-                    INSERT INTO DEFECTO_MEDIDO (id_imagen, area, clasificacion)
-                    VALUES (%s, %s, %s)
+                    INSERT INTO DEFECTO_MEDIDO (id_imagen, area_mm, tipo_valor, tipo_defecto)
+                    VALUES (%s, %s, %s, %s)
                 """, (
                     id_imagen,
-                    defecto["area"],
-                    defecto["clasificacion"]
+                    defecto.area,
+                    defecto.tipo_valor,       # 'min' o 'max'
+                    defecto.tipo_defecto      # 'punto-negro', etc.
                 ))
-        cursor.execute("UPDATE rollo SET estado_rollo = 'controlado' WHERE id_rollo = %s", (id_rollo,))
 
+        # Marcar rollo como controlado
+        cursor.execute("UPDATE rollo SET estado_rollo = 'controlado' WHERE id_rollo = %s", (id_rollo,))
         conn.commit()
         return {"msg": "Control de calidad guardado exitosamente", "id_control": id_control}
+
     except Exception as e:
         conn.rollback()
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         cursor.close()
         conn.close()
+
 
 @router.get("/ultimo_id_control")
 def obtener_ultimo_id_control():

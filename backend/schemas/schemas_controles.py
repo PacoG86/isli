@@ -6,15 +6,17 @@ from decimal import Decimal
 
 class DefectoMedido(BaseModel):
     area: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
-    clasificacion: Literal['ok', 'nok']
+    tipo_valor: Literal["min", "max"]
+    tipo_defecto: str  # tipo de defecto como 'punto-negro', 'cascarilla', etc.
 
 
 class ImagenDefecto(BaseModel):
     nombre_archivo: str
     fecha_captura: datetime
-    max_dim_defecto_medido: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
+    max_dim_defecto_medido: Annotated[Decimal, condecimal(ge=0, max_digits=6, decimal_places=2)]
+    min_dim_defecto_medido: Annotated[Decimal, condecimal(ge=0, max_digits=6, decimal_places=2)]
     clasificacion: Literal['ok', 'nok']
-    defectos: Optional[List[DefectoMedido]] = []
+    defectos: List[DefectoMedido] = []
 
 
 class RolloControladoInput(BaseModel):
