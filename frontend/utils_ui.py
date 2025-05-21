@@ -2,6 +2,9 @@ from PySide6.QtWidgets import QMessageBox
 import webbrowser
 import json
 from PySide6.QtCore import QTimer
+import urllib.request
+import sys
+import os
 
 CONFIG_FILE = "config.json"
 
@@ -58,8 +61,10 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
     Conecta los botones de panel de control, manual de usuario y logout.
     Desactiva el botón de panel si el rol no es administrador.
     """
-    ui.pushButton_manual.clicked.connect(lambda: webbrowser.open("manual_usuario.pdf"))
+    #ui.pushButton_manual.clicked.connect(lambda: webbrowser.open("https://github.com/PacoG86/isli/blob/dev/README.md"))
     ui.pushButton_3.clicked.connect(lambda: logout(parent))
+    ui.pushButton_manual.clicked.connect(abrir_manual_usuario)
+
 
     if rol_usuario != "administrador":
         ui.pushButton_pcontrol.setEnabled(False)
@@ -107,3 +112,31 @@ def logout(parent):
         # ⬇️ Guardar como atributo persistente para que no se destruya
         parent.login_window = LoginWindow()
         parent.login_window.show()
+
+
+
+def hay_conexion_internet(url="http://www.google.com", timeout=3):
+    try:
+        urllib.request.urlopen(url, timeout=timeout)
+        return True
+    except Exception:
+        return False
+
+def abrir_manual_usuario():
+    url_online = url_online = "https://github.com/PacoG86/isli/blob/dev/README.md"
+    ruta_pdf_local = r"C:\Users\pgago\Desktop\arboles\informe_6.pdf"
+
+    if hay_conexion_internet():  # ✔️ No pasamos URL específica
+        print("🌐 Conexión detectada. Abriendo manual online...")
+        webbrowser.open(url_online)
+    else:
+        print("📴 Sin conexión. Abriendo manual local en PDF...")
+        try:
+            if sys.platform.startswith('darwin'):
+                os.system(f"open '{ruta_pdf_local}'")
+            elif os.name == 'nt':
+                os.startfile(ruta_pdf_local)
+            elif os.name == 'posix':
+                os.system(f"xdg-open '{ruta_pdf_local}'")
+        except Exception as e:
+            print(f"❌ Error al abrir el manual local: {e}")
