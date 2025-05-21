@@ -1,7 +1,23 @@
 from PySide6.QtWidgets import QMessageBox
 import webbrowser
+import json
 from PySide6.QtCore import QTimer
 
+CONFIG_FILE = "config.json"
+
+def guardar_config_ruta(ruta):
+        try:
+            with open(CONFIG_FILE, "w") as f:
+                json.dump({"base_folder": ruta}, f)
+        except Exception as e:
+            print(f"❌ Error al guardar config: {e}")
+
+def cargar_config_ruta():
+        try:
+            with open(CONFIG_FILE, "r") as f:
+                return json.load(f).get("base_folder", "")
+        except FileNotFoundError:
+            return ""
 
 def mostrar_datos_usuario(ui, nombre_usuario, rol_usuario):
     """
@@ -47,6 +63,7 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
 
     if rol_usuario != "administrador":
         ui.pushButton_pcontrol.setEnabled(False)
+        ui.pushButton_gAlmacen.setEnabled(False)
     else:
         print(f"🌐 Abriendo panel admin con token: {token_jwt}")
         ui.pushButton_pcontrol.clicked.connect(lambda: webbrowser.open(f"http://localhost:8000/admin?token={token_jwt}"))

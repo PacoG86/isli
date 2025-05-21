@@ -10,7 +10,7 @@ import requests
 from PySide6.QtWidgets import (
     QMainWindow, QSizePolicy, QGraphicsView,
     QGraphicsScene, QFrame, QGraphicsTextItem,
-    QTableWidgetItem, QMessageBox
+    QTableWidgetItem, QMessageBox, QFileDialog
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
@@ -21,8 +21,7 @@ from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_
 from historico_controles_app import HistoricoControlesWindow
 from utils_informes import generar_pdf_completo, guardar_registro_informe
 from analisis_defectos.procesador_rollos import analizar_rollo
-
-
+from utils_ui import guardar_config_ruta, cargar_config_ruta
 
 class HighQualityImageView(QGraphicsView):
     def __init__(self, parent=None):
@@ -133,6 +132,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.clicked.connect(self.confirmar_interrumpir)  # Botón "Interrumpir control"
         self.ui.pushButton_8.clicked.connect(self.guardar_resultados)
         self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
+        self.ui.pushButton_gAlmacen.clicked.connect(self.seleccionar_ruta_almacen)
+
     
     def abrir_ventana_historico(self):
         self.hide()  # Oculta la ventana actual
@@ -759,7 +760,17 @@ class MainWindow(QMainWindow):
 
         self.analisis_completado = True
         self.ui.pushButton_report.setEnabled(True)
+    
+    
+    def seleccionar_ruta_almacen(self):
+        nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta raíz de los rollos")
+        if nueva_ruta:
+            self.base_folder = nueva_ruta
+            guardar_config_ruta(nueva_ruta)
+            QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta raíz:\n{nueva_ruta}")
+            self.configurar_combobox()
 
+    
 
 
 

@@ -96,6 +96,11 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.pushButton_pcontrol)
 
+        self.pushButton_gAlmacen = QPushButton(self.barra_izq_frame)
+        self.pushButton_gAlmacen.setObjectName(u"pushButton_gAlmacen")
+
+        self.verticalLayout_5.addWidget(self.pushButton_gAlmacen)
+
         self.pushButton_manual = QPushButton(self.barra_izq_frame)
         self.pushButton_manual.setObjectName(u"pushButton_manual")
         self.pushButton_manual.setMinimumSize(QSize(2, 9))
@@ -344,6 +349,7 @@ class Ui_MainWindow(object):
         self.label_11.setText(QCoreApplication.translate("MainWindow", u"ref_control", None))
         self.pushButton_historico.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico de controles", None))
         self.pushButton_pcontrol.setText(QCoreApplication.translate("MainWindow", u"Panel de Control", None))
+        self.pushButton_gAlmacen.setText(QCoreApplication.translate("MainWindow", u"Gesti\u00f3n Almac\u00e9n", None))
         self.pushButton_manual.setText(QCoreApplication.translate("MainWindow", u"Manual Usuario", None))
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"TOLERANCIA DEFECTOS", None))

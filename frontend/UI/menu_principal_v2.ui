@@ -40,7 +40,7 @@
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,0,2,0,0,0,0,0">
+        <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,0,2,0,0,0,0,0,0">
          <item>
           <widget class="QPushButton" name="pushButton_15">
            <property name="text">
@@ -126,6 +126,13 @@
           <widget class="QPushButton" name="pushButton_pcontrol">
            <property name="text">
             <string>Panel de Control</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButton_gAlmacen">
+           <property name="text">
+            <string>Gestión Almacén</string>
            </property>
           </widget>
          </item>
