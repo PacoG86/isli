@@ -15,12 +15,18 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_4">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_ventanaPpal" stretch="0,0,0">
+    <layout class="QHBoxLayout" name="horizontalLayout_ventanaPpal" stretch="1,0,3">
      <property name="sizeConstraint">
       <enum>QLayout::SizeConstraint::SetMaximumSize</enum>
      </property>
      <item>
       <widget class="QFrame" name="barra_izq_frame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="styleSheet">
         <string notr="true">background-color: rgb(205, 222, 195);</string>
        </property>
@@ -150,6 +156,12 @@
      </item>
      <item>
       <widget class="QFrame" name="ventana_dcha">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="frameShape">
         <enum>QFrame::Shape::StyledPanel</enum>
        </property>
@@ -168,6 +180,11 @@
           <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="0,0,0,0,0,0,0,0">
            <item>
             <widget class="QLabel" name="label_umbralDefectos">
+             <property name="font">
+              <font>
+               <bold>true</bold>
+              </font>
+             </property>
              <property name="text">
               <string>TOLERANCIA DEFECTOS</string>
              </property>
@@ -384,6 +401,12 @@
         </item>
         <item>
          <widget class="QFrame" name="frame_tablaResults">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="frameShape">
            <enum>QFrame::Shape::StyledPanel</enum>
           </property>
@@ -475,6 +498,12 @@
                <height>50</height>
               </size>
              </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    padding: 0px 12px; 
+}
+</string>
+             </property>
              <property name="text">
               <string>Guardar comentarios</string>
              </property>
@@ -487,6 +516,12 @@
                <width>0</width>
                <height>50</height>
               </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    padding: 0px 12px; 
+}
+</string>
              </property>
              <property name="text">
               <string>Mostrar informe</string>

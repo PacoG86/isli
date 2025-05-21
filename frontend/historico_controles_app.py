@@ -77,8 +77,8 @@ class HistoricoControlesWindow(QWidget):
         self.ui.tableWidget_results.setRowCount(0)
         self.ui.tableWidget_results.setColumnCount(8)
         self.ui.tableWidget_results.setHorizontalHeaderLabels([
-            "ID Control", "Usuario", "Fecha", "Tamaño máx (mm)", "Cant. defectos",
-            "Informe", "Resultado", "Comentarios"
+            "ID Control", "Usuario", "Fecha/Hora", "Area max(mm2)", "#defectos",
+            "Informe", "Result.", "Comentarios"
         ])
 
         for row_idx, item in enumerate(controles):

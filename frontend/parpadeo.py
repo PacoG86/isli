@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -10,7 +11,7 @@ import requests
 from PySide6.QtWidgets import (
     QMainWindow, QSizePolicy, QGraphicsView,
     QGraphicsScene, QFrame, QGraphicsTextItem,
-    QTableWidgetItem, QMessageBox, QFileDialog
+    QTableWidgetItem, QMessageBox, QFileDialog, QProgressDialog
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
@@ -38,6 +39,10 @@ class HighQualityImageView(QGraphicsView):
         self.image_item = None
         self.text_item = None
         self.pixmap = None
+        self.current_message = ""
+        self.current_bg_color = "#2C7873"
+        self.current_text_color = "#FFFFFF"
+        self.is_showing_message = False
 
     def setImage(self, image_path):
         image = QImage(image_path)
@@ -45,6 +50,7 @@ class HighQualityImageView(QGraphicsView):
             print(f"\u274c Error: no se pudo cargar la imagen desde {image_path}")
             return False
         self.pixmap = QPixmap.fromImage(image)
+        self.is_showing_message = False
         self.updateImage()
         return True
 
@@ -53,32 +59,65 @@ class HighQualityImageView(QGraphicsView):
             return
         self.scene.clear()
         self.image_item = self.scene.addPixmap(self.pixmap)
-        self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
+        # Usamos el tamaño real de la imagen como rectángulo de escena
+        self.scene.setSceneRect(self.image_item.boundingRect())
+        # Ajustamos la vista respetando proporción
+        self.fitInView(self.image_item, Qt.KeepAspectRatio)
+        self.text_item = None
 
     def showMessage(self, message, bgColor="#2C7873", textColor="#FFFFFF"):
         self.scene.clear()
-        view_width = self.viewport().width()
-        view_height = self.viewport().height()
+        self.image_item = None
+        self.is_showing_message = True
+        self.current_message = message
+        self.current_bg_color = bgColor
+        self.current_text_color = textColor
+        
+        self._updateMessageDisplay()
+
+    def _updateMessageDisplay(self):
+        if not self.is_showing_message:
+            return
+            
+        # Obtener el tamaño actual de la vista
+        view_width = max(1, self.viewport().width())
+        view_height = max(1, self.viewport().height())
+        
+        # Actualizar el rectángulo de la escena
+        self.scene.clear()
+        self.scene.setSceneRect(0, 0, view_width, view_height)
+        
+        # Fondo del visor completo
         rect = QRectF(0, 0, view_width, view_height)
-        self.scene.addRect(rect, brush=QBrush(QColor(bgColor)))
-        self.text_item = QGraphicsTextItem(message)
-        font = QFont("Arial", 14, QFont.Bold)
+        self.scene.addRect(rect, brush=QBrush(QColor(self.current_bg_color)))
+        
+        # Texto proporcional - ajustamos el tamaño de la fuente según las dimensiones actuales
+        font_size = max(10, int(min(view_width, view_height) * 0.08))
+        font = QFont("Arial", font_size, QFont.Bold)
+        
+        self.text_item = QGraphicsTextItem(self.current_message)
         self.text_item.setFont(font)
-        self.text_item.setDefaultTextColor(QColor(textColor))
-        text_width = self.text_item.boundingRect().width()
-        text_height = self.text_item.boundingRect().height()
-        self.text_item.setPos((rect.width() - text_width) / 2, (rect.height() - text_height) / 2)
+        self.text_item.setDefaultTextColor(QColor(self.current_text_color))
         self.scene.addItem(self.text_item)
+        
+        # Centrar texto
+        text_rect = self.text_item.boundingRect()
+        x = (view_width - text_rect.width()) / 2
+        y = (view_height - text_rect.height()) / 2
+        self.text_item.setPos(x, y)
+        
+        # Ajustar la vista al contenido
+        self.fitInView(self.scene.sceneRect(), Qt.IgnoreAspectRatio)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        if self.scene and not self.scene.itemsBoundingRect().isNull():
-            self.fitInView(self.scene.sceneRect(), Qt.KeepAspectRatio)
-            if self.text_item and not self.image_item:
-                message = self.text_item.toPlainText()
-                bgColor = self.scene.items()[-1].brush().color().name()
-                textColor = self.text_item.defaultTextColor().name()
-                self.showMessage(message, bgColor, textColor)
+        
+        if self.is_showing_message:
+            # Si estamos mostrando un mensaje, actualizamos su display
+            self._updateMessageDisplay()
+        elif self.image_item:
+            # Si estamos mostrando una imagen, la ajustamos
+            self.fitInView(self.image_item, Qt.KeepAspectRatio)
 
 
 class MainWindow(QMainWindow):
@@ -136,7 +175,18 @@ class MainWindow(QMainWindow):
 
     
     def abrir_ventana_historico(self):
-        self.hide()  # Oculta la ventana actual
+        progress = QProgressDialog("Cargando historial...", None, 0, 0, self)
+        progress.setWindowTitle("ISLI - Controles")
+        progress.setWindowModality(Qt.ApplicationModal)
+        progress.setCancelButton(None)
+        progress.setMinimumDuration(0)
+        progress.setAutoClose(True)
+        progress.show()
+
+        QTimer.singleShot(100, lambda: self._mostrar_ventana_historico(progress))
+
+    def _mostrar_ventana_historico(self, progress_dialog):
+        self.hide()
         self.historial_window = HistoricoControlesWindow(
             self.nombre_usuario,
             self.rol_usuario,
@@ -144,6 +194,7 @@ class MainWindow(QMainWindow):
             self.id_usuario
         )
         self.historial_window.show()
+        progress_dialog.close()
 
     def cargar_datos_iniciales(self):
         mostrar_siguiente_id_control(self.ui)
@@ -272,7 +323,7 @@ class MainWindow(QMainWindow):
         item_result = QTableWidgetItem(result_analisis)
 
 
-        # 🎨 Estilo condicional: rojo para NOK, verde para OK
+        # Estilo condicional: rojo para NOK, verde para OK
         if result_analisis == "nok":
             item_dim.setBackground(QColor("#FFCDD2"))      # rojo claro
             item_result.setBackground(QColor("#FFCDD2"))
@@ -310,6 +361,8 @@ class MainWindow(QMainWindow):
 
         self.folder = os.path.join(self.base_folder, seleccion)
         umbral_usuario = float(self.ui.doubleSpinBox.value())
+        self.ui.label_contador.setText("📊 0 / {}".format(len(self.images)))
+
 
         # Ejecutar el análisis de imágenes antes de cargarlas
         try:
@@ -443,10 +496,10 @@ class MainWindow(QMainWindow):
             
             # Mostrar mensaje de interrupción si no estaba completado
             if not self.analisis_completado and self.images:
-                self.image_view1.showMessage("Control interrumpido", "#F57C00")
-                self.image_view2.showMessage("Control interrumpido", "#F57C00")
-                self.ui.label_5.setText("Control interrumpido")
-                self.ui.label_6.setText("Control interrumpido")
+                self.image_view1.showMessage("Control cancelado", "#F57C00")
+                self.image_view2.showMessage("Control cancelado", "#F57C00")
+                self.ui.label_5.setText("Control cancelado")
+                self.ui.label_6.setText("Control cancelado")
                 
             # Restaurar el texto del botón
             self.ui.pushButton_5.setText("Iniciar Control de Calidad")
@@ -475,6 +528,7 @@ class MainWindow(QMainWindow):
 
         self.ui.label_6.setText(f"Imagen: {nombre}")
         self.ui.progressBar.setValue(self.index + 1)
+        self.ui.label_contador.setText(f"📊 {self.index + 1} / {len(self.images)}")
         self.agregar_registro_a_tabla(ruta_original, ruta_procesada)
 
         print(f"🔄 Mostrando imagen: {nombre} ({self.index + 1}/{len(self.images)})")
@@ -691,6 +745,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # limpiar_pantalla
         self.ui.pushButton_4.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # interrumpir_control  # Deshabilitado por defecto
 
+    
+
     def mostrar_analisis_completado(self, mensaje="Análisis completado", color="#2E7D32"):
         if self.analisis_completado:
             return
@@ -760,6 +816,7 @@ class MainWindow(QMainWindow):
 
         self.analisis_completado = True
         self.ui.pushButton_report.setEnabled(True)
+
     
     
     def seleccionar_ruta_almacen(self):
@@ -769,9 +826,6 @@ class MainWindow(QMainWindow):
             guardar_config_ruta(nueva_ruta)
             QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta raíz:\n{nueva_ruta}")
             self.configurar_combobox()
-
-    
-
 
 
 # ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa

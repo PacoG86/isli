@@ -33,6 +33,11 @@ class Ui_Form_historico(object):
         self.horizontalLayout_ventanaPpal.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.barra_izq_frame = QFrame(Form_historico)
         self.barra_izq_frame.setObjectName(u"barra_izq_frame")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.barra_izq_frame.sizePolicy().hasHeightForWidth())
+        self.barra_izq_frame.setSizePolicy(sizePolicy)
         self.barra_izq_frame.setStyleSheet(u"background-color: rgb(205, 222, 195);")
         self.barra_izq_frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.barra_izq_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -108,6 +113,8 @@ class Ui_Form_historico(object):
 
         self.ventana_dcha = QFrame(Form_historico)
         self.ventana_dcha.setObjectName(u"ventana_dcha")
+        sizePolicy.setHeightForWidth(self.ventana_dcha.sizePolicy().hasHeightForWidth())
+        self.ventana_dcha.setSizePolicy(sizePolicy)
         self.ventana_dcha.setFrameShape(QFrame.Shape.StyledPanel)
         self.ventana_dcha.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_3 = QVBoxLayout(self.ventana_dcha)
@@ -120,6 +127,9 @@ class Ui_Form_historico(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_umbralDefectos = QLabel(self.frame_umbralDefectos)
         self.label_umbralDefectos.setObjectName(u"label_umbralDefectos")
+        font1 = QFont()
+        font1.setBold(True)
+        self.label_umbralDefectos.setFont(font1)
 
         self.horizontalLayout_8.addWidget(self.label_umbralDefectos)
 
@@ -129,9 +139,9 @@ class Ui_Form_historico(object):
 
         self.label_numDefectos = QLabel(self.frame_umbralDefectos)
         self.label_numDefectos.setObjectName(u"label_numDefectos")
-        font1 = QFont()
-        font1.setItalic(True)
-        self.label_numDefectos.setFont(font1)
+        font2 = QFont()
+        font2.setItalic(True)
+        self.label_numDefectos.setFont(font2)
         self.label_numDefectos.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_8.addWidget(self.label_numDefectos)
@@ -147,7 +157,7 @@ class Ui_Form_historico(object):
 
         self.label_dimDefectos = QLabel(self.frame_umbralDefectos)
         self.label_dimDefectos.setObjectName(u"label_dimDefectos")
-        self.label_dimDefectos.setFont(font1)
+        self.label_dimDefectos.setFont(font2)
         self.label_dimDefectos.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_8.addWidget(self.label_dimDefectos)
@@ -240,6 +250,11 @@ class Ui_Form_historico(object):
 
         self.frame_tablaResults = QFrame(self.ventana_dcha)
         self.frame_tablaResults.setObjectName(u"frame_tablaResults")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.frame_tablaResults.sizePolicy().hasHeightForWidth())
+        self.frame_tablaResults.setSizePolicy(sizePolicy1)
         self.frame_tablaResults.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_tablaResults.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_2 = QHBoxLayout(self.frame_tablaResults)
@@ -286,12 +301,20 @@ class Ui_Form_historico(object):
         self.pushButton_saveObs = QPushButton(self.frame_btnsDown)
         self.pushButton_saveObs.setObjectName(u"pushButton_saveObs")
         self.pushButton_saveObs.setMinimumSize(QSize(0, 50))
+        self.pushButton_saveObs.setStyleSheet(u"QPushButton {\n"
+"    padding: 0px 12px; \n"
+"}\n"
+"")
 
         self.horizontalLayout_3.addWidget(self.pushButton_saveObs)
 
         self.pushButton_report = QPushButton(self.frame_btnsDown)
         self.pushButton_report.setObjectName(u"pushButton_report")
         self.pushButton_report.setMinimumSize(QSize(0, 50))
+        self.pushButton_report.setStyleSheet(u"QPushButton {\n"
+"    padding: 0px 12px; \n"
+"}\n"
+"")
 
         self.horizontalLayout_3.addWidget(self.pushButton_report)
 
@@ -306,6 +329,8 @@ class Ui_Form_historico(object):
 
         self.horizontalLayout_ventanaPpal.addWidget(self.ventana_dcha)
 
+        self.horizontalLayout_ventanaPpal.setStretch(0, 1)
+        self.horizontalLayout_ventanaPpal.setStretch(2, 3)
 
         self.horizontalLayout_4.addLayout(self.horizontalLayout_ventanaPpal)
 

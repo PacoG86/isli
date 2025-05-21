@@ -26,7 +26,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1114, 645)
+        MainWindow.resize(1119, 687)
         MainWindow.setMinimumSize(QSize(300, 300))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -38,6 +38,11 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setSizeConstraint(QLayout.SizeConstraint.SetMaximumSize)
         self.barra_izq_frame = QFrame(self.centralwidget)
         self.barra_izq_frame.setObjectName(u"barra_izq_frame")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.barra_izq_frame.sizePolicy().hasHeightForWidth())
+        self.barra_izq_frame.setSizePolicy(sizePolicy)
         self.barra_izq_frame.setStyleSheet(u"background-color: rgb(205, 222, 195);")
         self.barra_izq_frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.barra_izq_frame.setFrameShadow(QFrame.Shadow.Raised)
@@ -141,6 +146,9 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_8 = QLabel(self.frame_6)
         self.label_8.setObjectName(u"label_8")
+        font1 = QFont()
+        font1.setBold(True)
+        self.label_8.setFont(font1)
 
         self.horizontalLayout_8.addWidget(self.label_8)
 
@@ -150,9 +158,9 @@ class Ui_MainWindow(object):
 
         self.label_7 = QLabel(self.frame_6)
         self.label_7.setObjectName(u"label_7")
-        font1 = QFont()
-        font1.setItalic(True)
-        self.label_7.setFont(font1)
+        font2 = QFont()
+        font2.setItalic(True)
+        self.label_7.setFont(font2)
         self.label_7.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_8.addWidget(self.label_7)
@@ -168,7 +176,7 @@ class Ui_MainWindow(object):
 
         self.label_4 = QLabel(self.frame_6)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setFont(font1)
+        self.label_4.setFont(font2)
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.horizontalLayout_8.addWidget(self.label_4)
@@ -202,9 +210,7 @@ class Ui_MainWindow(object):
         self.pushButton_5.setObjectName(u"pushButton_5")
         self.pushButton_5.setMinimumSize(QSize(0, 50))
         self.pushButton_5.setMaximumSize(QSize(16777215, 16777215))
-        font2 = QFont()
-        font2.setBold(True)
-        self.pushButton_5.setFont(font2)
+        self.pushButton_5.setFont(font1)
 
         self.horizontalLayout_7.addWidget(self.pushButton_5)
 
@@ -248,17 +254,41 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_3.addWidget(self.label_6)
 
+        self.label_contador = QLabel(self.frame_2)
+        self.label_contador.setObjectName(u"label_contador")
+
+        self.horizontalLayout_3.addWidget(self.label_contador)
+
         self.label_5 = QLabel(self.frame_2)
         self.label_5.setObjectName(u"label_5")
         self.label_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.label_5)
 
+        self.horizontalLayout_3.setStretch(0, 1)
+        self.horizontalLayout_3.setStretch(2, 1)
 
         self.verticalLayout_3.addWidget(self.frame_2)
 
         self.progressBar = QProgressBar(self.ventana_dcha)
         self.progressBar.setObjectName(u"progressBar")
+        font3 = QFont()
+        font3.setUnderline(False)
+        font3.setKerning(True)
+        self.progressBar.setFont(font3)
+        self.progressBar.setMouseTracking(False)
+        self.progressBar.setAutoFillBackground(False)
+        self.progressBar.setStyleSheet(u"QProgressBar {\n"
+"    border: 2px solid grey;\n"
+"    border-radius: 5px;\n"
+"    text-align: center;\n"
+"}\n"
+"\n"
+"QProgressBar::chunk {\n"
+"    background-color: #4CAF50;\n"
+"    width: 10px;\n"
+"}")
+        self.progressBar.setMaximum(100)
         self.progressBar.setValue(24)
 
         self.verticalLayout_3.addWidget(self.progressBar)
@@ -328,7 +358,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1114, 30))
+        self.menubar.setGeometry(QRect(0, 0, 1119, 30))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -359,6 +389,7 @@ class Ui_MainWindow(object):
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"Iniciar Control de Calidad", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Interrumpir control", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Detalles imagen", None))
+        self.label_contador.setText(QCoreApplication.translate("MainWindow", u"Num_imgs", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Detalles imagen", None))
         ___qtablewidgetitem = self.tableWidget.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"New Column", None));
