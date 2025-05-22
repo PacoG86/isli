@@ -285,7 +285,7 @@ class MainWindow(QMainWindow):
 
     def configurar_tabla(self):
         self.ui.tableWidget.setHorizontalHeaderLabels([
-        "Fecha/ Hora", "Tipo Defecto", "REF Defecto Img", "Dim. Defecto mm", "Resultado",  "Min_defecto"
+        "Fecha/ Hora", "Tipo Defecto", "REF Defecto Img", "Mayor Defecto mm2", "Resultado",  "Min_defecto"
         ])
 
         self.ui.tableWidget.setColumnHidden(5, True)
@@ -769,15 +769,19 @@ class MainWindow(QMainWindow):
         if self.images:
             self.ui.progressBar.setValue(len(self.images))
 
+            # Calcular mayor defecto robustamente desde la columna 3
+            import re
             mayor_defecto = 0.0
             for i in range(self.ui.tableWidget.rowCount()):
                 item = self.ui.tableWidget.item(i, 3)
-                if item and item.text().replace('.', '', 1).isdigit():
-                    try:
-                        valor = float(item.text())
-                        mayor_defecto = max(mayor_defecto, valor)
-                    except ValueError:
-                        pass
+                if item:
+                    match = re.search(r"(\d+(\.\d+)?)", item.text())
+                    if match:
+                        try:
+                            valor = float(match.group(1))
+                            mayor_defecto = max(mayor_defecto, valor)
+                        except ValueError:
+                            print(f"⚠️ No se pudo convertir '{item.text()}' a float.")
 
             umbral_usuario = float(self.ui.doubleSpinBox.value())
             resultado_global = "nok" if mayor_defecto > umbral_usuario else "ok"
@@ -786,29 +790,31 @@ class MainWindow(QMainWindow):
             fila_actual = self.ui.tableWidget.rowCount()
             self.ui.tableWidget.insertRow(fila_actual)
 
-            # Crear items
+            # Obtener tipos de defecto desde los JSON procesados
+            tipos_acumulados = []
+            for ruta in self.imagenes_procesadas:
+                tipos = self.leer_tipos_defecto_json(ruta)
+                tipos_acumulados.extend(tipos)
+            tipos_unicos = sorted(set(tipos_acumulados))
+            tipos_str = ", ".join(tipos_unicos) if tipos_unicos else "—"
+
+            # Crear items finales
             item_fecha = QTableWidgetItem(timestamp)
-            item_resumen = QTableWidgetItem("RESUMEN")
+            item_tipos = QTableWidgetItem(tipos_str)
             item_total = QTableWidgetItem(f"Total: {len(self.images)} imágenes")
-            item_limite = QTableWidgetItem(f"LÍMITE: {mayor_defecto:.2f} mm")
+            item_limite = QTableWidgetItem(f"{mayor_defecto:.2f}")  # ⚠️ sin texto decorativo
             item_resultado = QTableWidgetItem(resultado_global)
 
-            items = [item_fecha, item_resumen, item_total, item_limite, item_resultado]
+            items = [item_fecha, item_tipos, item_total, item_limite, item_resultado]
 
-            # Fuente en negrita para todos
             for item in items:
                 item.setFont(QFont("Arial", 10, QFont.Bold))
-
-            # Fondo verde por defecto
-            for item in items:
                 item.setBackground(QColor("#C8E6C9"))
 
-            # Si resultado es NOK, sobrescribir color de límite y resultado a rojo
             if resultado_global == "nok":
                 item_limite.setBackground(QColor("#FFCDD2"))
                 item_resultado.setBackground(QColor("#FFCDD2"))
 
-            # Insertar fila
             for col, item in enumerate(items):
                 self.ui.tableWidget.setItem(fila_actual, col, item)
 
