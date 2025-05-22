@@ -385,6 +385,7 @@ class MainWindow(QMainWindow):
 
         self.images = list(zip(self.imagenes_originales, self.imagenes_procesadas))
         self.index = 0
+        self.imagenes_procesadas = []  # Limpiar acumulación previa
         self.analisis_completado = False
 
         self.ui.tableWidget.setRowCount(0)

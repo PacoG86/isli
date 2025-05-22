@@ -7,6 +7,13 @@ from reportlab.pdfgen import canvas
 from PySide6.QtWidgets import QMessageBox
 
 
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+import os
+import sys
+from datetime import datetime
+from PySide6.QtWidgets import QMessageBox
+
 def generar_pdf_completo(
     id_control,
     nombre_usuario,
@@ -19,25 +26,35 @@ def generar_pdf_completo(
     logo_path=None,
     parent_widget=None
 ):
-    """
-    Genera un informe PDF y lo guarda en la ruta especificada.
-    - Se puede pasar un logo opcional.
-    - Si se proporciona `parent_widget`, se usa para mostrar QMessageBox.
-    """
-
     try:
         c = canvas.Canvas(ruta_destino, pagesize=A4)
         width, height = A4
-        y = height - 50
 
-        # Logo
+        # ==== ENCABEZADO ====
+        logo_width = 100
+        logo_height = 60
+        logo_x = 40
+        logo_y = height - logo_height - 40  # Espacio superior
+
+        # Logo a la izquierda
         if logo_path and os.path.exists(logo_path):
-            c.drawImage(logo_path, 40, y - 60, width=100, height=40)
+            c.drawImage(
+                logo_path,
+                logo_x,
+                logo_y,
+                width=logo_width,
+                height=logo_height,
+                preserveAspectRatio=True,
+                mask='auto'
+            )
 
-        c.setFont("Helvetica-Bold", 14)
-        c.drawString(150, y, "Informe de Control de Calidad")
-        y -= 30
+        # Título alineado al centro del logo
+        title_y = logo_y + logo_height / 2 - 7  # Ajuste visual fino
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(logo_x + logo_width + 20, title_y, "Informe de Control de Calidad")
 
+        # ==== INFORMACIÓN BÁSICA ====
+        y = logo_y - 20
         c.setFont("Helvetica", 10)
         datos = [
             f"ID Control: {id_control}",
@@ -50,6 +67,7 @@ def generar_pdf_completo(
             c.drawString(40, y, d)
             y -= 15
 
+        # ==== RESUMEN DEL ANÁLISIS ====
         y -= 10
         c.setFont("Helvetica-Bold", 11)
         c.drawString(40, y, "Resumen del análisis")
@@ -67,36 +85,42 @@ def generar_pdf_completo(
             c.drawString(40, y, " | ".join(linea))
             y -= 12
 
+        # ==== IMÁGENES ANALIZADAS ====
         y -= 20
         c.setFont("Helvetica-Bold", 11)
         c.drawString(40, y, "Visores de análisis")
         y -= 20
 
-        for img_path in imagenes_procesadas[:6]:
+        for idx, img_path in enumerate(imagenes_procesadas):
+            if not os.path.exists(img_path):
+                continue
+
             if y < 120:
                 c.showPage()
                 y = height - 50
-            if os.path.exists(img_path):
-                try:
-                    c.drawImage(img_path, 40, y - 100, width=200, height=100)
-                    c.drawString(250, y - 60, os.path.basename(img_path))
-                    y -= 120
-                except Exception as e:
-                    print(f"❌ Error al insertar imagen en PDF: {e}")
+                c.setFont("Helvetica-Bold", 11)
+                c.drawString(40, y, "Visores de análisis (continuación)")
+                y -= 20
+
+            try:
+                c.drawImage(img_path, 40, y - 100, width=200, height=100)
+                c.setFont("Helvetica", 8)
+                c.drawString(250, y - 60, f"{idx+1}. {os.path.basename(img_path)}")
+                y -= 120
+            except Exception as e:
+                print(f"❌ Error al insertar imagen en PDF: {e}")
 
         c.save()
 
-        # Mostrar mensaje de éxito y abrir el PDF
+        # Mostrar mensaje de éxito
         if parent_widget:
             QMessageBox.information(parent_widget, "Informe generado", f"Informe guardado en:\n{ruta_destino}")
-
         abrir_pdf(ruta_destino)
 
     except Exception as e:
         print(f"❌ Error al generar el PDF: {e}")
         if parent_widget:
             QMessageBox.critical(parent_widget, "Error al generar informe", f"Error al crear el informe:\n\n{str(e)}")
-
 
 def abrir_pdf(ruta_pdf):
     """Abre el PDF según el sistema operativo"""
@@ -110,6 +134,7 @@ def abrir_pdf(ruta_pdf):
             subprocess.call(("xdg-open", ruta_pdf))
     except Exception as e:
         print(f"❌ No se pudo abrir el PDF: {e}")
+
 
 def guardar_registro_informe(id_control, ruta_pdf, generado_por):
     """
