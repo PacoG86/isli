@@ -125,6 +125,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.showMaximized()
         self.setWindowTitle("ISLI - Control de Calidad")
         self.setupUiConnections()
 

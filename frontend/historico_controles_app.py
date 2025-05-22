@@ -206,6 +206,7 @@ class HistoricoControlesWindow(QWidget):
         super().__init__()
         self.ui = Ui_Form_historico()
         self.ui.setupUi(self)
+        self.showMaximized()
         self.id_usuario = id_usuario
         self.configurar_tabla()
         self.cargar_usuarios()
