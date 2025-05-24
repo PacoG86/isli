@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 from jose import jwt, JWTError
 import os
 from dotenv import load_dotenv
@@ -26,6 +26,14 @@ admin_router = APIRouter()
 
 @admin_router.get("/admin", response_class=HTMLResponse)
 def mostrar_panel_admin(request: Request, token: str = Query(None)):
+    """
+    Muestra el panel de administración si el token es válido y el usuario es administrador.
+
+    Valida el token JWT proporcionado por URL, verifica el rol y carga:
+    - Lista de usuarios.
+    - Rollos controlados.
+    - Solicitudes pendientes de cambio de contraseña.
+    """
     if not token:
         raise HTTPException(status_code=401, detail="Token requerido en la URL")
 
@@ -88,6 +96,11 @@ async def crear_usuario_desde_panel(
 ):
     conn = get_connection()
     cursor = conn.cursor()
+    """
+    Crea un nuevo usuario desde el panel si el correo no está registrado.
+
+    Hashea la contraseña, asigna rol y marca el usuario como activo.
+    """
     try:
         # Verificar si ya existe ese email
         cursor.execute("SELECT * FROM usuario WHERE email_usuario = %s", (email_usuario,))
@@ -112,6 +125,9 @@ async def crear_usuario_desde_panel(
 
 @admin_router.post("/admin/usuarios/toggle_activo")
 async def toggle_usuario_activo(id_usuario: int = Form(...), token: str = Form(...)):
+    """
+    Activa o desactiva un usuario alternando su estado entre 1 y 0.
+    """
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -132,6 +148,9 @@ async def toggle_usuario_activo(id_usuario: int = Form(...), token: str = Form(.
 
 @admin_router.post("/admin/usuarios/cambiar_rol")
 async def cambiar_rol_usuario(id_usuario: int = Form(...), token: str = Form(...)):
+    """
+    Cambia el rol de un usuario entre 'operario' y 'administrador'.
+    """
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -150,6 +169,9 @@ async def cambiar_rol_usuario(id_usuario: int = Form(...), token: str = Form(...
 
 @admin_router.post("/admin/rollos/devolver")
 async def devolver_rollo_al_almacen(id_rollo: int = Form(...), token: str = Form(...)):
+    """
+    Devuelve un rollo al estado 'disponible' en el sistema.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -162,6 +184,23 @@ async def devolver_rollo_al_almacen(id_rollo: int = Form(...), token: str = Form
 
 @admin_router.post("/admin/usuarios/reiniciar_password")
 async def reiniciar_contrasena_usuario(email_usuario: str = Form(...), token: str = Form(...)):
+    """
+    Reinicia la contraseña de un usuario según una solicitud pendiente.
+
+    - Busca la solicitud más reciente.
+    - Hashea la nueva contraseña.
+    - Actualiza la base de datos y marca la solicitud como atendida.
+
+    Args:
+        email_usuario (str): Correo del usuario con solicitud pendiente.
+        token (str): Token JWT del administrador (para redirección).
+
+    Returns:
+        RedirectResponse: Redirección al panel administrativo.
+
+    Raises:
+        HTTPException: Si no hay solicitud o si ocurre un error de base de datos.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:

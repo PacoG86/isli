@@ -7,8 +7,16 @@ from utils_ui import mostrar_datos_usuario, configurar_botones_comunes
 
 
 class HistoricoControlesWindow(QWidget):
+    """
+    Ventana del sistema ISLI para visualizar y filtrar el histórico de controles de calidad.
 
+    Permite aplicar filtros por usuario, fecha, tolerancia y tamaño de defecto.
+    También permite editar comentarios y visualizar informes asociados.
+    """
     def cargar_datos_historico(self):
+        """
+        Obtiene el listado completo de controles desde la API y los muestra en la tabla.
+        """
         try:
             response = requests.get("http://localhost:8000/controles/historico")
             if response.status_code == 200:
@@ -20,6 +28,9 @@ class HistoricoControlesWindow(QWidget):
             QMessageBox.critical(self, "Error de conexión", str(e))
 
     def aplicar_filtros(self):
+        """
+        Aplica los filtros seleccionados en la interfaz y actualiza la tabla con los resultados.
+        """
         params = {}
 
         # Filtro por cantidad máxima de defectos
@@ -55,6 +66,7 @@ class HistoricoControlesWindow(QWidget):
             print("Excepción al aplicar filtros:", str(e))
 
     def limpiar_filtros(self):
+        """Reinicia los filtros a valores por defecto y recarga los datos."""
         # Restablecer spinBoxes
         self.ui.spinBox_numDefectos.setValue(0)
         self.ui.doubleSpinBox_dimDefectos.setValue(0.0)
@@ -71,6 +83,12 @@ class HistoricoControlesWindow(QWidget):
         self.cargar_datos_historico()
 
     def mostrar_datos_en_tabla(self, controles):
+        """
+        Muestra en la tabla los datos de controles pasados como lista de diccionarios.
+        
+        Args:
+            controles (list[dict]): Lista con la información de cada control.
+        """
         self.ui.tableWidget_results.setRowCount(0)
         self.ui.tableWidget_results.setColumnCount(8)
         self.ui.tableWidget_results.setHorizontalHeaderLabels([
@@ -114,9 +132,8 @@ class HistoricoControlesWindow(QWidget):
             notas_item = QTableWidgetItem(notas)
             self.ui.tableWidget_results.setItem(row_idx, 7, notas_item)
 
-
-
     def cargar_usuarios(self):
+        """Carga la lista de usuarios disponibles desde la API."""
         try:
             response = requests.get("http://localhost:8000/controles/usuarios")
             if response.status_code == 200:
@@ -131,6 +148,7 @@ class HistoricoControlesWindow(QWidget):
 
 
     def volver_a_menu_principal(self):
+        """Cierra la ventana actual y regresa al menú principal."""
         from parpadeo import MainWindow
         from main import BASE_FOLDER  # Ojo! disponible en config.json
         self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
@@ -143,6 +161,10 @@ class HistoricoControlesWindow(QWidget):
         header.setStretchLastSection(True)  # Última columna ocupa espacio restante
 
     def mostrar_o_generar_informe(self):
+        """
+        Verifica si existe un informe PDF asociado al control seleccionado.
+        Si existe, lo abre. Si no, muestra un mensaje.
+        """
         fila = self.ui.tableWidget_results.currentRow()
         if fila == -1:
             QMessageBox.warning(self, "Sin selección", "Seleccione una fila para mostrar el informe.")
@@ -170,6 +192,9 @@ class HistoricoControlesWindow(QWidget):
             QMessageBox.critical(self, "Error", str(e))
     
     def guardar_comentarios(self):
+        """
+        Recorre la tabla y actualiza los comentarios (notas) modificados en la base de datos.
+        """
         filas_actualizadas = 0
 
         for row in range(self.ui.tableWidget_results.rowCount()):
@@ -197,6 +222,15 @@ class HistoricoControlesWindow(QWidget):
 
     
     def __init__(self, nombre_usuario, rol_usuario, token_jwt, id_usuario):
+        """
+        Inicializa la interfaz, carga datos de usuario y conecta eventos.
+
+        Args:
+            nombre_usuario (str): Nombre del usuario actual.
+            rol_usuario (str): Rol ('administrador' u 'operario').
+            token_jwt (str): Token de autenticación.
+            id_usuario (int): ID del usuario.
+        """
         super().__init__()
         self.ui = Ui_Form_historico()
         self.ui.setupUi(self)

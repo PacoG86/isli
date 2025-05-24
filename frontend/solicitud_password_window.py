@@ -3,9 +3,22 @@ from PySide6.QtWidgets import QDialog, QMessageBox
 from UI.solicitud_password_dialog import Ui_Dialog
 from datetime import datetime
 
+# solicitud_password_window.py - Ventana emergente para que el usuario solicite un cambio de contraseña.
 
 class SolicitudPasswordWindow(QDialog):
+    """
+    Ventana de diálogo para solicitar un cambio de contraseña.
+
+    Permite al usuario ingresar su email, nueva contraseña y un motivo opcional.
+    Envía la solicitud al backend para su posterior validación por un administrador.
+    """
     def __init__(self, parent=None):
+        """
+        Inicializa la interfaz y conecta los botones de enviar y cancelar.
+
+        Args:
+            parent (QWidget, optional): Widget padre. Por defecto es None.
+        """
         super().__init__(parent)
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
@@ -17,6 +30,12 @@ class SolicitudPasswordWindow(QDialog):
 
     
     def enviar_solicitud(self):
+        """
+        Envía la solicitud de cambio de contraseña al backend.
+
+        Valida los campos requeridos, construye el payload y muestra mensajes
+        de confirmación o error según la respuesta del servidor.
+        """
         email = self.ui.lineEdit_email.text().strip()
         nueva_password = self.ui.lineEdit_password.text().strip()
         motivo = self.ui.textEdit_motivo.toPlainText().strip()

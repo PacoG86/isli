@@ -6,29 +6,50 @@ import os
 import json
 
 class BlackSpotsSegmentation:
-    """ Class for black spot segmentation using dynamic binarization.
+    """
+    Clase para la segmentación y visualización de defectos oscuros ("puntos negros") en imágenes industriales.
+
+    Esta clase implementa distintos métodos para:
+    - Preprocesar imágenes con transformaciones de histograma.
+    - Segmentar defectos usando umbrales adaptativos o globales.
+    - Clasificar los defectos por tamaño en "aceptables" y "no aceptables".
+    - Generar visualizaciones con superposición de máscaras y anotaciones.
+
+    También proporciona herramientas auxiliares para recortar imágenes, dibujar cuadros delimitadores (bounding boxes),
+    y obtener mediciones asociadas a los defectos detectados.
     """
 
     def __init__(self, visualization: bool = False):
         """
+        Inicializa la clase con una opción para activar o desactivar la visualización.
 
         Args:
-            visualization (bool, optional): Set to true to return a visualization images which highlights the segmented defects. If filter by size is applied, it also will differentiate between acceptable and non-acceptable black spots, as well as their size in mm2. Defaults to False.
+            visualization (bool): Si se establece en True, los métodos que lo soporten
+                devolverán imágenes con superposición visual de los defectos segmentados.
+                Si se aplica filtrado por tamaño, las visualizaciones también diferenciarán
+                entre defectos aceptables y no aceptables, incluyendo su área en mm².
         """
         self.visualization = visualization
 
     @staticmethod
     def draw_bounding_box(image: np.ndarray, bbox: Dict[str, int], category: str) -> np.ndarray:
         """
-        Draws a bounding box with a category label on the image.
+        Dibuja un recuadro delimitador (bounding box) con una etiqueta de categoría sobre una imagen.
+
+        Este método se utiliza para resaltar visualmente regiones de interés (defectos detectados)
+        sobre una imagen, agregando además una etiqueta con el nombre de la categoría.
 
         Args:
-            image (np.ndarray): The original image.
-            bbox (Dict[str, int]): Bounding box with keys "x", "y", "w", and "h".
-            category (str): Category label to draw above the bounding box.
+            image (np.ndarray): Imagen original sobre la que se dibujará el recuadro.
+            bbox (Dict[str, int]): Diccionario con las coordenadas del recuadro. Debe contener:
+                - "x": coordenada horizontal del vértice superior izquierdo.
+                - "y": coordenada vertical del vértice superior izquierdo.
+                - "w": ancho del recuadro.
+                - "h": alto del recuadro.
+            category (str): Etiqueta de texto que se mostrará encima del recuadro (ej. "punto-negro").
 
         Returns:
-            np.ndarray: Image with the bounding box and label drawn.
+            np.ndarray: Imagen con el recuadro y la etiqueta superpuestos.
         """
         x, y, w, h = bbox["x"], bbox["y"], bbox["w"], bbox["h"]
 
@@ -68,18 +89,21 @@ class BlackSpotsSegmentation:
     @staticmethod
     def get_image_crop(image: np.ndarray[np.uint8], bbox: Dict[str, int]) -> np.ndarray[np.uint8]:
         """
-        Extracts and returns a cropped portion of the input image based on the specified bounding box.
+        Extrae y devuelve una región recortada de la imagen original según un bounding box.
+
+        Este método permite aislar una sección rectangular de la imagen especificada
+        por las coordenadas y dimensiones indicadas en el diccionario `bbox`.
 
         Args:
-            image (np.ndarray): The original image represented as a NumPy array.
-            bbox (Dict[str, int]): A dictionary containing the bounding box coordinates with keys:
-                - "x": The x-coordinate of the top-left corner.
-                - "y": The y-coordinate of the top-left corner.
-                - "w": The width of the bounding box.
-                - "h": The height of the bounding box.
+            image (np.ndarray): Imagen de entrada (en escala de grises o RGB).
+            bbox (Dict[str, int]): Diccionario con las coordenadas del recorte. Debe incluir:
+                - "x": coordenada horizontal del vértice superior izquierdo.
+                - "y": coordenada vertical del vértice superior izquierdo.
+                - "w": ancho del recorte.
+                - "h": alto del recorte.
 
         Returns:
-            np.ndarray: The cropped image as a NumPy array.
+            np.ndarray: Imagen recortada según las coordenadas especificadas.
         """
         x_init = max(0, bbox["x"])
         y_init = max(0, bbox["y"])
@@ -91,20 +115,24 @@ class BlackSpotsSegmentation:
     @staticmethod
     def create_bimodal_histogram(image: np.ndarray[np.uint8], peak1: int = 20, peak2: int = 240, weight1: float = 0.99, weight2: float = 0.01) -> np.ndarray[np.uint8]:
         """
-        Transforms a grayscale image to create a bimodal intensity distribution based on two Gaussian peaks. The goal is to enhance the contrast of the image.
+        Transforma una imagen en escala de grises para generar una distribución bimodal de intensidades.
+
+        Esta transformación sirve para aumentar el contraste de la imagen antes de aplicar técnicas
+        de segmentación. Utiliza dos curvas gaussianas con pesos diferentes para modificar la 
+        distribución de histograma.
 
         Args:
-            image (np.ndarray): The input grayscale image represented as a NumPy array.
-            peak1 (int, optional): The intensity value for the first Gaussian peak. Defaults to 20.
-            peak2 (int, optional): The intensity value for the second Gaussian peak. Defaults to 240.
-            weight1 (float, optional): The weight (contribution) of the first Gaussian peak. Defaults to 0.99.
-            weight2 (float, optional): The weight (contribution) of the second Gaussian peak. Defaults to 0.01.
+            image (np.ndarray): Imagen de entrada en escala de grises.
+            peak1 (int): Pico de intensidad principal de la primera gaussiana (más oscura). Por defecto 20.
+            peak2 (int): Pico de intensidad de la segunda gaussiana (más clara). Por defecto 240.
+            weight1 (float): Peso relativo de la primera gaussiana. Por defecto 0.99.
+            weight2 (float): Peso relativo de la segunda gaussiana. Por defecto 0.01.
 
         Raises:
-            ValueError: If the input image is not a grayscale image.
+            ValueError: Si la imagen no está en escala de grises.
 
         Returns:
-            np.ndarray: The transformed image with the bimodal intensity distribution applied.
+            np.ndarray: Imagen resultante con distribución de intensidades bimodal.
         """
         if len(image.shape) > 2:
             raise ValueError("Input image must be a grayscale image.")
@@ -130,21 +158,27 @@ class BlackSpotsSegmentation:
     @staticmethod
     def create_visualization(image: np.ndarray[np.uint8], blackspot_binary_image_ok: np.ndarray[np.bool_], blackspot_binary_image_nok: np.ndarray[np.bool_], pixel_to_mm: float = None, crop_area = None) -> np.ndarray[np.uint8]:
         """
-        Creates a visualization image by overlaying binary blackspot masks on the input image. 
-        The visualization highlights "OK" areas in green and "NOK" areas in red. Optionally,
-        it annotates areas with size information if a pixel-to-millimeter ratio is provided.
+        Crea una visualización superponiendo máscaras de defectos sobre la imagen original.
+
+        Este método genera una imagen RGB a partir de una imagen de entrada (en escala de grises o RGB),
+        donde se resaltan los defectos clasificados como:
+        - OK (dentro del umbral de tamaño): en verde.
+        - NOK (fuera del umbral de tamaño): en rojo.
+
+        Si se proporciona el factor `pixel_to_mm`, se anotan también las áreas de cada defecto en mm².
+        Además, se puede limitar la visualización a un área concreta mediante `crop_area`.
 
         Args:
-            image (np.ndarray[np.uint8]): The input grayscale image to be visualized.
-            blackspot_binary_image_ok (np.ndarray[np.bool_]): Binary mask for "OK" blackspots. 
-                Non-zero pixels represent the "OK" regions.
-            blackspot_binary_image_nok (np.ndarray[np.bool_]): Binary mask for "NOK" blackspots. 
-                Non-zero pixels represent the "NOK" regions.
-            pixel_to_mm (float, optional): Conversion factor from pixels to millimeters. If provided, 
-                the areas of the regions are annotated in the visualization.
+            image (np.ndarray): Imagen original en escala de grises o RGB.
+            blackspot_binary_image_ok (np.ndarray): Máscara binaria de defectos aceptables ("OK").
+            blackspot_binary_image_nok (np.ndarray): Máscara binaria de defectos no aceptables ("NOK").
+            pixel_to_mm (float, opcional): Factor de conversión de píxeles a milímetros. Si se proporciona,
+                se muestran etiquetas con el área de cada defecto detectado.
+            crop_area (list[int], opcional): Área de recorte sobre la que aplicar las máscaras, en formato [x1, y1, x2, y2].
+                Si no se proporciona, se aplica a toda la imagen.
 
         Returns:
-            np.ndarray[np.uint8]: The visualization image with overlaid masks and optional annotations.
+            np.ndarray: Imagen visual resultante con superposición de defectos y anotaciones (si aplica).
         """
 
         if crop_area == None:
@@ -197,17 +231,21 @@ class BlackSpotsSegmentation:
     @staticmethod
     def adaptive_blackspot_segmentation(image: np.ndarray[np.uint8]) -> np.ndarray[np.bool_]:
         """
-        Performs adaptive thresholding to segment blackspots in a grayscale image.
+        Aplica umbralización adaptativa para segmentar defectos oscuros (blackspots) en una imagen en escala de grises.
+
+        Esta técnica ajusta el umbral dinámicamente en función de las regiones locales de la imagen,
+        lo que permite una detección más precisa en condiciones de iluminación no uniforme.
 
         Args:
-            image (np.ndarray[np.uint8]): The input grayscale image represented as a NumPy array.
+            image (np.ndarray[np.uint8]): Imagen de entrada en escala de grises.
 
         Returns:
-            np.ndarray[np.bool_]: A binary mask (boolean array) where `True` indicates blackspot regions.
-
-        Notes:
-            - The block size for adaptive thresholding is dynamically calculated as half the smaller dimension of the image,
-            adjusted to ensure it is odd.
+            np.ndarray[np.bool_]: Máscara binaria donde los píxeles `True` indican regiones con posibles defectos.
+        
+        Notas:
+            - El tamaño del bloque para la umbralización se calcula como la mitad del menor lado de la imagen,
+            y se ajusta para que siempre sea impar.
+            - Se aplica un desenfoque Gaussiano previo para reducir ruido.
         """
 
         blur = cv2.GaussianBlur(image, (5,5), 0)
@@ -225,17 +263,21 @@ class BlackSpotsSegmentation:
     @staticmethod
     def global_blackspot_segmentation(image: np.ndarray[np.uint8]) -> np.ndarray[np.bool_]:
         """
-        Segments blackspots in a grayscale image using global thresholding with Otsu's method.
+        Segmenta defectos oscuros en una imagen en escala de grises utilizando umbralización global con el método de Otsu.
+
+        Este método determina automáticamente un umbral óptimo de binarización analizando el histograma
+        de la imagen. Es útil en condiciones de iluminación homogénea donde una separación clara entre
+        fondo y defecto es posible.
 
         Args:
-            image (np.ndarray[np.uint8]): The input grayscale image represented as a NumPy array.
+            image (np.ndarray[np.uint8]): Imagen de entrada en escala de grises.
 
         Returns:
-            np.ndarray[np.bool_]: A binary mask (boolean array) where `True` indicates blackspot regions.
+            np.ndarray[np.bool_]: Máscara binaria donde los píxeles `True` representan regiones detectadas como defectos.
 
-        Notes:
-            - Otsu's method automatically determines an optimal threshold value for the image based on its histogram.
-            - The binary mask uses `True` for pixels corresponding to blackspot regions.
+        Notas:
+            - Se aplica un filtro Gaussiano previo para suavizar la imagen y reducir el ruido.
+            - Otsu determina el umbral que minimiza la varianza intra-clase de intensidades.
         """
 
         blur = cv2.GaussianBlur(image, (5,5), 0)
@@ -247,19 +289,27 @@ class BlackSpotsSegmentation:
     @staticmethod
     def blackspot_filter_by_size(blackspot_binary_image: np.ndarray[np.bool_], max_acceptable_blackspot_area: float, pixel_to_mm: float) -> Tuple[np.ndarray[np.bool_], np.ndarray[np.bool_]]:
         """
-        Filters blackspots in a binary image based on their area. Segments blackspots into two categories:
-        one for acceptable blackspot sizes and another for oversized blackspots.
+        Clasifica los defectos detectados en una imagen binaria según su tamaño.
+
+        Esta función recorre los componentes conectados de la imagen binaria (`blackspot_binary_image`)
+        y los separa en dos máscaras:
+        - Una con los defectos aceptables (OK) cuyo área está por debajo del umbral.
+        - Otra con los defectos no aceptables (NOK) que superan el área máxima permitida.
 
         Args:
-            blackspot_binary_image (np.ndarray[np.bool_]): Binary image where `True` represents blackspot regions.
-            max_acceptable_blackspot_area (float): The maximum acceptable area for blackspots, in square millimeters.
-            pixel_to_mm (float): Conversion factor to map pixel area to millimeters squared.
+            blackspot_binary_image (np.ndarray[np.bool_]): Imagen binaria donde los píxeles `True` representan defectos detectados.
+            max_acceptable_blackspot_area (float): Área máxima tolerable para un defecto, en milímetros cuadrados.
+            pixel_to_mm (float): Factor de conversión de píxeles a milímetros.
 
         Returns:
             Tuple[np.ndarray[np.bool_], np.ndarray[np.bool_]]:
-                - A binary mask (np.ndarray[np.bool_]) where `True` represents blackspots within the acceptable area (`blackspot_binary_image_ok`).
-                - A binary mask (np.ndarray[np.bool_]) where `True` represents blackspots exceeding the maximum acceptable area (`blackspot_binary_image_nok`).
-    """
+                - Primera máscara binaria con los defectos aceptables ("OK").
+                - Segunda máscara binaria con los defectos no aceptables ("NOK").
+
+        Notas:
+            - La segmentación se basa en el área de cada componente conectado.
+            - El área en mm² se calcula como: `área en píxeles * pixel_to_mm²`.
+        """
 
         blackspot_binary_image_ok = np.zeros(blackspot_binary_image.shape).astype(np.bool)
         blackspot_binary_image_nok = np.zeros(blackspot_binary_image.shape).astype(np.bool)
@@ -294,13 +344,21 @@ class BlackSpotsSegmentation:
 
     def preprocess_image(self, image: np.ndarray[np.uint8]) -> np.ndarray[np.uint8]:
         """
-        Preprocesses the input image to reduce high-intensity regions and enhance its histogram for better segmentation.
+        Preprocesa una imagen en escala de grises para mejorar la segmentación de defectos.
+
+        Este método reduce la intensidad de las regiones muy brillantes, que podrían generar
+        un tercer pico no deseado en el histograma, y aplica una transformación para forzar
+        una distribución bimodal de intensidades.
 
         Args:
-            image (np.ndarray[np.uint8]): The input grayscale image represented as a NumPy array.
+            image (np.ndarray[np.uint8]): Imagen original en escala de grises.
 
         Returns:
-            np.ndarray[np.uint8]: The preprocessed grayscale image after applying a low-pass filter and a bimodal histogram transformation.
+            np.ndarray[np.uint8]: Imagen preprocesada lista para segmentación.
+        
+        Notas:
+            - Se limita la intensidad máxima al valor de la mediana para eliminar saturaciones.
+            - Luego se aplica `create_bimodal_histogram()` para aumentar el contraste local.
         """
         
         # Low-pass filter to avoid low-intensity areas that creates a third peak in the image histogram
@@ -313,20 +371,23 @@ class BlackSpotsSegmentation:
 
     def blackspot_segmentation(self, crop_img: np.ndarray[np.uint8], return_visualization: bool = False) -> Union[np.ndarray[np.uint8], None]:
         """
-        Segments blackspots from the input cropped image. Optionally returns a visualization of the blackspot detection.
+        Segmenta defectos en una imagen recortada utilizando umbralización adaptativa.
+
+        Esta función aplica preprocesado sobre una subimagen (crop) y segmenta posibles defectos.
+        Si se indica `return_visualization=True`, devuelve también una imagen anotada visualmente.
 
         Args:
-            crop_img (np.ndarray[np.uint8]): The cropped grayscale image from which blackspots will be segmented.
-            return_visualization (bool, optional): If True, returns a visualization image with the segmented blackspots marked. Defaults to False.
+            crop_img (np.ndarray[np.uint8]): Imagen recortada en escala de grises sobre la que se aplicará la segmentación.
+            return_visualization (bool): Si es True, devuelve también una visualización de los defectos segmentados.
 
         Returns:
-            Union[np.ndarray[np.uint8], None]: 
-                - A grayscale image with the segmented blackspots (if `return_visualization` is True).
-                - None if `return_visualization` is False.
-        
-        Notes:
-            - If `return_visualization` is set to True, the function uses the `create_visualization` method to generate an annotated image
-            showing the segmented blackspots.
+            Union[np.ndarray[np.uint8], Tuple[np.ndarray, np.ndarray]]:
+                - Si `return_visualization` es False: máscara binaria con los defectos segmentados.
+                - Si es True: tupla con (máscara segmentada, visualización con superposición).
+
+        Notas:
+            - Utiliza el método `preprocess_image` para mejorar el contraste antes de segmentar.
+            - La segmentación se realiza con umbralización adaptativa.
         """
 
         enhanced_crop_img = self.preprocess_image(crop_img)
@@ -341,48 +402,33 @@ class BlackSpotsSegmentation:
     
     def blackspot_segmentation_and_classification_by_size(self, crop_img: np.ndarray[np.uint8], size_th_in_mm: float, pixel_to_mm: float, return_visualization: bool = False) -> Union[np.ndarray[np.uint8], None]:
         """
-        Segments blackspots in the input cropped image, classifies them by size, and optionally returns a visualization.
+        Segmenta y clasifica defectos por tamaño en una imagen recortada.
+
+        Esta función realiza segmentación de defectos oscuros (puntos negros), los clasifica
+        como aceptables (OK) o no aceptables (NOK) en función de un umbral de área, y
+        opcionalmente genera una visualización anotada.
 
         Args:
-            crop_img (np.ndarray[np.uint8]): The cropped grayscale image from which blackspots will be segmented and classified.
-            size_th_in_mm (float): The size threshold in millimeters to classify blackspots as acceptable or oversized.
-            pixel_to_mm (float): Conversion factor from pixels to millimeters for size calculations.
-            return_visualization (bool, optional): If True, returns a visualization image with the segmented blackspots and their classifications. Defaults to False.
+            crop_img (np.ndarray[np.uint8]): Imagen recortada (crop) en escala de grises.
+            size_th_in_mm (float): Umbral de área (en mm²) para considerar un defecto como no aceptable.
+            pixel_to_mm (float): Factor de conversión de píxeles a milímetros.
+            return_visualization (bool): Si es True, se devuelve también una imagen con la visualización de los defectos clasificados.
 
         Returns:
-            Union[np.ndarray[np.uint8], None]: 
-                - A grayscale image with the segmented and classified blackspots if `return_visualization` is True.
-                - None if `return_visualization` is False.
+            Union[np.ndarray[np.uint8], Tuple[np.ndarray, np.ndarray]]:
+                - Máscara binaria con todos los defectos segmentados.
+                - Si `return_visualization` es True, también se devuelve una visualización RGB con la clasificación OK/NOK superpuesta.
 
-        Notes:
-            - If `return_visualization` is True, the `create_visualization` method is used to display the blackspots categorized as "OK" (within size threshold) and "NOK" (exceeding size threshold).
-            - The classification is based on the area of each blackspot, calculated using the `pixel_to_mm` conversion factor.
+        Notas:
+            - Este método combina `preprocess_image`, `adaptive_blackspot_segmentation`,
+            `blackspot_filter_by_size` y `create_visualization`.
+            - Es adecuado cuando se desea inspección automática con criterio de tamaño.
         """
         
         enhanced_crop_img = self.preprocess_image(crop_img)
 
         blackspots = self.adaptive_blackspot_segmentation(enhanced_crop_img)
-        """
-        # Find connected components
-        num_labels, labels = cv2.connectedComponents(blackspots.astype(np.uint8))
-
-        # Create an output image (with colors for each region)
-        output = np.zeros((*blackspots.shape, 3), dtype=np.uint8)
-
-        # Generate random colors for each component (excluding background)
-        colors = np.random.randint(0, 255, size=(num_labels, 3), dtype=np.uint8)
-
-        # Assign colors to each connected component
-        for label in range(1, num_labels):  # Skip 0 (background)
-            output[labels == label] = colors[label]
-
-        # Show the result
-        plt.figure(figsize=(8, 6))
-        plt.imshow(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
-        plt.axis('off')
-        plt.title('Connected Components')
-        plt.show()
-        """
+        
         blackspots_ok, blackspots_nok = self.blackspot_filter_by_size(blackspots, size_th_in_mm, pixel_to_mm)
 
         if return_visualization:
@@ -394,6 +440,25 @@ class BlackSpotsSegmentation:
     
     def get_detections_and_measurements_for_roll(self, base_path, roll_name, defect_area_threshold, pixel_to_mm_factor = 0.13379797308):
 
+        """
+        Aplica segmentación y medición de defectos sobre todas las imágenes de un rollo.
+
+        Este método recorre todas las imágenes en la carpeta de un rollo determinado,
+        identifica las regiones etiquetadas como defectos en el archivo JSON de anotaciones,
+        y genera dos salidas por cada imagen:
+        - Una imagen con los defectos marcados mediante bounding boxes.
+        - Una imagen con la segmentación y medición de cada defecto detectado.
+
+        Args:
+            base_path (str): Ruta raíz donde se encuentran el archivo JSON y la carpeta del rollo.
+            roll_name (str): Nombre de la carpeta del rollo a procesar.
+            defect_area_threshold (float): Área máxima aceptable para un defecto, en mm².
+            pixel_to_mm_factor (float): Factor de conversión de píxeles a milímetros cuadrados. Por defecto 0.13379797308.
+
+        Efectos:
+            - Crea dos carpetas dentro del rollo: `detecciones` y `mediciones`.
+            - Guarda imágenes con resultados visuales del análisis para cada muestra.
+        """
         JSON_PATH = os.path.join(base_path, "formaspack_test_black_dots.json")
         IMAGES_ROLL_PATH = os.path.join(base_path, roll_name)
 

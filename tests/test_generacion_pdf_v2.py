@@ -11,6 +11,10 @@ class TestGeneracionInformePDF(unittest.TestCase):
         cls.app = QApplication(sys.argv)
 
     def test_generar_pdf(self):
+        """
+        Verifica que se genera correctamente un archivo PDF de informe
+        a partir de una tabla simulada y rutas de imágenes ficticias.
+        """
         # Crear tabla simulada
         tabla = QTableWidget(2, 3)
         tabla.setHorizontalHeaderLabels(["Imagen", "Resultado", "Tipo defecto"])

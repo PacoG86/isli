@@ -11,6 +11,10 @@ CONFIG_PATH = "config.json"
 class TestConfiguracionRutaAlmacen(unittest.TestCase):
 
     def test_guardar_ruta_con_funcion_real(self):
+        """
+        Verifica que la función `guardar_config_ruta()` actualiza correctamente
+        el valor de 'base_folder' en config.json y que el valor anterior se restaura.
+        """
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             config_original = json.load(f)
 

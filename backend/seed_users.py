@@ -3,6 +3,11 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 
+# Script para insertar usuarios iniciales (semilla) en la base de datos.
+
+# Crea usuarios administrativos y operarios solo si no existen previamente.
+# Las contraseñas se hashean con bcrypt mediante passlib.
+
 load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

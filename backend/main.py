@@ -1,3 +1,7 @@
+"""Punto de entrada del backend ISLI.
+
+Configura la aplicación FastAPI, gestiona middleware, excepciones globales y enrutado de endpoints.
+"""
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -23,6 +27,11 @@ app.add_middleware(
 # Manejador global de excepciones
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    """
+    Manejador global de excepciones no capturadas.
+
+    Registra el error en el log y devuelve una respuesta genérica con código 500.
+    """
     logger.error(f"Error no manejado: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
@@ -36,4 +45,7 @@ app.include_router(admin_router)
 
 @app.get("/")
 def read_root():
+    """
+    Endpoint de prueba para comprobar que la API está en funcionamiento.
+    """
     return {"message": "API funcionando correctamente"}

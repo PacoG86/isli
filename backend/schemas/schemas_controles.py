@@ -5,12 +5,18 @@ from decimal import Decimal
 
 
 class DefectoMedido(BaseModel):
+    """
+    Información individual de un defecto medido en una imagen (tipo y área).
+    """
     area: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
     tipo_valor: Literal["min", "max"]
     tipo_defecto: str  # tipo de defecto como 'punto-negro', 'cascarilla', etc.
 
 
 class ImagenDefecto(BaseModel):
+    """
+    Imagen de inspección con clasificación OK/NOK y sus defectos detectados.
+    """
     nombre_archivo: str
     fecha_captura: datetime
     max_dim_defecto_medido: Annotated[Decimal, condecimal(ge=0, max_digits=6, decimal_places=2)]
@@ -20,6 +26,9 @@ class ImagenDefecto(BaseModel):
 
 
 class RolloControladoInput(BaseModel):
+    """
+    Datos de un rollo analizado en una sesión de control de calidad.
+    """
     ruta_local_rollo: str
     nombre_rollo: str
     num_defectos_rollo: int
@@ -29,6 +38,9 @@ class RolloControladoInput(BaseModel):
 
 
 class ControlCalidadInput(BaseModel):
+    """
+    Modelo completo de entrada para registrar un nuevo control de calidad.
+    """
     id_usuario: int
     umbral_tamano_defecto: Annotated[Decimal, condecimal(gt=0, max_digits=5, decimal_places=2)]
     num_defectos_tolerables_por_tamano: int
@@ -37,6 +49,9 @@ class ControlCalidadInput(BaseModel):
     imagenes: List[ImagenDefecto]
 
 class InformeControlInput(BaseModel):
+    """
+    Datos requeridos para registrar un informe PDF asociado a un control.
+    """
     id_control: int
     ruta_pdf: str
     generado_por: int
@@ -45,11 +60,17 @@ class InformeControlInput(BaseModel):
 
 
 class ActualizarNotasInput(BaseModel):
+    """
+    Modelo para actualizar las notas de un informe existente.
+    """
     id_control: int
     notas: str
 
 
 class SolicitudCambioPassword(BaseModel):
+    """
+    Solicitud de cambio de contraseña con nuevo password y motivo.
+    """
     email_usuario: EmailStr
     motivo: str = ""
     password_nueva: str

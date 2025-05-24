@@ -1,3 +1,7 @@
+"""Módulo de endpoints del backend para gestionar controles de calidad.
+
+Incluye creación de controles, consulta de histórico, informes, comentarios y solicitudes de cambio de contraseña.
+"""
 import os
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -10,6 +14,23 @@ router = APIRouter(prefix="/controles", tags=["Controles"])
 
 @router.post("/nuevo")
 def guardar_control_calidad(control: ControlCalidadInput):
+    """
+    Guarda un nuevo control de calidad en la base de datos.
+
+    Inserta registros en:
+    - CONTROL_CALIDAD
+    - ROLLO y ROLLO_CONTROLADO
+    - IMG_DEFECTO y DEFECTO_MEDIDO
+
+    Args:
+        control (ControlCalidadInput): Datos completos del control, imágenes y defectos.
+
+    Returns:
+        dict: Mensaje de éxito y ID del control creado.
+
+    Raises:
+        HTTPException: Si ocurre un error en la base de datos.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -100,6 +121,12 @@ def guardar_control_calidad(control: ControlCalidadInput):
 
 @router.get("/ultimo_id_control")
 def obtener_ultimo_id_control():
+    """
+    Obtiene el ID del último control registrado y sugiere el siguiente.
+
+    Returns:
+        dict: El siguiente ID potencial para el próximo control.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -122,6 +149,19 @@ def obtener_historico_controles(
     desde: Optional[datetime] = Query(None),
     hasta: Optional[datetime] = Query(None)
 ):
+    """
+    Devuelve el listado de controles de calidad registrados, con filtros opcionales.
+
+    Args:
+        max_defectos (int, opcional): Máximo número de defectos tolerables.
+        max_dim (float, opcional): Máximo umbral de tamaño de defecto.
+        usuario (str, opcional): Nombre parcial del usuario.
+        desde (datetime, opcional): Fecha mínima del control.
+        hasta (datetime, opcional): Fecha máxima del control.
+
+    Returns:
+        List[dict]: Controles que cumplen con los filtros aplicados.
+    """
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     try:
@@ -192,6 +232,15 @@ def obtener_lista_usuarios():
 
 @router.post("/informe/nuevo")
 def guardar_informe_control(informe: InformeControlInput):
+    """
+    Guarda un nuevo informe PDF generado para un control existente.
+
+    Args:
+        informe (InformeControlInput): Datos del informe (ruta, autor, notas...).
+
+    Returns:
+        dict: Confirmación de éxito.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -216,6 +265,18 @@ def guardar_informe_control(informe: InformeControlInput):
 
 @router.get("/rollo/orden_analisis")
 def obtener_orden_analisis(nombre_rollo: str):
+    """
+    Calcula el siguiente número de orden para un rollo controlado.
+
+    Args:
+        nombre_rollo (str): Nombre del rollo.
+
+    Returns:
+        dict: Número de orden de análisis siguiente.
+
+    Raises:
+        HTTPException: Si el rollo no existe.
+    """
     nombre_rollo = nombre_rollo.strip().lower()
     conn = get_connection()
     cursor = conn.cursor()
@@ -245,6 +306,15 @@ def obtener_orden_analisis(nombre_rollo: str):
 
 @router.get("/informe/existe")
 def verificar_existencia_informe(id_control: int):
+    """
+    Verifica si ya existe un informe PDF para un control específico.
+
+    Args:
+        id_control (int): ID del control.
+
+    Returns:
+        dict: Indica si existe el informe y su ruta.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -264,6 +334,12 @@ def verificar_existencia_informe(id_control: int):
 
 @router.post("/informe/actualizar_notas")
 def actualizar_notas_informe(datos: ActualizarNotasInput):
+    """
+    Actualiza el campo de notas de un informe existente.
+
+    Args:
+        datos (ActualizarNotasInput): Nuevas notas e ID del control asociado.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:
@@ -284,6 +360,20 @@ def actualizar_notas_informe(datos: ActualizarNotasInput):
 
 @router.post("/solicitud_password")
 def registrar_solicitud_cambio(solicitud: SolicitudCambioPassword):
+    """
+    Registra una solicitud de cambio de contraseña para un usuario.
+
+    Verifica si el correo existe, y si es así, guarda la solicitud como 'pendiente'.
+
+    Args:
+        solicitud (SolicitudCambioPassword): Correo, motivo, nueva contraseña y timestamp.
+
+    Returns:
+        dict: Mensaje de confirmación o error.
+
+    Raises:
+        HTTPException: Si el correo no está registrado o falla la inserción.
+    """
     conn = get_connection()
     cursor = conn.cursor()
     try:

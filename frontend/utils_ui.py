@@ -1,3 +1,11 @@
+"""Funciones utilitarias para la interfaz gráfica del sistema ISLI.
+
+Incluye lógica compartida entre ventanas PySide6 como:
+- Mostrar datos de usuario.
+- Configurar botones comunes según el rol.
+- Logout con mensaje de despedida.
+- Acceso al panel de control, manual de usuario o ID de control.
+"""
 from PySide6.QtWidgets import QMessageBox
 import webbrowser
 import json
@@ -9,6 +17,9 @@ import os
 CONFIG_FILE = "config.json"
 
 def guardar_config_ruta(ruta):
+    """
+    Guarda en disco la ruta base de los rollos en un archivo JSON de configuración.
+    """
     try:
         CONFIG_FILE = "config.json"
 
@@ -30,6 +41,7 @@ def guardar_config_ruta(ruta):
 
 
 def cargar_config_ruta():
+        """Carga la ruta base de los rollos desde el archivo config.json (si existe)."""
         try:
             with open(CONFIG_FILE, "r") as f:
                 return json.load(f).get("base_folder", "")
@@ -88,6 +100,10 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
 
 
 def logout(parent):
+    """
+    Muestra un diálogo de cierre de sesión con opciones de confirmación, 
+    incluyendo cierre, cancelación o inicio de nueva sesión.
+    """
     from main import LoginWindow
 
     msg_box = QMessageBox(parent)
@@ -127,8 +143,8 @@ def logout(parent):
         parent.login_window.show()
 
 
-
 def hay_conexion_internet(url="http://www.google.com", timeout=3):
+    """Verifica si hay conexión a internet intentando abrir una URL."""
     try:
         urllib.request.urlopen(url, timeout=timeout)
         return True

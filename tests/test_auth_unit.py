@@ -9,16 +9,19 @@ import os
 class TestAuthUtils(unittest.TestCase):
 
     def test_hash_y_verificacion_ok(self):
+        """Comprueba que una contraseña hasheada se verifica correctamente."""
         contrasena = "prueba123"
         hash_generado = hashear_contrasena(contrasena)
         self.assertTrue(verificar_contrasena(contrasena, hash_generado))
 
     def test_hash_y_verificacion_fallo(self):
+        """Verifica que una contraseña incorrecta no pasa la validación."""
         contrasena = "prueba123"
         hash_generado = hashear_contrasena(contrasena)
         self.assertFalse(verificar_contrasena("otrovalor", hash_generado))
 
     def test_creacion_token_jwt(self):
+        """Verifica que el token JWT generado contiene los datos correctos."""
         data = {"sub": "12", "rol": "admin", "nombre": "Paco"}
         token = crear_token(data)
         decoded = jwt.decode(token, os.getenv("SECRET_KEY", "dam202324!"), algorithms=["HS256"])

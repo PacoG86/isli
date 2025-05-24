@@ -1,3 +1,7 @@
+"""Punto de entrada de la interfaz gráfica ISLI (frontend).
+
+Lanza la ventana de login que autentica al usuario y da acceso al sistema.
+"""
 import sys
 import requests
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
@@ -5,13 +9,21 @@ from UI.login_window import Ui_Form
 from parpadeo import MainWindow 
 from solicitud_password_window import SolicitudPasswordWindow
 
-
 API_URL = "http://localhost:8000"
 BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
 #BASE_FOLDER = r"/Users/pacomunozgago/Downloads/arboles" (pruebas con plataforma linux)
 
 class LoginWindow(QMainWindow):
+    """
+    Ventana de inicio de sesión del sistema ISLI.
+
+    Permite al usuario ingresar su email y contraseña para autenticarse contra el backend.
+    En caso de éxito, abre el menú principal.
+    """
     def __init__(self):
+        """
+        Inicializa la ventana de login y conecta los botones de acción.
+        """
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
@@ -20,6 +32,12 @@ class LoginWindow(QMainWindow):
         self.ui.pushButton_login_2.clicked.connect(self.abrir_ventana_password)
 
     def login(self):
+        """
+        Envía los datos de login al backend y procesa la respuesta.
+
+        Si el login es correcto, se abre el menú principal.
+        Si falla, se muestra un mensaje de error.
+        """
         email = self.ui.lineEdit.text().strip()
         password = self.ui.lineEdit_3.text().strip()
 
@@ -43,6 +61,12 @@ class LoginWindow(QMainWindow):
             QMessageBox.critical(self, "Error de conexión", str(e))
 
     def abrir_menu_principal(self, result):
+        """
+        Crea e inicia la ventana de menú principal tras un login exitoso.
+
+        Args:
+            result (dict): Diccionario con los datos del usuario autenticado.
+        """
         self.hide()
         id_usuario = result.get("id_usuario", 1)
         nombre = result.get("nombre_usuario", "Desconocido")
@@ -52,6 +76,7 @@ class LoginWindow(QMainWindow):
         self.menu_window.show()
 
     def abrir_ventana_password(self):
+        """Abre la ventana para solicitar un cambio de contraseña."""
         self.solicitud_window = SolicitudPasswordWindow(self)
         self.solicitud_window.exec()
 

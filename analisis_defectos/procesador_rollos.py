@@ -7,16 +7,28 @@ from analisis_defectos.blackspots_segmentation import BlackSpotsSegmentation
 
 def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_test_black_dots.json", area_umbral: float = 1.0, pixel_to_mm: float = 0.13379797308):
     """
-    Procesa un rollo de imágenes, generando dos carpetas:
-    - 'originales': imágenes originales movidas desde el rollo.
-    - 'procesado': imágenes con medidas e inspección visual.
+    Procesa un rollo de imágenes industriales detectando defectos visuales y generando resultados para inspección.
+
+    Esta función analiza las imágenes asociadas a un rollo específico, segmenta posibles defectos (como puntos negros
+    o pegotes de cascarilla) y genera archivos procesados incluyendo:
+    - Imágenes anotadas con visualizaciones de defectos.
+    - Archivos .txt con medidas de cada defecto en mm².
+    - Archivos .json con los tipos de defectos encontrados.
+
+    Además, mueve las imágenes originales a una carpeta separada.
 
     Args:
-        base_path (str): Ruta raíz donde se encuentra el JSON y las carpetas de rollos.
+        base_path (str): Ruta raíz donde se encuentran el archivo JSON y las carpetas de rollos.
         rollo (str): Nombre de la carpeta del rollo a procesar.
-        json_filename (str): Nombre del archivo JSON de etiquetas.
-        area_umbral (float): Área máxima tolerable para un defecto (mm2).
-        pixel_to_mm (float): Conversión de píxeles a milímetros (no cambiar).
+        json_filename (str): Nombre del archivo JSON con las etiquetas (por defecto, 'formaspack_test_black_dots.json').
+        area_umbral (float): Área máxima tolerable para un defecto (en milímetros cuadrados).
+        pixel_to_mm (float): Factor de conversión de píxeles a milímetros (calibrado para la cámara).
+
+    Side Effects:
+        - Crea carpetas 'procesado' y 'originales' dentro del rollo.
+        - Genera archivos visuales, de medidas (.txt) y etiquetas (.json) en 'procesado'.
+        - Mueve imágenes originales a 'originales'.
+
     """
     ruta_json = os.path.join(base_path, json_filename)
     ruta_rollo = os.path.join(base_path, rollo)

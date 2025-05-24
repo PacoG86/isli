@@ -1,3 +1,8 @@
+"""Módulo de autenticación del backend ISLI.
+
+Gestiona el login de usuarios, verificación de contraseñas y generación de tokens JWT.
+Usado por el endpoint /login.
+"""
 from fastapi import APIRouter, HTTPException
 from db import get_connection
 from jose import jwt
@@ -17,8 +22,14 @@ login_router = APIRouter()
 
 def verificar_contrasena(plain_password, hashed_password):
     """
-    Verifica si la contraseña en texto plano coincide con el hash almacenado.
-    Maneja automáticamente la conversión entre strings y bytes.
+    Verifica si una contraseña en texto plano coincide con un hash bcrypt.
+
+    Args:
+        plain_password (str or bytes): Contraseña proporcionada por el usuario.
+        hashed_password (str or bytes): Contraseña almacenada en la base de datos.
+
+    Returns:
+        bool: True si coinciden, False si no o si ocurre un error.
     """
     try:
         # Convertir contraseña a bytes si es string
@@ -39,6 +50,7 @@ def hashear_contrasena(plain_password):
     """
     Genera un hash para una contraseña en texto plano.
     Útil para crear nuevos usuarios o actualizar contraseñas.
+    Usa bcrypt con semilla aleatoria. Se recomienda para creación y actualización de usuarios.
     """
     if isinstance(plain_password, str):
         plain_password = plain_password.encode('utf-8')
@@ -47,7 +59,16 @@ def hashear_contrasena(plain_password):
 
 def crear_token(data: dict):
     """
-    Crea un token JWT con los datos proporcionados, eliminando acentos o caracteres no ASCII.
+    Genera un token JWT a partir de un diccionario de datos.
+
+    - Elimina acentos y normaliza strings antes de codificar.
+    - Añade una fecha de expiración automática.
+
+    Args:
+        data (dict): Diccionario con los datos del usuario (ej. ID, rol, nombre...).
+
+    Returns:
+        str: Token JWT firmado.
     """
     to_encode = {}
 
@@ -65,7 +86,20 @@ def crear_token(data: dict):
 @login_router.post("/login")
 def login(usuario: dict):
     """
-    Endpoint para autenticar usuarios y generar tokens JWT.
+    Endpoint de autenticación de usuarios.
+
+    - Verifica que el email exista y que el usuario esté activo.
+    - Comprueba la contraseña usando bcrypt.
+    - Si es válido, devuelve un token JWT con los datos clave del usuario.
+
+    Args:
+        usuario (dict): Diccionario con claves 'correo' y 'contrasenia'.
+
+    Returns:
+        dict: Información del usuario autenticado y token de acceso.
+
+    Raises:
+        HTTPException: Si las credenciales no son válidas o el usuario está inactivo.
     """
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)

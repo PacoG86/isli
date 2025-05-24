@@ -1,3 +1,8 @@
+"""Ventana principal del sistema ISLI para el control de calidad de rollos industriales.
+
+Permite al operario seleccionar rollos, ejecutar el análisis por visión artificial,
+visualizar resultados procesados, registrar datos en backend y generar informes PDF.
+"""
 import sys
 import os
 import shutil
@@ -22,7 +27,12 @@ from utils_informes import generar_pdf_completo, guardar_registro_informe
 from analisis_defectos.procesador_rollos import analizar_rollo
 from utils_ui import guardar_config_ruta
 
+
 class HighQualityImageView(QGraphicsView):
+    """
+    Visor de imágenes personalizado con capacidad para mostrar mensajes
+    centrados sobre un fondo coloreado, además de imágenes procesadas con alta calidad.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.scene = QGraphicsScene(self)
@@ -119,6 +129,12 @@ class HighQualityImageView(QGraphicsView):
 
 
 class MainWindow(QMainWindow):
+    """
+    Ventana principal del sistema ISLI.
+
+    Controla todo el flujo de control de calidad: selección de rollo, análisis de imágenes,
+    visualización gráfica, tabla de resultados y generación de informes.
+    """
     def __init__(self, base_folder, nombre_usuario, rol_usuario, token_jwt, id_usuario):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -172,7 +188,6 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
         self.ui.pushButton_gAlmacen.clicked.connect(self.seleccionar_ruta_almacen)
 
-    
     def abrir_ventana_historico(self):
         progress = QProgressDialog("Cargando historial...", None, 0, 0, self)
         progress.setWindowTitle("ISLI - Controles")
@@ -317,10 +332,8 @@ class MainWindow(QMainWindow):
         self.ui.tableWidget.setItem(fila, 1, QTableWidgetItem(tipos_str))
         self.ui.tableWidget.setItem(fila, 2, QTableWidgetItem(archivo))
 
-
         item_dim = QTableWidgetItem(f"{dim_defecto:.2f}")
         item_result = QTableWidgetItem(result_analisis)
-
 
         # Estilo condicional: rojo para NOK, verde para OK
         if result_analisis == "nok":
@@ -338,7 +351,7 @@ class MainWindow(QMainWindow):
         # Desplazarse a la última fila
         self.ui.tableWidget.scrollToBottom()
 
-        
+
     def parpadear_boton(self):
         """Controla el parpadeo del botón de iniciar control"""
         if self.blink_state:
@@ -348,6 +361,12 @@ class MainWindow(QMainWindow):
         self.blink_state = not self.blink_state
 
     def iniciar_control_calidad(self):
+        """
+        Ejecuta el análisis de defectos sobre las imágenes del rollo seleccionado.
+
+        Procesa las imágenes mediante la función `analizar_rollo`,
+        carga las imágenes originales/procesadas, y lanza la visualización secuencial.
+        """
         if self.timer and self.timer.isActive():
             self.interrumpir_control()
             return
@@ -452,7 +471,6 @@ class MainWindow(QMainWindow):
                     print(f"Error al restaurar {carpeta}: {e}")
 
 
-    
     def confirmar_interrumpir(self):
         """Muestra diálogo de confirmación antes de interrumpir el control"""
         if not self.timer or not self.timer.isActive():
@@ -599,6 +617,14 @@ class MainWindow(QMainWindow):
 
 
     def guardar_resultados(self):
+        """
+        Compila los resultados mostrados en la tabla y los envía al backend.
+
+        Incluye:
+        - metadatos del control
+        - lista de imágenes y defectos
+        - cálculo del resultado global (ok/nok)
+        """
         if not self.analisis_completado:
             QMessageBox.warning(self, "Advertencia", "No se ha completado ningún análisis para guardar.")
             return
@@ -660,7 +686,6 @@ class MainWindow(QMainWindow):
                 if clasificacion == "nok":
                     defectos_intolerables += 1
 
-
                 data["imagenes"].append({
                     "nombre_archivo": nombre_archivo,
                     "fecha_captura": timestamp_actual,
@@ -701,6 +726,12 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Error inesperado", str(e))
 
     def generar_informe_pdf(self):
+        """
+        Genera un informe PDF con los resultados del análisis actual.
+
+        El informe se guarda en la carpeta 'historico' del escritorio y
+        se registra en la base de datos mediante una llamada al backend.
+        """
         if not self.analisis_completado:
             QMessageBox.warning(self, "Advertencia", "Debe finalizar un análisis antes de generar el informe.")
             return
@@ -745,9 +776,13 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # limpiar_pantalla
         self.ui.pushButton_4.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # interrumpir_control  # Deshabilitado por defecto
 
-    
 
     def mostrar_analisis_completado(self, mensaje="Análisis completado", color="#2E7D32"):
+        """
+        Finaliza el flujo de análisis, muestra resumen global y activa la opción de generar informe.
+
+        Añade una fila resumen con el resultado global basado en el mayor defecto detectado.
+        """
         if self.analisis_completado:
             return
 
@@ -824,8 +859,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_report.setEnabled(True)
 
     
-    
     def seleccionar_ruta_almacen(self):
+        """Permite al usuario cambiar la carpeta raíz donde se almacenan los rollos."""
         nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta raíz de los rollos")
         if nueva_ruta:
             self.base_folder = nueva_ruta

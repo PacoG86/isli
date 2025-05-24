@@ -7,6 +7,10 @@ BASE_URL = "http://127.0.0.1:8000"
 class TestGuardarResultados(unittest.TestCase):
 
     def test_guardar_control_calidad(self):
+        """
+        Verifica que el endpoint /controles/nuevo guarda correctamente un control
+        de calidad cuando se le envía un payload válido.
+        """
         payload = {
             "id_usuario": 1,
             "umbral_tamano_defecto": "0.50",

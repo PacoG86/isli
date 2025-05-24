@@ -6,6 +6,10 @@ BASE_URL = "http://127.0.0.1:8000"
 class TestHistoricoControles(unittest.TestCase):
 
     def test_get_historico(self):
+        """
+        Verifica que la ruta /controles/historico responde correctamente 
+        y devuelve una lista, incluso si los filtros no son estrictos.
+        """
         params = {
             "usuario": 1  # Puedes ajustar según el ID real
         }
@@ -14,6 +18,10 @@ class TestHistoricoControles(unittest.TestCase):
         self.assertIsInstance(response.json(), list)
 
     def test_actualizar_notas(self):
+        """
+        Verifica que la ruta /controles/informe/actualizar_notas 
+        responde correctamente con un ID de control válido o inválido.
+        """
         payload = {
             "id_control": 9,  # Ajusta si necesitas uno existente
             "notas": "Comentario de prueba actualizado automáticamente"

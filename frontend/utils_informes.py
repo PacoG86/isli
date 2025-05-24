@@ -1,3 +1,10 @@
+"""Utilidades para generación, visualización y registro de informes PDF en el sistema ISLI.
+
+Incluye funciones para:
+- Crear el informe PDF con resultados del análisis visual.
+- Abrir el informe una vez generado.
+- Registrar su existencia en la base de datos vía backend.
+"""
 import os
 import sys
 import requests
@@ -5,8 +12,6 @@ from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from PySide6.QtWidgets import QMessageBox
-
-
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 import os
@@ -26,6 +31,12 @@ def generar_pdf_completo(
     logo_path=None,
     parent_widget=None
 ):
+    """
+    Genera un informe PDF completo con datos del análisis y visores de imágenes.
+
+    El informe incluye encabezado, resumen del análisis, y hasta 6 imágenes procesadas.
+    Se guarda en la ruta especificada y se abre automáticamente tras generarse.
+    """
     try:
         c = canvas.Canvas(ruta_destino, pagesize=A4)
         width, height = A4
@@ -139,6 +150,7 @@ def abrir_pdf(ruta_pdf):
 def guardar_registro_informe(id_control, ruta_pdf, generado_por):
     """
     Envía al backend la información del informe generado para registrar en la tabla INFORME_CONTROL.
+    Devuelve True si se registró correctamente, False en caso de error.
     """
     payload = {
         "id_control": id_control,
