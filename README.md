@@ -555,7 +555,7 @@ ISLI/
 ├── frontend/ # Interfaz gráfica (PySide6)
 │ ├── UI/ # Archivos .ui diseñados en Qt Designer
 │ ├── tests/ # Scripts de prueba para conexiones
-│ ├── parpadeo.py # Ventana principal (control de calidad)
+│ ├── control_calidad_menu_principal.py # Ventana principal
 │ ├── historico_controles_app.py # Ventana de histórico
 │ └── main.py # Arranque principal de la aplicación
 │

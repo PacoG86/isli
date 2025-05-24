@@ -149,7 +149,7 @@ class HistoricoControlesWindow(QWidget):
 
     def volver_a_menu_principal(self):
         """Cierra la ventana actual y regresa al menú principal."""
-        from parpadeo import MainWindow
+        from frontend.control_calidad_menu_principal import MainWindow
         from main import BASE_FOLDER  # Ojo! disponible en config.json
         self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
         self.menu_window.show()

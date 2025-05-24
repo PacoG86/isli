@@ -6,7 +6,7 @@ import sys
 import requests
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from UI.login_window import Ui_Form
-from parpadeo import MainWindow 
+from control_calidad_menu_principal import MainWindow
 from solicitud_password_window import SolicitudPasswordWindow
 
 API_URL = "http://localhost:8000"

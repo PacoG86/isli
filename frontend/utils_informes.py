@@ -12,12 +12,6 @@ from datetime import datetime
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from PySide6.QtWidgets import QMessageBox
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-import os
-import sys
-from datetime import datetime
-from PySide6.QtWidgets import QMessageBox
 
 def generar_pdf_completo(
     id_control,
