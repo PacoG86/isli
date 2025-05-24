@@ -9,11 +9,25 @@ import os
 CONFIG_FILE = "config.json"
 
 def guardar_config_ruta(ruta):
-        try:
-            with open(CONFIG_FILE, "w") as f:
-                json.dump({"base_folder": ruta}, f)
-        except Exception as e:
-            print(f"Error al guardar config: {e}")
+    try:
+        CONFIG_FILE = "config.json"
+
+        # Leer configuración actual si existe
+        if os.path.exists(CONFIG_FILE):
+            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                config = json.load(f)
+        else:
+            config = {}
+
+        # Modificar solo la clave deseada
+        config["base_folder"] = ruta
+
+        # Guardar la nueva configuración
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4)
+    except Exception as e:
+        print(f"Error al guardar config: {e}")
+
 
 def cargar_config_ruta():
         try:
