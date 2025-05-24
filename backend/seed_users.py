@@ -15,8 +15,6 @@ conexion = mysql.connector.connect(
     port=int(os.getenv("DB_PORT", 3306))
 )
 
-#cursor = conexion.cursor()
-#cursor.execute("DELETE FROM usuario")
 usuarios = [
     ("Pedro García", "op_pedrog@isli.com", "1234", "administrador"),
     ("Pepa Gutiérrez", "admin2@isli.com", "abcd", "administrador"),
@@ -28,7 +26,7 @@ cursor = conexion.cursor()
 for nombre, email, raw_pass, rol in usuarios:
     cursor.execute("SELECT * FROM usuario WHERE email_usuario = %s", (email,))
     if cursor.fetchone():
-        print(f"⚠️ Usuario ya existe: {email} → no insertado")
+        print(f"Usuario ya existe: {email} → no insertado")
         continue
 
     hashed = pwd_context.hash(raw_pass)
@@ -36,10 +34,10 @@ for nombre, email, raw_pass, rol in usuarios:
         INSERT INTO usuario (nombre_usuario, email_usuario, password, rol, activo)
         VALUES (%s, %s, %s, %s, 1)
     """, (nombre, email, hashed, rol))
-    print(f"✅ Insertado: {email} ({rol})")
+    print(f"Insertado: {email} ({rol})")
 
 conexion.commit()
 cursor.close()
 conexion.close()
 
-print("\n✅ Inserción finalizada.")
+print("\n Inserción finalizada.")

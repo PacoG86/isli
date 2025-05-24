@@ -1,5 +1,3 @@
-# archivo: analisis_defectos/procesador_rollos.py
-
 import os
 import shutil
 import json
@@ -28,7 +26,7 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
     os.makedirs(carpeta_procesado, exist_ok=True)
     os.makedirs(carpeta_originales, exist_ok=True)
 
-    print("🔍 Analizando imágenes en:", ruta_rollo)
+    print("Analizando imágenes en:", ruta_rollo)
 
     with open(ruta_json, "r", encoding="utf-8") as f:
         etiquetas = json.load(f)
@@ -61,7 +59,7 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
             y2 = min(imagen.shape[0], y1 + crop["rect"]["h"])
 
             subimg = imagen[y1:y2, x1:x2].copy()
-            print(f"🎯 Aplicando umbral dinámico de usuario: {area_umbral} mm²")
+            print(f"Aplicando umbral dinámico de usuario: {area_umbral} mm²")
             blackspots, _ = procesador.blackspot_segmentation_and_classification_by_size(
                 subimg, area_umbral, pixel_to_mm, return_visualization=False)
 
@@ -108,4 +106,4 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
         # Mover imagen original
         shutil.move(ruta_img, os.path.join(carpeta_originales, nombre_img))
 
-    print("✅ Análisis finalizado para:", rollo)
+    print("Análisis finalizado para:", rollo)

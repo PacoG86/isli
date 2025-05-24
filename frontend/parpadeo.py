@@ -1,7 +1,6 @@
 import sys
 import os
 import shutil
-import re
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,12 +16,11 @@ from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
 from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control
 from historico_controles_app import HistoricoControlesWindow
 from utils_informes import generar_pdf_completo, guardar_registro_informe
 from analisis_defectos.procesador_rollos import analizar_rollo
-from utils_ui import guardar_config_ruta, cargar_config_ruta
+from utils_ui import guardar_config_ruta
 
 class HighQualityImageView(QGraphicsView):
     def __init__(self, parent=None):
@@ -212,7 +210,7 @@ class MainWindow(QMainWindow):
             max_imgs = self.ui.spinBox.value()
             if max_imgs <= 0:
                 self.ui.comboBox.addItem("-- No hay rollos que cumplan con el umbral indicado --")
-                print("🔢 El valor del spinBox es 0, no se cargarán carpetas.")
+                print("El valor del spinBox es 0, no se cargarán carpetas.")
                 return
             
             self.ui.comboBox.addItem("-- Seleccione un rollo --")
@@ -273,10 +271,10 @@ class MainWindow(QMainWindow):
                        if os.path.isfile(os.path.join(folder, f)) and f.lower().endswith(extensiones)]
             
             if not archivos:
-                print(f"⚠️ No se encontraron imágenes en la carpeta: {folder}")
+                print(f"No se encontraron imágenes en la carpeta: {folder}")
                 QMessageBox.information(self, "Información", f"No se encontraron imágenes en la carpeta: {os.path.basename(folder)}")
             else:
-                print(f"📷 Se encontraron {len(archivos)} imágenes para mostrar")
+                print(f"Se encontraron {len(archivos)} imágenes para mostrar")
                 
             return archivos
         except Exception as e:
@@ -369,7 +367,7 @@ class MainWindow(QMainWindow):
         try:
             analizar_rollo(base_path=self.base_folder, rollo=seleccion, area_umbral=umbral_usuario)
         except Exception as e:
-            print(f"❌ Error al analizar el rollo: {e}")
+            print(f"Error al analizar el rollo: {e}")
             QMessageBox.critical(self, "Error", f"Ocurrió un error al analizar el rollo seleccionado:\n{e}")
             return
 
@@ -428,7 +426,7 @@ class MainWindow(QMainWindow):
         self.ui.spinBox.setValue(0)
         self.ui.doubleSpinBox.setValue(0.00)
 
-        # 🔁 Revertir todas las carpetas de rollos al estado original
+        # Revertir todas las carpetas de rollos al estado original
         for carpeta in os.listdir(self.base_folder):
             ruta_rollo = os.path.join(self.base_folder, carpeta)
             if not os.path.isdir(ruta_rollo):
@@ -451,7 +449,7 @@ class MainWindow(QMainWindow):
                     shutil.rmtree(ruta_procesado)
                     print(f"♻️ Rollo restaurado: {carpeta}")
                 except Exception as e:
-                    print(f"❌ Error al restaurar {carpeta}: {e}")
+                    print(f"Error al restaurar {carpeta}: {e}")
 
 
     
@@ -490,7 +488,7 @@ class MainWindow(QMainWindow):
         """Detiene el proceso de control de calidad"""
         if self.timer and self.timer.isActive():
             self.timer.stop()
-            print("⏹️ Control de calidad interrumpido")
+            print("Control de calidad interrumpido")
             
             # Detener parpadeo del botón y restaurar estilo original
             self.blink_timer.stop()
@@ -533,7 +531,7 @@ class MainWindow(QMainWindow):
         self.ui.label_contador.setText(f"📊 {self.index + 1} / {len(self.images)}")
         self.agregar_registro_a_tabla(ruta_original, ruta_procesada)
 
-        print(f"🔄 Mostrando imagen: {nombre} ({self.index + 1}/{len(self.images)})")
+        print(f"Mostrando imagen: {nombre} ({self.index + 1}/{len(self.images)})")
         self.index += 1
 
 
@@ -553,7 +551,7 @@ class MainWindow(QMainWindow):
                     c.drawString(250, y - 60, os.path.basename(img_path))
                     y -= 120
                 except Exception as e:
-                    print(f"❌ Error al insertar imagen en PDF: {e}")
+                    print(f"Error al insertar imagen en PDF: {e}")
 
 
     def leer_defectos_txt(self, ruta_imagen_procesada):
@@ -582,7 +580,7 @@ class MainWindow(QMainWindow):
 
             return min(areas), max(areas), areas
         except Exception as e:
-            print(f"❌ Error al leer defectos desde TXT: {e}")
+            print(f"Error al leer defectos desde TXT: {e}")
             return None, None, []
         
     def leer_tipos_defecto_json(self, ruta_imagen_procesada):
@@ -596,7 +594,7 @@ class MainWindow(QMainWindow):
                 data = json.load(f)
                 return data.get("tipos", [])
         except Exception as e:
-            print(f"❌ Error leyendo tipos de defecto desde JSON: {e}")
+            print(f"Error leyendo tipos de defecto desde JSON: {e}")
             return []
 
 
@@ -613,7 +611,7 @@ class MainWindow(QMainWindow):
             timestamp_actual = datetime.now().isoformat()
             ruta_rollo = self.folder  # Carpeta actual seleccionada
             nombre_rollo = os.path.basename(ruta_rollo).strip().lower()
-            print(f"📤 nombre_rollo enviado desde frontend: '{nombre_rollo}'")
+            print(f"nombre_rollo enviado desde frontend: '{nombre_rollo}'")
             orden_analisis = 1
             print(f"Ruta enviada como rollo: {ruta_rollo}")
             try:
@@ -680,11 +678,11 @@ class MainWindow(QMainWindow):
             data["rollo"]["resultado_rollo"] = "nok" if defectos_intolerables > 0 else "ok"
 
             # Enviar al backend
-            print(f"📤 Payload enviado al backend:\n{json.dumps(data, indent=2)}")
+            print(f"Payload enviado al backend:\n{json.dumps(data, indent=2)}")
             response = requests.post("http://localhost:8000/controles/nuevo", json=data)
 
             if response.status_code == 200:
-                QMessageBox.information(self, "Éxito", "✅ Resultados guardados correctamente.")
+                QMessageBox.information(self, "Éxito", "Resultados guardados correctamente.")
 
                 # Actualizar id_control en interfaz
                 respuesta = response.json()
@@ -693,11 +691,11 @@ class MainWindow(QMainWindow):
                     self.id_control_confirmado = nuevo_id
                     self.ui.label_11.setText(f"{int(nuevo_id) + 1:05d}")
                 else:
-                    print("⚠️ No se recibió un id_control válido desde el backend.")
+                    print("No se recibió un id_control válido desde el backend.")
                     self.ui.label_11.setText("-----")
             else:
                 error_msg = response.json().get("detail", "Error desconocido")
-                QMessageBox.critical(self, "Error", f"❌ Error al guardar: {error_msg}")
+                QMessageBox.critical(self, "Error", f"Error al guardar: {error_msg}")
 
         except Exception as e:
             QMessageBox.critical(self, "Error inesperado", str(e))
@@ -734,9 +732,9 @@ class MainWindow(QMainWindow):
 
         # Registrar el informe en la base de datos
         guardar_registro_informe(
-            id_control=int(id_control),           # asegúrate que sea int
+            id_control=int(id_control), # asegúrarse de que sea int
             ruta_pdf=ruta_hist_pdf,
-            generado_por=self.id_usuario                        # o usa self.id_usuario si lo tienes
+            generado_por=self.id_usuario
         )
 
     def setupUiConnections(self):
@@ -753,7 +751,7 @@ class MainWindow(QMainWindow):
         if self.analisis_completado:
             return
 
-        print("✅ Análisis de imágenes completado")
+        print("Análisis de imágenes completado")
 
         if self.timer and self.timer.isActive():
             self.timer.stop()
@@ -783,7 +781,7 @@ class MainWindow(QMainWindow):
                             valor = float(match.group(1))
                             mayor_defecto = max(mayor_defecto, valor)
                         except ValueError:
-                            print(f"⚠️ No se pudo convertir '{item.text()}' a float.")
+                            print(f"No se pudo convertir '{item.text()}' a float.")
 
             umbral_usuario = float(self.ui.doubleSpinBox.value())
             resultado_global = "nok" if mayor_defecto > umbral_usuario else "ok"
@@ -804,7 +802,7 @@ class MainWindow(QMainWindow):
             item_fecha = QTableWidgetItem(timestamp)
             item_tipos = QTableWidgetItem(tipos_str)
             item_total = QTableWidgetItem(f"Total: {len(self.images)} imágenes")
-            item_limite = QTableWidgetItem(f"{mayor_defecto:.2f}")  # ⚠️ sin texto decorativo
+            item_limite = QTableWidgetItem(f"{mayor_defecto:.2f}")
             item_resultado = QTableWidgetItem(resultado_global)
 
             items = [item_fecha, item_tipos, item_total, item_limite, item_resultado]
@@ -836,7 +834,7 @@ class MainWindow(QMainWindow):
             self.configurar_combobox()
 
 
-# ⚠️ Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
+# Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).
 # Se conserva aquí solo como referencia:
 #if __name__ == "__main__":

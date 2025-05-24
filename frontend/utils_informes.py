@@ -108,7 +108,7 @@ def generar_pdf_completo(
                 c.drawString(250, y - 60, f"{idx+1}. {os.path.basename(img_path)}")
                 y -= 120
             except Exception as e:
-                print(f"❌ Error al insertar imagen en PDF: {e}")
+                print(f"Error al insertar imagen en PDF: {e}")
 
         c.save()
 
@@ -118,7 +118,7 @@ def generar_pdf_completo(
         abrir_pdf(ruta_destino)
 
     except Exception as e:
-        print(f"❌ Error al generar el PDF: {e}")
+        print(f"Error al generar el PDF: {e}")
         if parent_widget:
             QMessageBox.critical(parent_widget, "Error al generar informe", f"Error al crear el informe:\n\n{str(e)}")
 
@@ -133,7 +133,7 @@ def abrir_pdf(ruta_pdf):
         elif os.name == "posix":
             subprocess.call(("xdg-open", ruta_pdf))
     except Exception as e:
-        print(f"❌ No se pudo abrir el PDF: {e}")
+        print(f"No se pudo abrir el PDF: {e}")
 
 
 def guardar_registro_informe(id_control, ruta_pdf, generado_por):
@@ -151,11 +151,11 @@ def guardar_registro_informe(id_control, ruta_pdf, generado_por):
     try:
         response = requests.post("http://localhost:8000/controles/informe/nuevo", json=payload)
         if response.status_code == 200:
-            print("✅ Informe registrado correctamente.")
+            print("Informe registrado correctamente.")
             return True
         else:
-            print(f"❌ Error al registrar informe: {response.status_code} - {response.text}")
+            print(f"Error al registrar informe: {response.status_code} - {response.text}")
             return False
     except Exception as e:
-        print(f"❌ Excepción al registrar informe: {e}")
+        print(f"Excepción al registrar informe: {e}")
         return False

@@ -1,7 +1,6 @@
-import sys
 import requests
 from PySide6.QtWidgets import QDialog, QMessageBox
-from UI.solicitud_password_dialog import Ui_Dialog  # Asegúrate de que el archivo generado se llama así
+from UI.solicitud_password_dialog import Ui_Dialog
 from datetime import datetime
 
 
@@ -12,7 +11,7 @@ class SolicitudPasswordWindow(QDialog):
         self.ui.setupUi(self)
         self.setWindowTitle("Solicitud de cambio de contraseña")
 
-        # Conectar botones
+        # Conectamos botones
         self.ui.pushButton_enviar.clicked.connect(self.enviar_solicitud)
         self.ui.pushButton_cancelar.clicked.connect(self.close)
 

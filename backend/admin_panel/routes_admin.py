@@ -32,15 +32,15 @@ def mostrar_panel_admin(request: Request, token: str = Query(None)):
     try:
         token = token.strip()  # eliminar espacios invisibles
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        print("✅ Payload decodificado:", payload)
+        print("Payload decodificado:", payload)
         rol = payload.get("rol")
         if rol != "administrador":
             raise HTTPException(status_code=403, detail="Acceso restringido a administradores")
     except JWTError as e:
-        print(f"❌ Error al decodificar token: {e}")
+        print(f"Error al decodificar token: {e}")
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
 
-    # 🔹 Obtener usuarios desde la base de datos
+    # Obtener usuarios desde la base de datos
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     # Obtener usuarios y verificar si tienen solicitudes pendientes
@@ -92,7 +92,7 @@ async def crear_usuario_desde_panel(
         # Verificar si ya existe ese email
         cursor.execute("SELECT * FROM usuario WHERE email_usuario = %s", (email_usuario,))
         if cursor.fetchone():
-            print(f"⚠️ Usuario ya existe: {email_usuario}")
+            print(f"Usuario ya existe: {email_usuario}")
         else:
             hashed = pwd_context.hash(password)
             cursor.execute("""
@@ -100,9 +100,9 @@ async def crear_usuario_desde_panel(
                 VALUES (%s, %s, %s, %s, 1)
             """, (nombre_usuario, email_usuario, hashed, rol))
             conn.commit()
-            print(f"✅ Usuario creado desde el panel: {email_usuario} ({rol})")
+            print(f"Usuario creado desde el panel: {email_usuario} ({rol})")
     except Exception as e:
-        print(f"❌ Error al crear usuario: {e}")
+        print(f"Error al crear usuario: {e}")
     finally:
         cursor.close()
         conn.close()
@@ -195,10 +195,10 @@ async def reiniciar_contrasena_usuario(email_usuario: str = Form(...), token: st
         """, (id_solicitud,))
 
         conn.commit()
-        print(f"🔐 Contraseña reiniciada para: {email_usuario}")
+        print(f"Contraseña reiniciada para: {email_usuario}")
     except Exception as e:
         conn.rollback()
-        print(f"❌ Error al reiniciar contraseña: {e}")
+        print(f"Error al reiniciar contraseña: {e}")
         raise HTTPException(status_code=500, detail="Error al reiniciar la contraseña")
     finally:
         cursor.close()

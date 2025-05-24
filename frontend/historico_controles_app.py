@@ -1,8 +1,5 @@
-# archivo: frontend/historico_controles_app.py
-
-import sys
 import requests
-from PySide6.QtWidgets import QApplication, QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QPushButton
+from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem
 from PySide6.QtCore import QDate, QTimer, Qt
 from datetime import datetime, time
 from UI.historico_controles import Ui_Form_historico
@@ -132,10 +129,10 @@ class HistoricoControlesWindow(QWidget):
         except Exception as e:
             print("Error al cargar usuarios:", str(e))
 
-    
+
     def volver_a_menu_principal(self):
         from parpadeo import MainWindow
-        from main import BASE_FOLDER  # Asegúrate de tener esta variable disponible o pásala por parámetro
+        from main import BASE_FOLDER  # Ojo! disponible en config.json
         self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
         self.menu_window.show()
         self.hide()
@@ -162,7 +159,6 @@ class HistoricoControlesWindow(QWidget):
                     from utils_informes import abrir_pdf
                     abrir_pdf(ruta_pdf)
                 else:
-                    # Ahora no se genera informe: solo mensaje
                     QMessageBox.information(
                         self,
                         "Informe no disponible",
@@ -188,18 +184,16 @@ class HistoricoControlesWindow(QWidget):
                     "id_control": id_control,
                     "notas": notas
                 }
-
                 try:
                     response = requests.post("http://localhost:8000/controles/informe/actualizar_notas", json=payload)
                     if response.status_code == 200:
                         filas_actualizadas += 1
                     else:
-                        print(f"❌ Error actualizando ID {id_control}: {response.text}")
+                        print(f"Error actualizando ID {id_control}: {response.text}")
                 except Exception as e:
-                    print(f"❌ Excepción al actualizar ID {id_control}: {e}")
+                    print(f"Excepción al actualizar ID {id_control}: {e}")
 
-        QMessageBox.information(self, "Comentarios guardados", f"Se guardaron notas para {filas_actualizadas} controles.")
-
+        QMessageBox.information(self, "Comentarios guardados", f"Se guardaron notas para control con ID {filas_actualizadas}.")
 
     
     def __init__(self, nombre_usuario, rol_usuario, token_jwt, id_usuario):
@@ -216,7 +210,7 @@ class HistoricoControlesWindow(QWidget):
         self.ui.dateEdit_hasta.setDate(hoy)
         self.setWindowTitle("Histórico de Controles")
 
-        # Guardar atributos para usarlos al volver
+        # Guardar atributos para usarlos al volver al menú princial (ventana control calidad)
         self.nombre_usuario = nombre_usuario
         self.rol_usuario = rol_usuario
         self.token_jwt = token_jwt
@@ -236,9 +230,6 @@ class HistoricoControlesWindow(QWidget):
         self.ui.pushButton_limpiarFiltros.clicked.connect(self.limpiar_filtros)
         self.ui.pushButton_report.clicked.connect(self.mostrar_o_generar_informe)
         self.ui.pushButton_saveObs.clicked.connect(self.guardar_comentarios)
-
-
-
 
 #if __name__ == "__main__":
 #    app = QApplication(sys.argv)

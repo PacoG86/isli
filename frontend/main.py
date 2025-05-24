@@ -2,13 +2,13 @@ import sys
 import requests
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from UI.login_window import Ui_Form
-from parpadeo import MainWindow  # <-- importa la ventana de menú principal
+from parpadeo import MainWindow 
 from solicitud_password_window import SolicitudPasswordWindow
 
 
 API_URL = "http://localhost:8000"
 BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
-#BASE_FOLDER = r"/Users/pacomunozgago/Downloads/arboles"
+#BASE_FOLDER = r"/Users/pacomunozgago/Downloads/arboles" (pruebas con plataforma linux)
 
 class LoginWindow(QMainWindow):
     def __init__(self):

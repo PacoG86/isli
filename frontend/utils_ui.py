@@ -13,7 +13,7 @@ def guardar_config_ruta(ruta):
             with open(CONFIG_FILE, "w") as f:
                 json.dump({"base_folder": ruta}, f)
         except Exception as e:
-            print(f"❌ Error al guardar config: {e}")
+            print(f"Error al guardar config: {e}")
 
 def cargar_config_ruta():
         try:
@@ -43,15 +43,15 @@ def mostrar_siguiente_id_control(ui, label_name="label_11"):
                 getattr(ui, label_name).setText(f"{siguiente_id:05d}")
                 return True
             else:
-                print("⚠️ ID inválido recibido.")
+                print("ID inválido recibido.")
                 getattr(ui, label_name).setText("-----")
                 return False
         else:
-            print(f"❌ Error HTTP {response.status_code}")
+            print(f"Error HTTP {response.status_code}")
             getattr(ui, label_name).setText("Error")
             return False
     except Exception as e:
-        print(f"❌ Error obteniendo ID de control: {e}")
+        print(f"Error obteniendo ID de control: {e}")
         getattr(ui, label_name).setText("N/A")
         return False
 
@@ -61,7 +61,6 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
     Conecta los botones de panel de control, manual de usuario y logout.
     Desactiva el botón de panel si el rol no es administrador.
     """
-    #ui.pushButton_manual.clicked.connect(lambda: webbrowser.open("https://github.com/PacoG86/isli/blob/dev/README.md"))
     ui.pushButton_3.clicked.connect(lambda: logout(parent))
     ui.pushButton_manual.clicked.connect(abrir_manual_usuario)
 
@@ -109,7 +108,7 @@ def logout(parent):
     elif clicked_button == btn_new_session:
         parent.hide()
 
-        # ⬇️ Guardar como atributo persistente para que no se destruya
+        # Guardar como atributo persistente para que no se destruya
         parent.login_window = LoginWindow()
         parent.login_window.show()
 
@@ -126,11 +125,11 @@ def abrir_manual_usuario():
     url_online = url_online = "https://github.com/PacoG86/isli/blob/dev/README.md"
     ruta_pdf_local = r"C:\Users\pgago\Desktop\arboles\informe_6.pdf"
 
-    if hay_conexion_internet():  # ✔️ No pasamos URL específica
-        print("🌐 Conexión detectada. Abriendo manual online...")
+    if hay_conexion_internet():  # No pasamos URL específica
+        print("Conexión detectada. Abriendo manual online...")
         webbrowser.open(url_online)
     else:
-        print("📴 Sin conexión. Abriendo manual local en PDF...")
+        print("Sin conexión. Abriendo manual local en PDF...")
         try:
             if sys.platform.startswith('darwin'):
                 os.system(f"open '{ruta_pdf_local}'")
@@ -139,4 +138,4 @@ def abrir_manual_usuario():
             elif os.name == 'posix':
                 os.system(f"xdg-open '{ruta_pdf_local}'")
         except Exception as e:
-            print(f"❌ Error al abrir el manual local: {e}")
+            print(f"Error al abrir el manual local: {e}")
