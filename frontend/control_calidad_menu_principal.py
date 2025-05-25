@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QGraphicsScene, QFrame, QGraphicsTextItem,
     QTableWidgetItem, QMessageBox, QFileDialog, QProgressDialog
 )
-from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
+from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush, QIcon
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
 from reportlab.lib.pagesizes import A4
@@ -138,6 +138,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        self.setWindowIcon(QIcon(ruta_icono))
         self.showMaximized()
         self.setWindowTitle("ISLI - Control de Calidad")
         self.setupUiConnections()

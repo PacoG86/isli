@@ -1,4 +1,6 @@
 import requests
+from PySide6.QtGui import QIcon
+import os
 from PySide6.QtWidgets import QDialog, QMessageBox
 from UI.solicitud_password_dialog import Ui_Dialog
 from datetime import datetime
@@ -23,6 +25,8 @@ class SolicitudPasswordWindow(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.setWindowTitle("Solicitud de cambio de contraseña")
+        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        self.setWindowIcon(QIcon(ruta_icono))
 
         # Conectamos botones
         self.ui.pushButton_enviar.clicked.connect(self.enviar_solicitud)

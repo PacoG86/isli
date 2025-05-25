@@ -1,5 +1,7 @@
 import requests
 import json
+from PySide6.QtGui import QIcon
+import os
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QFileDialog  
 from PySide6.QtCore import QDate, QTimer, Qt
 from datetime import datetime, time
@@ -255,6 +257,8 @@ class HistoricoControlesWindow(QWidget):
         self.ui = Ui_Form_historico()
         self.ui.setupUi(self)
         self.showMaximized()
+        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        self.setWindowIcon(QIcon(ruta_icono))
         self.id_usuario = id_usuario
         self.configurar_tabla()
         self.cargar_usuarios()

@@ -4,6 +4,8 @@ Lanza la ventana de login que autentica al usuario y da acceso al sistema.
 """
 import sys
 import requests
+from PySide6.QtGui import QIcon
+import os
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 from UI.login_window import Ui_Form
 from control_calidad_menu_principal import MainWindow
@@ -27,6 +29,9 @@ class LoginWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.setWindowTitle("Login ISLI")
+        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        self.setWindowIcon(QIcon(ruta_icono))
         
         self.ui.pushButton_login.clicked.connect(self.login)
         self.ui.pushButton_login_2.clicked.connect(self.abrir_ventana_password)
