@@ -134,17 +134,28 @@
 {% else %}
 <p style="color: gray; font-style: italic;">No hay rollos CONTROLADOS que mostrar.</p>
 {% endif %}
-
+    
     <hr>
 
-    <!-- Configuración de informes -->
-    <h2>Configuración de informes</h2>
-    <form method="post" action="/admin/configuracion/guardar">
-        <label><input type="checkbox" name="incluir_nombre" checked> Incluir nombre de usuario</label><br>
-        <label><input type="checkbox" name="incluir_fecha" checked> Incluir fecha de análisis</label><br>
-        <label><input type="checkbox" name="incluir_resultados" checked> Incluir resultados y defectos</label><br>
-        <button type="submit">Guardar configuración</button>
-    </form>
+    <h2>Documentación del sistema</h2>
+    <p>Consulta la documentación técnica y funcional del sistema ISLI.</p>
+
+    <!-- Botón para abrir Swagger -->
+    <button onclick="window.open('http://localhost:8000/docs', '_blank')">Swagger API</button>
+
+    <!-- Botón para abrir Redoc -->
+    <button onclick="window.open('http://localhost:8000/redoc', '_blank')">ReDoc API</button>
+
+    <!-- Botón para abrir documentación local generada con pdoc -->
+    <button onclick="window.open('http://localhost:8000/pdoc/index.html', '_blank')">
+        Documentación de código (pdoc)
+    </button>
+
+    <!-- Botón para abrir el Manual de Usuario PDF (local o online desde la app) -->
+    <button onclick="window.open('http://localhost:8000/assets/manual_de_usuario.pdf', '_blank')">
+        Manual de Usuario
+    </button>
+
 
 </body>
 </html>

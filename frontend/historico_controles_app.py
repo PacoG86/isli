@@ -1,9 +1,10 @@
 import requests
-from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem
+import json
+from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QFileDialog  
 from PySide6.QtCore import QDate, QTimer, Qt
 from datetime import datetime, time
 from UI.historico_controles import Ui_Form_historico
-from utils_ui import mostrar_datos_usuario, configurar_botones_comunes
+from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, guardar_config_ruta
 
 
 class HistoricoControlesWindow(QWidget):
@@ -220,6 +221,25 @@ class HistoricoControlesWindow(QWidget):
 
         QMessageBox.information(self, "Comentarios guardados", f"Se guardaron notas para control con ID {filas_actualizadas}.")
 
+    def seleccionar_ruta_informes(self):
+        """
+        Permite al usuario seleccionar una nueva carpeta base para guardar informes.
+        """
+        nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta para informes")
+        if nueva_ruta:
+            try:
+                # Abrimos y modificamos el config.json
+                with open("config.json", "r", encoding="utf-8") as f:
+                    config = json.load(f)
+            except FileNotFoundError:
+                config = {}
+
+            config["ruta_informes"] = nueva_ruta
+
+            with open("config.json", "w", encoding="utf-8") as f:
+                json.dump(config, f, indent=4)
+
+            QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta para informes:\n{nueva_ruta}")
     
     def __init__(self, nombre_usuario, rol_usuario, token_jwt, id_usuario):
         """
@@ -264,6 +284,8 @@ class HistoricoControlesWindow(QWidget):
         self.ui.pushButton_limpiarFiltros.clicked.connect(self.limpiar_filtros)
         self.ui.pushButton_report.clicked.connect(self.mostrar_o_generar_informe)
         self.ui.pushButton_saveObs.clicked.connect(self.guardar_comentarios)
+        self.ui.pushButton_rutaInforme.clicked.connect(self.seleccionar_ruta_informes)
+
 
 #if __name__ == "__main__":
 #    app = QApplication(sys.argv)

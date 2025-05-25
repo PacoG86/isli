@@ -2,6 +2,7 @@
 
 Configura la aplicación FastAPI, gestiona middleware, excepciones globales y enrutado de endpoints.
 """
+import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -9,6 +10,7 @@ from routers.auth import login_router
 from routers.controles import router as controles_router
 from admin_panel.routes_admin import admin_router
 import logging
+from fastapi.staticfiles import StaticFiles
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
@@ -49,3 +51,14 @@ def read_root():
     Endpoint de prueba para comprobar que la API está en funcionamiento.
     """
     return {"message": "API funcionando correctamente"}
+
+
+# Ruta absoluta a la carpeta "docs"
+docs_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "docs"))
+# Servir documentación HTML generada con pdoc
+app.mount("/pdoc", StaticFiles(directory=docs_path, html=True), name="pdoc")
+
+# Ruta absoluta a la carpeta "assets"
+assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets"))
+# Servir manual PDF u otros recursos
+app.mount("/assets", StaticFiles(directory=assets_path, html=True), name="assets")

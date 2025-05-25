@@ -152,13 +152,20 @@ def hay_conexion_internet(url="http://www.google.com", timeout=3):
         return False
 
 def abrir_manual_usuario():
-    url_online = url_online = "https://github.com/PacoG86/isli/blob/dev/README.md"
-    ruta_pdf_local = r"C:\Users\pgago\Desktop\arboles\informe_6.pdf"
+    try:
+        with open("config.json", "r", encoding="utf-8") as f:
+            config = json.load(f)
+            ruta_pdf_local = config.get("ruta_manual_usuario", "")
+    except Exception as e:
+        print(f"Error leyendo configuración del manual: {e}")
+        ruta_pdf_local = ""
 
-    if hay_conexion_internet():  # No pasamos URL específica
+    url_online = "https://github.com/PacoG86/isli/blob/dev/README.md"
+
+    if hay_conexion_internet():
         print("Conexión detectada. Abriendo manual online...")
         webbrowser.open(url_online)
-    else:
+    elif ruta_pdf_local:
         print("Sin conexión. Abriendo manual local en PDF...")
         try:
             if sys.platform.startswith('darwin'):
@@ -169,3 +176,27 @@ def abrir_manual_usuario():
                 os.system(f"xdg-open '{ruta_pdf_local}'")
         except Exception as e:
             print(f"Error al abrir el manual local: {e}")
+    else:
+        print("No se encontró ruta del manual local.")
+
+
+def obtener_ruta_informes():
+    """
+    Devuelve la ruta donde se deben guardar los informes PDF.
+    Si no se encuentra en config.json, devuelve una ruta por defecto en el escritorio.
+    """
+    try:
+        if os.path.exists("config.json"):
+            with open("config.json", "r", encoding="utf-8") as f:
+                config = json.load(f)
+                ruta = config.get("ruta_informes")
+                if ruta and os.path.exists(ruta):
+                    return ruta
+    except Exception as e:
+        print(f"Error al cargar config.json: {e}")
+
+    # Ruta por defecto: Escritorio/historico
+    escritorio = os.path.join(os.path.expanduser("~"), "Desktop")
+    ruta_por_defecto = os.path.join(escritorio, "historico")
+    os.makedirs(ruta_por_defecto, exist_ok=True)
+    return ruta_por_defecto

@@ -86,6 +86,11 @@ class Ui_Form_historico(object):
 
         self.verticalLayout_6.addWidget(self.pushButton_pcontrol)
 
+        self.pushButton_rutaInforme = QPushButton(self.barra_izq_frame)
+        self.pushButton_rutaInforme.setObjectName(u"pushButton_rutaInforme")
+
+        self.verticalLayout_6.addWidget(self.pushButton_rutaInforme)
+
         self.pushButton_manual = QPushButton(self.barra_izq_frame)
         self.pushButton_manual.setObjectName(u"pushButton_manual")
         self.pushButton_manual.setMinimumSize(QSize(2, 9))
@@ -348,6 +353,7 @@ class Ui_Form_historico(object):
         self.label_3.setText(QCoreApplication.translate("Form_historico", u"nombre_usuario", None))
         self.pushButton_menuPpal.setText(QCoreApplication.translate("Form_historico", u"Control de calidad", None))
         self.pushButton_pcontrol.setText(QCoreApplication.translate("Form_historico", u"Panel de Control", None))
+        self.pushButton_rutaInforme.setText(QCoreApplication.translate("Form_historico", u"Gesti\u00f3n de informes", None))
         self.pushButton_manual.setText(QCoreApplication.translate("Form_historico", u"Manual Usuario", None))
         self.pushButton_3.setText(QCoreApplication.translate("Form_historico", u"Logout", None))
         self.label_umbralDefectos.setText(QCoreApplication.translate("Form_historico", u"TOLERANCIA DEFECTOS", None))

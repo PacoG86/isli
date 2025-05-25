@@ -21,11 +21,10 @@ from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
 from UI.menu_principal_v2 import Ui_MainWindow
 from reportlab.lib.pagesizes import A4
-from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control
+from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control, obtener_ruta_informes, guardar_config_ruta
 from historico_controles_app import HistoricoControlesWindow
 from utils_informes import generar_pdf_completo, guardar_registro_informe
 from analisis_defectos.procesador_rollos import analizar_rollo
-from utils_ui import guardar_config_ruta
 
 
 class HighQualityImageView(QGraphicsView):
@@ -743,7 +742,7 @@ class MainWindow(QMainWindow):
             return
         nombre_pdf = f"informe_control_{id_control}_{timestamp_str}.pdf"
 
-        ruta_hist = os.path.join(os.path.expanduser("~"), "Desktop", "historico")
+        ruta_hist = obtener_ruta_informes()
         os.makedirs(ruta_hist, exist_ok=True)
         ruta_hist_pdf = os.path.join(ruta_hist, nombre_pdf)
 
