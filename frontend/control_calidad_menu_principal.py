@@ -381,7 +381,6 @@ class MainWindow(QMainWindow):
         umbral_usuario = float(self.ui.doubleSpinBox.value())
         self.ui.label_contador.setText("📊 0 / {}".format(len(self.images)))
 
-
         # Ejecutar el análisis de imágenes antes de cargarlas
         try:
             analizar_rollo(base_path=self.base_folder, rollo=seleccion, area_umbral=umbral_usuario)
