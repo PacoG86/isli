@@ -69,7 +69,7 @@
                 <form method="post" action="/admin/usuarios/toggle_activo" style="display:inline;">
                     <input type="hidden" name="id_usuario" value="{{ user.id_usuario }}">
                     <input type="hidden" name="token" value="{{ token }}">
-                    <button type="submit">{{ 'Desactivar' if user.activo else 'Activar' }}</button>
+                    <button type="submit">{{ 'Dar de baja' if user.activo else 'Dar de alta' }}</button>
                 </form>
 
                 <form method="post" action="/admin/usuarios/cambiar_rol" style="display:inline;">

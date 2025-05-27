@@ -430,8 +430,8 @@ class MainWindow(QMainWindow):
         self.interrumpir_control()
         
         # Limpiar visores
-        self.image_view1.showMessage("Pantalla limpiada", "#2C7873")
-        self.image_view2.showMessage("Pantalla limpiada", "#2C7873")
+        self.image_view1.showMessage("Sistema reiniciado", "#2C7873")
+        self.image_view2.showMessage("Sistema reiniciado", "#2C7873")
         
         # Restablecer etiquetas y barra de progreso
         self.ui.label_5.setText("Detalles imagen")
@@ -490,10 +490,10 @@ class MainWindow(QMainWindow):
         if respuesta == QMessageBox.Yes:
             # Mostrar mensaje en visores
             if not self.analisis_completado and self.images:
-                self.image_view1.showMessage("Control interrumpido", "#F57C00")
-                self.image_view2.showMessage("Control interrumpido", "#F57C00")
-                self.ui.label_5.setText("Control interrumpido")
-                self.ui.label_6.setText("Control interrumpido")
+                self.image_view1.showMessage("Control cancelado", "#F57C00")
+                self.image_view2.showMessage("Control cancelado", "#F57C00")
+                self.ui.label_5.setText("Control cancelado")
+                self.ui.label_6.setText("Control cancelado")
             # Restaurar estilo del botón
             self.ui.pushButton_5.setText("Iniciar Control de Calidad")
             self.ui.pushButton_5.setStyleSheet("")
