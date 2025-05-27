@@ -258,3 +258,17 @@ def trigger_validate():
     import os
     path = os.path.join(os.path.dirname(__file__), "templates", "trigger_validate.html")
     return FileResponse(path, media_type="text/html")
+
+@admin_router.get("/trigger_validate", response_class=HTMLResponse)
+def trigger_validate_alias():
+    """Alias para /trigger_validate que sirve trigger_validate.html"""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "templates", "trigger_validate.html")
+    return FileResponse(path, media_type="text/html")
+
+@admin_router.get("/admin/session_expired.html", response_class=HTMLResponse)
+def session_expired_admin():
+    """Alias para /admin/session_expired.html que sirve session_expired.html"""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "templates", "session_expired.html")
+    return FileResponse(path, media_type="text/html")

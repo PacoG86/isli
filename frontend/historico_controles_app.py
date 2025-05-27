@@ -283,6 +283,21 @@ class HistoricoControlesWindow(QWidget):
         self.ui.pushButton_rutaInforme.clicked.connect(self.seleccionar_ruta_informes)
         self.ui.tableWidget_results.cellChanged.connect(self.on_cell_changed)
 
+    def closeEvent(self, event):
+        """
+        Revoca el token al cerrar la ventana de histórico (X), para forzar expiración de sesión en el panel web.
+        """
+        import requests
+        import webbrowser
+        token = getattr(self, 'token_jwt', None)
+        if token:
+            try:
+                requests.post("http://localhost:8000/logout", json={"token": token}, timeout=3)
+                webbrowser.open(f"http://localhost:8000/trigger_validate?token={token}")
+            except Exception as e:
+                print(f"Error al revocar token en closeEvent: {e}")
+        event.accept()  # Permite el cierre inmediato
+
 class NotaUpdater(QRunnable):
     def __init__(self, id_control, nota):
         super().__init__()

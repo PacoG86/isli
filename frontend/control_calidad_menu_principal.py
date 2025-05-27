@@ -868,6 +868,21 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta raíz:\n{nueva_ruta}")
             self.configurar_combobox()
 
+    def closeEvent(self, event):
+        """
+        Revoca el token al cerrar la ventana principal (X), para forzar expiración de sesión en el panel web.
+        """
+        import requests
+        import webbrowser
+        token = getattr(self, 'token_jwt', None)
+        if token:
+            try:
+                requests.post("http://localhost:8000/logout", json={"token": token}, timeout=3)
+                webbrowser.open(f"http://localhost:8000/trigger_validate?token={token}")
+            except Exception as e:
+                print(f"Error al revocar token en closeEvent: {e}")
+        event.accept()  # Permite el cierre inmediato
+
 
 # Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).
