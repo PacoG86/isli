@@ -191,7 +191,17 @@ class HistoricoControlesWindow(QWidget):
             QMessageBox.critical(self, "Error", str(e))
     
     def guardar_comentarios(self):
-        QMessageBox.information(self, "Registro completado","Notas guardadas correctamente.")
+        selection = self.ui.tableWidget_results.selectionModel()
+        if not selection.hasSelection():
+            QMessageBox.warning(self, "Sin selección", "No hay notas que guardar. Seleccione fila de informe y escriba sus comentarios.")
+            return
+        fila = self.ui.tableWidget_results.currentRow()
+        notas_item = self.ui.tableWidget_results.item(fila, 7)
+        if notas_item is None or not notas_item.text().strip():
+            QMessageBox.warning(self, "Sin comentarios", "No hay notas que guardar. Seleccione fila de informe y escriba sus comentarios.")
+            return
+        # Si hay selección y comentarios, mostrar mensaje de éxito
+        QMessageBox.information(self, "Registro completado", "Notas guardadas correctamente.")
 
     def seleccionar_ruta_informes(self):
         """

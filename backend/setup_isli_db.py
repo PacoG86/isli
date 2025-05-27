@@ -14,7 +14,7 @@ DB_NAME = os.getenv("DB_NAME", "isli_db")
 
 SQL_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "01_crear_base_datos_isli_v3.sql"))
 
-# Users to seed
+# Usuarios iniciales a insertar
 usuarios = [
     ("Pedro García", "pedrog_op@isli.com", "Pedro_op!86", "administrador"),
     ("Pepa Gutiérrez", "pepag_admin@isli.com", "Abcd!86", "administrador"),
@@ -26,7 +26,7 @@ usuarios = [
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def run_sql_script(cursor, sql):
-    # Split on semicolon, but ignore inside strings
+    # Salta a siguiente línea si es un comentario o línea vacía
     import re
     statements = [s.strip() for s in re.split(r';\s*(?=CREATE|DROP|INSERT|ALTER|USE|--|$)', sql, flags=re.IGNORECASE) if s.strip()]
     for stmt in statements:
@@ -38,7 +38,7 @@ def run_sql_script(cursor, sql):
             print(f"Error executing statement: {stmt[:60]}...\n{e}")
 
 if __name__ == "__main__":
-    # 1. Connect to MySQL (no database yet)
+    # 1. Conectar a MySQL con credenciales de root
     print("Conectando a MySQL...")
     conn = mysql.connector.connect(
         host=DB_HOST,
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     print("Ejecutando DROP y CREATE DATABASE...")
     with open(SQL_FILE, encoding="utf-8") as f:
         sql = f.read()
-    # Only run DROP and CREATE DATABASE
+    # 2. Ejectuar DROP y CREATE DATABASE y desconectar
     for stmt in sql.split(';'):
         if 'DROP DATABASE' in stmt or 'CREATE DATABASE' in stmt:
             try:
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     cursor.close()
     conn.close()
 
-    # 2. Connect to the new database and run the rest
+    # 3. Conectar nuevamente a MySQL para evitar errores de conexión
     print(f"Conectando a la base de datos {DB_NAME} para crear tablas...")
     conn = mysql.connector.connect(
         host=DB_HOST,
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         port=DB_PORT
     )
     cursor = conn.cursor()
-    # Run all CREATE TABLE and the rest (skip DROP/CREATE DATABASE)
+    # 4. Ejecutar el resto del script SQL para crear tablas
     for stmt in sql.split(';'):
         if ('CREATE TABLE' in stmt or 'ALTER TABLE' in stmt or 'USE ' in stmt) and 'DATABASE' not in stmt:
             try:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     cursor.close()
     conn.close()
 
-    # 3. Connect to the new database
+    # 5. Conectar a la recién creada base de datos para poblar usuarios
     print(f"Conectando a la base de datos {DB_NAME} para poblar usuarios...")
     conn = mysql.connector.connect(
         host=DB_HOST,
