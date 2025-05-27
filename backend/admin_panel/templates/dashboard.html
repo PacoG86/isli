@@ -156,6 +156,30 @@
         Manual de Usuario
     </button>
 
+<script>
+// --- Token polling for session expiration ---
+function getTokenFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('token');
+}
+function checkTokenValidity() {
+    const token = getTokenFromUrl();
+    if (!token) {
+        window.location.href = '/admin/session_expired.html';
+        return;
+    }
+    fetch(`/validate_token?token=${encodeURIComponent(token)}`)
+        .then(resp => {
+            if (resp.status !== 200) {
+                window.location.href = '/admin/session_expired.html';
+            }
+        })
+        .catch(() => {
+            window.location.href = '/admin/session_expired.html';
+        });
+}
+setInterval(checkTokenValidity, 5000); // Check every 5 seconds
+</script>
 
 </body>
 </html>

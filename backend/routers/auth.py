@@ -3,7 +3,7 @@
 Gestiona el login de usuarios, verificación de contraseñas y generación de tokens JWT.
 Usado por el endpoint /login.
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from db import get_connection
 from jose import jwt
 from datetime import datetime, timedelta
@@ -16,9 +16,13 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "superclave")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+# Cambia aquí el tiempo de expiración del token (por ejemplo, 8 horas = 480 minutos)
+ACCESS_TOKEN_EXPIRE_MINUTES = 480
 
 login_router = APIRouter()
+
+# In-memory token blacklist (for demo; use DB for production)
+REVOKED_TOKENS = set()
 
 def verificar_contrasena(plain_password, hashed_password):
     """
@@ -133,3 +137,32 @@ def login(usuario: dict):
         "rol": user["rol"],
         "id_usuario": user["id_usuario"]
     }
+
+@login_router.post("/logout")
+def logout(payload: dict = Body(...)):
+    """
+    Endpoint para revocar/invalidate un token JWT (logout).
+    Guarda el token en una blacklist temporal.
+    """
+    token = payload.get("token")
+    print(f"Revoking token: {token!r}")
+    if not token:
+        raise HTTPException(status_code=400, detail="Token requerido")
+    REVOKED_TOKENS.add(token)
+    print(f"Current blacklist: {REVOKED_TOKENS}")
+    return {"detail": "Token revocado"}
+
+@login_router.get("/validate_token")
+def validate_token(token: str):
+    print(f"Validating token: {token!r}")
+    print(f"Current blacklist: {REVOKED_TOKENS}")
+    from jose import JWTError
+    try:
+        if token in REVOKED_TOKENS:
+            print("Token is revoked!")
+            raise HTTPException(status_code=401, detail="Token revocado")
+        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return {"valid": True}
+    except JWTError:
+        print("Token is invalid or expired!")
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")

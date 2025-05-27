@@ -4,8 +4,7 @@ Incluye creación de controles, consulta de histórico, informes, comentarios y 
 """
 import os
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import FileResponse
-from datetime import datetime, time
+from datetime import datetime
 from schemas.schemas_controles import ControlCalidadInput, InformeControlInput, ActualizarNotasInput, SolicitudCambioPassword
 from db import get_connection
 from typing import List, Optional

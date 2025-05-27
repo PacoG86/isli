@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Validando sesión...</title>
+    <script>
+        // Obtiene el token de la URL (?token=...)
+        function getToken() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('token');
+        }
+        async function validateToken() {
+            const token = getToken();
+            if (!token) {
+                window.location.href = '/admin/session_expired.html';
+                return;
+            }
+            try {
+                const resp = await fetch(`/admin/validate_token?token=" + encodeURIComponent(token) + "`);
+                if (resp.status !== 200) {
+                    window.location.href = '/admin/session_expired.html';
+                }
+            } catch (e) {
+                window.location.href = '/admin/session_expired.html';
+            }
+        }
+        window.onload = validateToken;
+    </script>
+    <style>body { font-family: Arial; text-align: center; margin-top: 100px; color: #2C7873; }</style>
+</head>
+<body>
+    <h2>Validando sesión...</h2>
+</body>
+</html>

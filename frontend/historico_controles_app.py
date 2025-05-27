@@ -3,7 +3,7 @@ import json
 from PySide6.QtGui import QIcon
 import os
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QFileDialog  
-from PySide6.QtCore import QDate, QTimer, Qt
+from PySide6.QtCore import QDate, QTimer, Qt, QRunnable, QThreadPool, Slot
 from datetime import datetime, time
 from UI.historico_controles import Ui_Form_historico
 from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, guardar_config_ruta
@@ -85,6 +85,8 @@ class HistoricoControlesWindow(QWidget):
         # Volver a cargar todos los datos
         self.cargar_datos_historico()
 
+    
+
     def mostrar_datos_en_tabla(self, controles):
         """
         Muestra en la tabla los datos de controles pasados como lista de diccionarios.
@@ -92,17 +94,15 @@ class HistoricoControlesWindow(QWidget):
         Args:
             controles (list[dict]): Lista con la información de cada control.
         """
+        self.ui.tableWidget_results.blockSignals(True)
         self.ui.tableWidget_results.setRowCount(0)
         self.ui.tableWidget_results.setColumnCount(8)
         self.ui.tableWidget_results.setHorizontalHeaderLabels([
             "ID Control", "Usuario", "Fecha/Hora", "Area max(mm2)", "#defectos",
             "Informe", "Result.", "Comentarios"
         ])
-
         for row_idx, item in enumerate(controles):
             self.ui.tableWidget_results.insertRow(row_idx)
-
-            # Columnas fijas (no editables)
             columnas = [
                 str(item["id_control"]),
                 item["nombre_usuario"],
@@ -110,31 +110,27 @@ class HistoricoControlesWindow(QWidget):
                 str(item["umbral_tamano_defecto"]),
                 str(item["num_defectos_tolerables_por_tamano"])
             ]
-
             for col_idx, valor in enumerate(columnas):
                 celda = QTableWidgetItem(valor)
                 celda.setFlags(celda.flags() & ~Qt.ItemIsEditable)
                 self.ui.tableWidget_results.setItem(row_idx, col_idx, celda)
 
-            # Columna 5 - Informe (ícono)
-            tiene_informe = item.get("tiene_informe", False)
-            icono_informe = "✅" if tiene_informe else "❌"
+            icono_informe = "✅" if item.get("tiene_informe", False) else "❌"
             reporte_item = QTableWidgetItem(icono_informe)
             reporte_item.setFlags(reporte_item.flags() & ~Qt.ItemIsEditable)
             self.ui.tableWidget_results.setItem(row_idx, 5, reporte_item)
 
-            # Columna 6 - Resultado (ícono)
             resultado = item.get("resultado_rollo", "").lower()
             icono_resultado = "🟢" if resultado == "ok" else "🔴" if resultado == "nok" else "❔"
             resultado_item = QTableWidgetItem(icono_resultado)
             resultado_item.setFlags(resultado_item.flags() & ~Qt.ItemIsEditable)
             self.ui.tableWidget_results.setItem(row_idx, 6, resultado_item)
 
-            # Columna 7 - Comentarios (editable)
             notas = item.get("notas", "")
             notas_item = QTableWidgetItem(notas)
             self.ui.tableWidget_results.setItem(row_idx, 7, notas_item)
-
+        self.ui.tableWidget_results.blockSignals(False)
+    
     def cargar_usuarios(self):
         """Carga la lista de usuarios disponibles desde la API."""
         try:
@@ -195,33 +191,7 @@ class HistoricoControlesWindow(QWidget):
             QMessageBox.critical(self, "Error", str(e))
     
     def guardar_comentarios(self):
-        """
-        Recorre la tabla y actualiza los comentarios (notas) modificados en la base de datos.
-        """
-        filas_actualizadas = 0
-
-        for row in range(self.ui.tableWidget_results.rowCount()):
-            id_control_item = self.ui.tableWidget_results.item(row, 0)
-            notas_item = self.ui.tableWidget_results.item(row, 7)
-
-            if id_control_item and notas_item:
-                id_control = int(id_control_item.text())
-                notas = notas_item.text()
-
-                payload = {
-                    "id_control": id_control,
-                    "notas": notas
-                }
-                try:
-                    response = requests.post("http://localhost:8000/controles/informe/actualizar_notas", json=payload)
-                    if response.status_code == 200:
-                        filas_actualizadas += 1
-                    else:
-                        print(f"Error actualizando ID {id_control}: {response.text}")
-                except Exception as e:
-                    print(f"Excepción al actualizar ID {id_control}: {e}")
-
-        QMessageBox.information(self, "Comentarios guardados", f"Se guardaron notas para control con ID {filas_actualizadas}.")
+        QMessageBox.information(self, "Registro completado","Notas guardadas correctamente.")
 
     def seleccionar_ruta_informes(self):
         """
@@ -243,6 +213,28 @@ class HistoricoControlesWindow(QWidget):
 
             QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta para informes:\n{nueva_ruta}")
     
+    def actualizar_nota_en_background(self, id_control, nota):
+        tarea = NotaUpdater(id_control, nota)
+        QThreadPool.globalInstance().start(tarea)
+    
+    def on_cell_changed(self, row, column):
+        if column != 7:  # Solo columna "Comentarios"
+            return
+
+        id_item = self.ui.tableWidget_results.item(row, 0)
+        nota_item = self.ui.tableWidget_results.item(row, column)
+
+        if not id_item or not nota_item:
+            return
+
+        id_control = int(id_item.text())
+        nueva_nota = nota_item.text()
+
+        self.ui.tableWidget_results.blockSignals(True)
+        self.actualizar_nota_en_background(id_control, nueva_nota)
+        self.ui.tableWidget_results.blockSignals(False)
+
+
     def __init__(self, nombre_usuario, rol_usuario, token_jwt, id_usuario):
         """
         Inicializa la interfaz, carga datos de usuario y conecta eventos.
@@ -289,6 +281,23 @@ class HistoricoControlesWindow(QWidget):
         self.ui.pushButton_report.clicked.connect(self.mostrar_o_generar_informe)
         self.ui.pushButton_saveObs.clicked.connect(self.guardar_comentarios)
         self.ui.pushButton_rutaInforme.clicked.connect(self.seleccionar_ruta_informes)
+        self.ui.tableWidget_results.cellChanged.connect(self.on_cell_changed)
+
+class NotaUpdater(QRunnable):
+    def __init__(self, id_control, nota):
+        super().__init__()
+        self.id_control = id_control
+        self.nota = nota
+
+    @Slot()
+    def run(self):
+        try:
+            payload = {"id_control": self.id_control, "notas": self.nota}
+            response = requests.post("http://localhost:8000/controles/informe/actualizar_notas", json=payload)
+            if response.status_code != 200:
+                print(f"Error actualizando nota de ID {self.id_control}: {response.text}")
+        except Exception as e:
+            print(f"Error conexión al guardar nota ID {self.id_control}: {str(e)}")
 
 
 #if __name__ == "__main__":

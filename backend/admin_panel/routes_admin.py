@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.security import HTTPBearer
 from jose import jwt, JWTError
@@ -244,3 +244,17 @@ async def reiniciar_contrasena_usuario(email_usuario: str = Form(...), token: st
         conn.close()
 
     return RedirectResponse(url=f"/admin?token={token}", status_code=303)
+
+@admin_router.get("/session_expired.html", response_class=HTMLResponse)
+def session_expired():
+    """Devuelve la página de sesión expirada."""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "templates", "session_expired.html")
+    return FileResponse(path, media_type="text/html")
+
+@admin_router.get("/trigger_validate.html", response_class=HTMLResponse)
+def trigger_validate():
+    """Devuelve la página de validación inmediata de sesión."""
+    import os
+    path = os.path.join(os.path.dirname(__file__), "templates", "trigger_validate.html")
+    return FileResponse(path, media_type="text/html")
