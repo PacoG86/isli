@@ -52,6 +52,20 @@ class SolicitudPasswordWindow(QDialog):
             QMessageBox.warning(self, "Campos requeridos", "Por favor, introduce una nueva contraseña.")
             return
 
+        # --- Validación sencilla de contraseña ---
+        mensaje_restricciones = (
+            "La contraseña debe tener al menos 8 caracteres, incluyendo "
+            "letras, mayúsculas, números y caracteres especiales."
+        )
+        if len(nueva_password) < 8 \
+            or nueva_password.isdigit() or nueva_password.isalpha() \
+            or not any(c.isupper() for c in nueva_password) \
+            or not any(c in '!@#$%^&*()-_=+[]{}|;:,.<>?/\\' for c in nueva_password) \
+            or not any(c.isdigit() for c in nueva_password):
+            QMessageBox.warning(self, "Contraseña insegura", mensaje_restricciones)
+            return
+        # --- Fin validación ---
+
         payload = {
             "email_usuario": email,
             "motivo": motivo,

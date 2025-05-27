@@ -6,7 +6,8 @@ import sys
 import requests
 from PySide6.QtGui import QIcon
 import os
-from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QProgressDialog
+from PySide6.QtCore import QTimer, Qt
 from UI.login_window import Ui_Form
 from control_calidad_menu_principal import MainWindow
 from solicitud_password_window import SolicitudPasswordWindow
@@ -56,7 +57,14 @@ class LoginWindow(QMainWindow):
             if response.status_code == 200:
                 result = response.json()
                 rol = result.get("rol", "desconocido")
-                QMessageBox.information(self, "Login exitoso", f"¡Bienvenido!\nRol: {rol}")
+                
+                progress = QProgressDialog(f"¡Bienvenido!\nRol: {rol}", None, 0, 0, self)
+                progress.setWindowTitle("Login exitoso")
+                progress.setCancelButton(None)
+                progress.setWindowModality(Qt.ApplicationModal)
+                progress.setMinimumDuration(0)
+                progress.show()
+                QTimer.singleShot(3000, progress.close)  # Close after 1.5 seconds
                 
                 self.abrir_menu_principal(result)
             else:
