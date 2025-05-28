@@ -189,6 +189,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
         self.ui.pushButton_gAlmacen.clicked.connect(self.seleccionar_ruta_almacen)
 
+        self.ui.pushButton_5.setEnabled(False)  # Disable 'Iniciar Control de Calidad' at start
         self.prompt_reiniciar_on_start()
 
     def abrir_ventana_historico(self):
@@ -216,7 +217,7 @@ class MainWindow(QMainWindow):
     def cargar_datos_iniciales(self):
         mostrar_siguiente_id_control(self.ui)
         self.configurar_combobox()
-        self.image_view1.showMessage("Se recomienda reiniciar\nsistema antes\nIniciar Control de Calidad", "#2C7873", textColor= '#FBC02D')
+        self.image_view1.showMessage("Reinicia el sistema antes\nIniciar Control de Calidad", "#2C7873", textColor= '#FBC02D')
         self.image_view2.showMessage("Selecciona una carpeta\ny haz clic en\nIniciar Control de Calidad", "#2C7873")
 
     def configurar_combobox(self):
@@ -472,6 +473,7 @@ class MainWindow(QMainWindow):
                 except Exception as e:
                     print(f"Error al restaurar {carpeta}: {e}")
 
+        self.ui.pushButton_5.setEnabled(True)  # Enable 'Iniciar Control de Calidad' after reinicio
 
     def confirmar_interrumpir(self):
         """Muestra diálogo de confirmación antes de interrumpir el control"""
@@ -944,6 +946,7 @@ class MainWindow(QMainWindow):
         def on_click():
             btn.clicked.disconnect(on_click)
             self.reset_button(btn, orig_style, orig_tooltip)
+            self.ui.pushButton_5.setEnabled(True)  # Enable 'Iniciar Control de Calidad' after reinicio
         btn.clicked.connect(on_click)
 
 

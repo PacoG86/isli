@@ -162,7 +162,7 @@ class Ui_Form(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(90, 190, 411, 21))
+        self.label.setGeometry(QRect(100, 190, 411, 21))
         font2 = QFont()
         font2.setPointSize(14)
         font2.setBold(True)
@@ -190,6 +190,6 @@ class Ui_Form(object):
         self.pushButton_login.setText(QCoreApplication.translate("Form", u"Login", None))
         self.lineEdit_3.setPlaceholderText(QCoreApplication.translate("Form", u" Escribe tu contrase\u00f1a", None))
         self.pushButton_login_2.setText(QCoreApplication.translate("Form", u"Olvid\u00e9 mi contrase\u00f1a", None))
-        self.label.setText(QCoreApplication.translate("Form", u"Bienvenid@ ISLI", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Bienvenid@ a ISLI", None))
     # retranslateUi
 
