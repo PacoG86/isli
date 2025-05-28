@@ -162,7 +162,7 @@ class Ui_Form(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(110, 170, 411, 21))
+        self.label.setGeometry(QRect(90, 190, 411, 21))
         font2 = QFont()
         font2.setPointSize(14)
         font2.setBold(True)
@@ -184,12 +184,12 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
         self.pushButton.setText("")
-        self.label_2.setText(QCoreApplication.translate("Form", u" Username", None))
-        self.label_4.setText(QCoreApplication.translate("Form", u" Password", None))
+        self.label_2.setText(QCoreApplication.translate("Form", u"Usuario", None))
+        self.label_4.setText(QCoreApplication.translate("Form", u"Contrase\u00f1a", None))
         self.lineEdit.setPlaceholderText(QCoreApplication.translate("Form", u" Escribe tu email de usuario", None))
         self.pushButton_login.setText(QCoreApplication.translate("Form", u"Login", None))
         self.lineEdit_3.setPlaceholderText(QCoreApplication.translate("Form", u" Escribe tu contrase\u00f1a", None))
         self.pushButton_login_2.setText(QCoreApplication.translate("Form", u"Olvid\u00e9 mi contrase\u00f1a", None))
-        self.label.setText(QCoreApplication.translate("Form", u"Welcome Back", None))
+        self.label.setText(QCoreApplication.translate("Form", u"Bienvenid@ ISLI", None))
     # retranslateUi
 
