@@ -149,7 +149,7 @@ class HistoricoControlesWindow(QWidget):
     def volver_a_menu_principal(self):
         """Cierra la ventana actual y regresa al menú principal."""
         from frontend.control_calidad_menu_principal import MainWindow
-        from main import BASE_FOLDER  # Ojo! disponible en config.json
+        from main import BASE_FOLDER  # Disponible en config.json
         self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
         self.menu_window.show()
         self.hide()
@@ -209,6 +209,8 @@ class HistoricoControlesWindow(QWidget):
         """
         nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta para informes")
         if nueva_ruta:
+            # Convert to forward slashes for config portability
+            nueva_ruta = nueva_ruta.replace("\\", "/")
             try:
                 # Abrimos y modificamos el config.json
                 with open("config.json", "r", encoding="utf-8") as f:
@@ -297,13 +299,10 @@ class HistoricoControlesWindow(QWidget):
         """
         Revoca el token al cerrar la ventana de histórico (X), para forzar expiración de sesión en el panel web.
         """
-        import requests
-        import webbrowser
         token = getattr(self, 'token_jwt', None)
         if token:
             try:
                 requests.post("http://localhost:8000/logout", json={"token": token}, timeout=3)
-                webbrowser.open(f"http://localhost:8000/trigger_validate?token={token}")
             except Exception as e:
                 print(f"Error al revocar token en closeEvent: {e}")
         event.accept()  # Permite el cierre inmediato

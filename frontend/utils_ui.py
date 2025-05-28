@@ -22,18 +22,15 @@ def guardar_config_ruta(ruta):
     """
     try:
         CONFIG_FILE = "config.json"
-
+        # Convert to forward slashes for config portability
+        ruta = ruta.replace("\\", "/")
         # Leer configuración actual si existe
         if os.path.exists(CONFIG_FILE):
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 config = json.load(f)
         else:
             config = {}
-
-        # Modificar solo la clave deseada
         config["base_folder"] = ruta
-
-        # Guardar la nueva configuración
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4)
     except Exception as e:
@@ -43,8 +40,10 @@ def guardar_config_ruta(ruta):
 def cargar_config_ruta():
         """Carga la ruta base de los rollos desde el archivo config.json (si existe)."""
         try:
+            CONFIG_FILE = "config.json"
             with open(CONFIG_FILE, "r") as f:
-                return json.load(f).get("base_folder", "")
+                ruta = json.load(f).get("base_folder", "")
+                return os.path.abspath(ruta) if ruta else ""
         except FileNotFoundError:
             return ""
 
@@ -139,8 +138,6 @@ def logout(parent):
                 print(f"Logout backend response: {response.status_code} {response.text}")
             except Exception as e:
                 print(f"Error al llamar /logout: {e}")
-            # Open trigger page in browser
-            webbrowser.open(f"http://localhost:8000/trigger_validate?token={token}")
         else:
             print("No se encontró token_jwt en la ventana principal.")
         # --- End secure logout logic ---
@@ -214,11 +211,9 @@ def obtener_ruta_informes():
                 config = json.load(f)
                 ruta = config.get("ruta_informes")
                 if ruta and os.path.exists(ruta):
-                    return ruta
+                    return os.path.abspath(ruta)
     except Exception as e:
         print(f"Error al cargar config.json: {e}")
-
-    # Ruta por defecto: Escritorio/historico
     escritorio = os.path.join(os.path.expanduser("~"), "Desktop")
     ruta_por_defecto = os.path.join(escritorio, "historico")
     os.makedirs(ruta_por_defecto, exist_ok=True)

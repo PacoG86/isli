@@ -189,6 +189,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
         self.ui.pushButton_gAlmacen.clicked.connect(self.seleccionar_ruta_almacen)
 
+        self.prompt_reiniciar_on_start()
+
     def abrir_ventana_historico(self):
         progress = QProgressDialog("Cargando historial...", None, 0, 0, self)
         progress.setWindowTitle("ISLI - Controles")
@@ -214,8 +216,8 @@ class MainWindow(QMainWindow):
     def cargar_datos_iniciales(self):
         mostrar_siguiente_id_control(self.ui)
         self.configurar_combobox()
-        self.image_view1.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
-        self.image_view2.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
+        self.image_view1.showMessage("Se recomienda reiniciar\nsistema antes\nIniciar Control de Calidad", "#2C7873", textColor= '#FBC02D')
+        self.image_view2.showMessage("Selecciona una carpeta\ny haz clic en\nIniciar Control de Calidad", "#2C7873")
 
     def configurar_combobox(self):
         """Configura el ComboBox con las subcarpetas del directorio base, filtrando por el número máximo de imágenes"""
@@ -431,7 +433,7 @@ class MainWindow(QMainWindow):
         
         # Limpiar visores
         self.image_view1.showMessage("Sistema reiniciado", "#2C7873")
-        self.image_view2.showMessage("Sistema reiniciado", "#2C7873")
+        self.image_view2.showMessage("Sistema listo para\npróximo Control de Calidad", "#2C7873")
         
         # Restablecer etiquetas y barra de progreso
         self.ui.label_5.setText("Detalles imagen")
@@ -795,7 +797,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.setStyleSheet("")
 
         self.image_view1.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
-        self.image_view2.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
+        self.image_view2.showMessage(f"Siga el flujo de botones\niluminados para\ncompletar proceso", color)
 
         self.ui.label_5.setText("Análisis finalizado")
         self.ui.label_6.setText("Análisis finalizado")
@@ -857,8 +859,61 @@ class MainWindow(QMainWindow):
 
         self.analisis_completado = True
         self.ui.pushButton_report.setEnabled(True)
+        self.workflow_after_analysis()
 
-    
+    # --- Workflog postcontrol de botones iluminados ---
+    def iluminar_btn(self, button, color, tooltip):
+        button.setStyleSheet(f"background-color: {color}; color: black; font-weight: bold;")
+        button.setToolTip(tooltip)
+        button.setEnabled(True)
+
+    def reset_button(self, button, original_style, tooltip=None):
+        button.setStyleSheet(original_style)
+        if tooltip is not None:
+            button.setToolTip(tooltip)
+
+    def workflow_after_analysis(self):
+        # Step 1: Highlight 'Guardar Resultados'
+        self.workflow_guardar_resultados()
+
+    def workflow_guardar_resultados(self):
+        btn = self.ui.pushButton_8  # Guardar Resultados
+        orig_style = btn.styleSheet()
+        orig_tooltip = btn.toolTip()
+        self.iluminar_btn(btn, '#FBC02D', 'Haz clic para guardar los resultados del análisis')
+        
+        def on_click():
+            btn.clicked.disconnect(on_click)
+            self.reset_button(btn, orig_style, orig_tooltip)
+            self.workflow_generar_informe()
+        btn.clicked.connect(on_click)
+
+    def workflow_generar_informe(self):
+        btn = self.ui.pushButton_report  # Generar Informe
+        orig_style = btn.styleSheet()
+        orig_tooltip = btn.toolTip()
+        self.iluminar_btn(btn, '#FBC02D', 'Genera el informe PDF del análisis')
+        btn.setEnabled(True)
+        
+        def on_click():
+            btn.clicked.disconnect(on_click)
+            self.reset_button(btn, orig_style, orig_tooltip)
+            self.workflow_reiniciar()
+        btn.clicked.connect(on_click)
+
+    def workflow_reiniciar(self):
+        btn = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
+        orig_style = btn.styleSheet()
+        orig_tooltip = btn.toolTip()
+        self.iluminar_btn(btn, '#FBC02D', 'Reinicia el sistema para un nuevo análisis')
+        
+        def on_click():
+            btn.clicked.disconnect(on_click)
+            self.reset_button(btn, orig_style, orig_tooltip)
+        btn.clicked.connect(on_click)
+
+    # --- End Guided Workflow ---
+
     def seleccionar_ruta_almacen(self):
         """Permite al usuario cambiar la carpeta raíz donde se almacenan los rollos."""
         nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta raíz de los rollos")
@@ -872,16 +927,24 @@ class MainWindow(QMainWindow):
         """
         Revoca el token al cerrar la ventana principal (X), para forzar expiración de sesión en el panel web.
         """
-        import requests
-        import webbrowser
         token = getattr(self, 'token_jwt', None)
         if token:
             try:
                 requests.post("http://localhost:8000/logout", json={"token": token}, timeout=3)
-                webbrowser.open(f"http://localhost:8000/trigger_validate?token={token}")
             except Exception as e:
                 print(f"Error al revocar token en closeEvent: {e}")
         event.accept()  # Permite el cierre inmediato
+
+    def prompt_reiniciar_on_start(self):
+        btn = self.ui.pushButton_2  # Reiniciar
+        orig_style = btn.styleSheet()
+        orig_tooltip = btn.toolTip()
+        self.iluminar_btn(btn, '#FBC02D', 'Haz clic aquí para reiniciar el sistema antes de iniciar un control de calidad')
+        
+        def on_click():
+            btn.clicked.disconnect(on_click)
+            self.reset_button(btn, orig_style, orig_tooltip)
+        btn.clicked.connect(on_click)
 
 
 # Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
