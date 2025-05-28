@@ -158,6 +158,19 @@ def logout(parent):
         return
 
     elif clicked_button == btn_new_session:
+        token = getattr(parent, 'token_jwt', None)
+        if token:
+            try:
+                response = requests.post(
+                    "http://localhost:8000/logout",
+                    json={"token": token},
+                    timeout=3
+                )
+                print(f"Logout backend response: {response.status_code} {response.text}")
+            except Exception as e:
+                print(f"Error al llamar /logout: {e}")
+        else:
+            print("No se encontró token_jwt en la ventana principal.")
         parent.hide()
         parent.login_window = LoginWindow()
         parent.login_window.show()
