@@ -880,8 +880,14 @@ class MainWindow(QMainWindow):
 
     def workflow_guardar_resultados(self):
         btn = self.ui.pushButton_8  # Guardar Resultados
+        btn2 = self.ui.pushButton_report  # Generar Informe
+        btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
+        # Only enable the highlighted button, disable the others
+        btn.setEnabled(True)
+        btn2.setEnabled(False)
+        btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Haz clic para guardar los resultados del análisis')
         
         def on_click():
@@ -892,10 +898,15 @@ class MainWindow(QMainWindow):
 
     def workflow_generar_informe(self):
         btn = self.ui.pushButton_report  # Generar Informe
+        btn2 = self.ui.pushButton_8  # Guardar Resultados
+        btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        self.iluminar_btn(btn, '#FBC02D', 'Genera el informe PDF del análisis')
+        # Only enable the highlighted button, disable the others
         btn.setEnabled(True)
+        btn2.setEnabled(False)
+        btn3.setEnabled(False)
+        self.iluminar_btn(btn, '#FBC02D', 'Genera el informe PDF del análisis')
         
         def on_click():
             btn.clicked.disconnect(on_click)
@@ -905,8 +916,14 @@ class MainWindow(QMainWindow):
 
     def workflow_reiniciar(self):
         btn = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
+        btn2 = self.ui.pushButton_8  # Guardar Resultados
+        btn3 = self.ui.pushButton_report  # Generar Informe
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
+        # Only enable the highlighted button, disable the others
+        btn.setEnabled(True)
+        btn2.setEnabled(False)
+        btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Reinicia el sistema para un nuevo análisis')
         
         def on_click():
