@@ -99,7 +99,7 @@ def configurar_botones_comunes(parent, ui, rol_usuario, token_jwt):
             ui.pushButton_rutaInforme.setEnabled(False)
 
     else:
-        print(f"🌐 Abriendo panel admin con token: {token_jwt}")
+        print(f"Abriendo panel admin con token: {token_jwt}")
         ui.pushButton_pcontrol.clicked.connect(lambda: webbrowser.open(f"http://localhost:8000/admin?token={token_jwt}"))
 
 

@@ -58,12 +58,12 @@ def mostrar_panel_admin(request: Request, token: str = Query(None)):
                 SELECT 1 FROM SOLICITUD_CAMBIO_PASSWORD s
                 WHERE s.email_usuario = u.email_usuario AND s.estado_solicitud = 'pendiente'
             ) AS tiene_solicitud_pendiente
-        FROM usuario u
+        FROM USUARIO u
     """)
     usuarios = cursor.fetchall()
 
     
-    cursor.execute("SELECT id_rollo, ruta_local_rollo, estado_rollo FROM rollo WHERE estado_rollo = 'controlado'")
+    cursor.execute("SELECT id_rollo, ruta_local_rollo, estado_rollo FROM ROLLO WHERE estado_rollo = 'controlado'")
     rollos = cursor.fetchall()
 
     cursor.execute("""
@@ -103,7 +103,7 @@ async def crear_usuario_desde_panel(
     """
     try:
         # Verificar si ya existe ese email
-        cursor.execute("SELECT * FROM usuario WHERE email_usuario = %s", (email_usuario,))
+        cursor.execute("SELECT * FROM USUARIO WHERE email_usuario = %s", (email_usuario,))
         if cursor.fetchone():
             print(f"Usuario ya existe: {email_usuario}")
         else:
@@ -132,7 +132,7 @@ async def toggle_usuario_activo(id_usuario: int = Form(...), token: str = Form(.
     cursor = conn.cursor()
 
     # Obtener estado actual
-    cursor.execute("SELECT activo FROM usuario WHERE id_usuario = %s", (id_usuario,))
+    cursor.execute("SELECT activo FROM USUARIO WHERE id_usuario = %s", (id_usuario,))
     result = cursor.fetchone()
     if not result:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -154,7 +154,7 @@ async def cambiar_rol_usuario(id_usuario: int = Form(...), token: str = Form(...
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT rol FROM usuario WHERE id_usuario = %s", (id_usuario,))
+    cursor.execute("SELECT rol FROM USUARIO WHERE id_usuario = %s", (id_usuario,))
     result = cursor.fetchone()
     if not result:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

@@ -138,7 +138,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.png")
+        ruta_icono = os.path.abspath(ruta_icono)
         self.setWindowIcon(QIcon(ruta_icono))
         self.showMaximized()
         self.setWindowTitle("ISLI - Control de Calidad")
@@ -469,7 +470,7 @@ class MainWindow(QMainWindow):
                     # Borrar carpetas originales y procesado
                     shutil.rmtree(ruta_originales)
                     shutil.rmtree(ruta_procesado)
-                    print(f"♻️ Rollo restaurado: {carpeta}")
+                    print(f"Rollo restaurado: {carpeta}")
                 except Exception as e:
                     print(f"Error al restaurar {carpeta}: {e}")
 

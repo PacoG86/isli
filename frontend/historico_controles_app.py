@@ -261,7 +261,8 @@ class HistoricoControlesWindow(QWidget):
         self.ui = Ui_Form_historico()
         self.ui.setupUi(self)
         self.showMaximized()
-        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.png")
+        ruta_icono = os.path.abspath(ruta_icono)
         self.setWindowIcon(QIcon(ruta_icono))
         self.id_usuario = id_usuario
         self.configurar_tabla()

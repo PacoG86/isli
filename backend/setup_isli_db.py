@@ -94,7 +94,7 @@ if __name__ == "__main__":
     )
     cursor = conn.cursor()
     for nombre, email, raw_pass, rol in usuarios:
-        cursor.execute("SELECT * FROM usuario WHERE email_usuario = %s", (email,))
+        cursor.execute("SELECT * FROM USUARIO WHERE email_usuario = %s", (email,))
         if cursor.fetchone():
             print(f"Usuario ya existe: {email} → no insertado")
             continue

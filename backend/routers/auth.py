@@ -110,7 +110,7 @@ def login(usuario: dict):
     
     # Buscar usuario activo por correo
     cursor.execute("""
-        SELECT * FROM usuario
+        SELECT * FROM USUARIO
         WHERE email_usuario = %s AND activo = 1
     """, (usuario["correo"],))
     

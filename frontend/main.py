@@ -31,7 +31,8 @@ class LoginWindow(QMainWindow):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.setWindowTitle("Login ISLI")
-        ruta_icono = os.path.abspath("logo_isli.png")
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.png")
+        ruta_icono = os.path.abspath(ruta_icono)
         self.setWindowIcon(QIcon(ruta_icono))
         
         self.ui.pushButton_login.clicked.connect(self.login)

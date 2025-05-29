@@ -190,7 +190,7 @@ Usado por el endpoint /login.</p>
 </span><span id="L-106"><a href="#L-106"><span class="linenos">106</span></a>    
 </span><span id="L-107"><a href="#L-107"><span class="linenos">107</span></a>    <span class="c1"># Buscar usuario activo por correo</span>
 </span><span id="L-108"><a href="#L-108"><span class="linenos">108</span></a>    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="s2">        SELECT * FROM usuario</span>
+</span><span id="L-109"><a href="#L-109"><span class="linenos">109</span></a><span class="s2">        SELECT * FROM USUARIO</span>
 </span><span id="L-110"><a href="#L-110"><span class="linenos">110</span></a><span class="s2">        WHERE email_usuario = </span><span class="si">%s</span><span class="s2"> AND activo = 1</span>
 </span><span id="L-111"><a href="#L-111"><span class="linenos">111</span></a><span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">usuario</span><span class="p">[</span><span class="s2">&quot;correo&quot;</span><span class="p">],))</span>
 </span><span id="L-112"><a href="#L-112"><span class="linenos">112</span></a>    
@@ -441,7 +441,7 @@ Usa bcrypt con semilla aleatoria. Se recomienda para creación y actualización 
 </span><span id="login-107"><a href="#login-107"><span class="linenos">107</span></a>    
 </span><span id="login-108"><a href="#login-108"><span class="linenos">108</span></a>    <span class="c1"># Buscar usuario activo por correo</span>
 </span><span id="login-109"><a href="#login-109"><span class="linenos">109</span></a>    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
-</span><span id="login-110"><a href="#login-110"><span class="linenos">110</span></a><span class="s2">        SELECT * FROM usuario</span>
+</span><span id="login-110"><a href="#login-110"><span class="linenos">110</span></a><span class="s2">        SELECT * FROM USUARIO</span>
 </span><span id="login-111"><a href="#login-111"><span class="linenos">111</span></a><span class="s2">        WHERE email_usuario = </span><span class="si">%s</span><span class="s2"> AND activo = 1</span>
 </span><span id="login-112"><a href="#login-112"><span class="linenos">112</span></a><span class="s2">    &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">usuario</span><span class="p">[</span><span class="s2">&quot;correo&quot;</span><span class="p">],))</span>
 </span><span id="login-113"><a href="#login-113"><span class="linenos">113</span></a>    
