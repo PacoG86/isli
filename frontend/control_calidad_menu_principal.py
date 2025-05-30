@@ -881,6 +881,8 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_8  # Guardar Resultados
         btn2 = self.ui.pushButton_report  # Generar Informe
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
+        # Deshabilitar también el botón de iniciar control
+        self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
         # Solo habilitar el botón resaltado, deshabilitar los otros
@@ -899,6 +901,8 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_report  # Generar Informe
         btn2 = self.ui.pushButton_8  # Guardar Resultados
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
+        # Deshabilitar también el botón de iniciar control
+        self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
         # Solo habilitar el botón resaltado, deshabilitar los otros
@@ -917,6 +921,8 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         btn2 = self.ui.pushButton_8  # Guardar Resultados
         btn3 = self.ui.pushButton_report  # Generar Informe
+        # Deshabilitar también el botón de iniciar control
+        self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
         # Solo habilitar el botón resaltado, deshabilitar los otros
@@ -928,6 +934,7 @@ class MainWindow(QMainWindow):
         def on_click():
             btn.clicked.disconnect(on_click)
             self.reset_button(btn, orig_style, orig_tooltip)
+            self.ui.pushButton_5.setEnabled(True)  # Rehabilitar solo al final del workflow
         btn.clicked.connect(on_click)
 
     # --- Fin de Workflow ---
