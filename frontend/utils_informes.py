@@ -151,7 +151,7 @@ def guardar_registro_informe(id_control, ruta_pdf, generado_por):
         "ruta_pdf": ruta_pdf,
         "generado_por": generado_por,
         "fecha_generacion": datetime.now().isoformat(),
-        "notas": ""  # se podrá actualizar más adelante desde la pantalla de histórico
+        "notas": ""  # se puede actualizar desde la pantalla de histórico
     }
 
     try:

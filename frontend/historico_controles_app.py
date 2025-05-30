@@ -36,12 +36,12 @@ class HistoricoControlesWindow(QWidget):
         """
         params = {}
 
-        # Filtro por cantidad máxima de defectos
+        # Filtro por cantidad máxima de defectos en rollo
         max_defectos = self.ui.spinBox_numDefectos.value()
         if max_defectos > 0:
             params["max_defectos"] = max_defectos
 
-        # Filtro por tamaño máximo de defecto
+        # Filtro por tamaño máximo de defecto individual analizado
         max_dim = self.ui.doubleSpinBox_dimDefectos.value()
         if max_dim > 0:
             params["max_dim"] = max_dim
@@ -74,7 +74,7 @@ class HistoricoControlesWindow(QWidget):
         self.ui.spinBox_numDefectos.setValue(0)
         self.ui.doubleSpinBox_dimDefectos.setValue(0.0)
 
-        # Reset ComboBox
+        # Resetear ComboBox
         self.ui.comboBox_listaUsuarios.setCurrentIndex(0)
 
         # Resetear fechas al día actual (o al mínimo)
@@ -86,7 +86,6 @@ class HistoricoControlesWindow(QWidget):
         self.cargar_datos_historico()
 
     
-
     def mostrar_datos_en_tabla(self, controles):
         """
         Muestra en la tabla los datos de controles pasados como lista de diccionarios.
@@ -209,7 +208,7 @@ class HistoricoControlesWindow(QWidget):
         """
         nueva_ruta = QFileDialog.getExistingDirectory(self, "Seleccionar carpeta para informes")
         if nueva_ruta:
-            # Convert to forward slashes for config portability
+            # Convertir forward slashes a backward slashes para compatibilidad
             nueva_ruta = nueva_ruta.replace("\\", "/")
             try:
                 # Abrimos y modificamos el config.json
@@ -226,7 +225,7 @@ class HistoricoControlesWindow(QWidget):
             QMessageBox.information(self, "Ruta actualizada", f"Nueva carpeta para informes:\n{nueva_ruta}")
     
     def actualizar_nota_en_background(self, id_control, nota):
-        tarea = NotaUpdater(id_control, nota)
+        tarea = ActualizadorNotas(id_control, nota)
         QThreadPool.globalInstance().start(tarea)
     
     def on_cell_changed(self, row, column):
@@ -308,7 +307,7 @@ class HistoricoControlesWindow(QWidget):
                 print(f"Error al revocar token en closeEvent: {e}")
         event.accept()  # Permite el cierre inmediato
 
-class NotaUpdater(QRunnable):
+class ActualizadorNotas(QRunnable):
     def __init__(self, id_control, nota):
         super().__init__()
         self.id_control = id_control

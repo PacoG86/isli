@@ -1,3 +1,6 @@
+"""CLASE DESARROLLADA DURANTE MIS PRÁCTICAS EN TUPL PARA CLIENTE REAL
+   CON OBJETO DE SEGMENTAR Y VISUALIZAR DE DEFECTOS OSCUROS EN IMÁGENES INDUSTRIALES.
+"""
 import cv2
 import numpy as np
 from typing import Dict, Tuple, Union
@@ -53,64 +56,38 @@ class BlackSpotsSegmentation:
         """
         x, y, w, h = bbox["x"], bbox["y"], bbox["w"], bbox["h"]
 
-        # Make a copy to avoid modifying the original
+        # Copia para no modificar la imagen original
         image_with_box = image.copy()
 
-        # Bounding box coordinates
+        # Coordenadas bounding box
         start_point = (x, y)
         end_point = (x + w, y + h)
 
-        # Box settings
+        # Propiedades del bounding box
         box_color = (255, 255, 255)  # Green
         thickness = 2
 
-        # Draw the bounding box
+        # Dibujamos el bounding box
         cv2.rectangle(image_with_box, start_point, end_point, box_color, thickness)
 
-        # Font settings
+        # Props de la fuente
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = 0.7
         text_thickness = 1
         text_color = (0, 255, 0)
 
-        # Get text size to draw a background rectangle if needed
+        # Obtenemos el tamaño del texto y su posición si es necesario
         (text_width, text_height), baseline = cv2.getTextSize(category, font, font_scale, text_thickness)
         text_origin = (x, y - 0 if y - 0 > text_height else y + text_height + 0)
 
-        # Optional: Draw background rectangle for better visibility
+        # Dijamos un rectángulo detrás del texto para mejorar la visibilidad
         cv2.rectangle(image_with_box, (text_origin[0], text_origin[1] - text_height),
                     (text_origin[0] + text_width, text_origin[1] + baseline), box_color, -1)
 
-        # Draw the category text
+        # Dibujamos el texto
         cv2.putText(image_with_box, category, text_origin, font, font_scale, (0, 0, 0), text_thickness, cv2.LINE_AA)
 
         return image_with_box
-
-    @staticmethod
-    def get_image_crop(image: np.ndarray[np.uint8], bbox: Dict[str, int]) -> np.ndarray[np.uint8]:
-        """
-        Extrae y devuelve una región recortada de la imagen original según un bounding box.
-
-        Este método permite aislar una sección rectangular de la imagen especificada
-        por las coordenadas y dimensiones indicadas en el diccionario `bbox`.
-
-        Args:
-            image (np.ndarray): Imagen de entrada (en escala de grises o RGB).
-            bbox (Dict[str, int]): Diccionario con las coordenadas del recorte. Debe incluir:
-                - "x": coordenada horizontal del vértice superior izquierdo.
-                - "y": coordenada vertical del vértice superior izquierdo.
-                - "w": ancho del recorte.
-                - "h": alto del recorte.
-
-        Returns:
-            np.ndarray: Imagen recortada según las coordenadas especificadas.
-        """
-        x_init = max(0, bbox["x"])
-        y_init = max(0, bbox["y"])
-        x_fin = min(image.shape[1], bbox["x"]+bbox["w"])
-        y_fin = min(image.shape[0], bbox["y"]+bbox["h"])
-
-        return image[y_init:y_fin, x_init:x_fin]
 
     @staticmethod
     def create_bimodal_histogram(image: np.ndarray[np.uint8], peak1: int = 20, peak2: int = 240, weight1: float = 0.99, weight2: float = 0.01) -> np.ndarray[np.uint8]:
@@ -319,15 +296,6 @@ class BlackSpotsSegmentation:
         for idx, (area, centroid) in enumerate(zip(stats[:, cv2.CC_STAT_AREA], centroids[:])):
             if idx == 0:
                 continue
-
-            #x_init = stats[idx, cv2.CC_STAT_LEFT]
-            #y_init = stats[idx, cv2.CC_STAT_TOP]
-            #x_fin = x_init + stats[idx, cv2.CC_STAT_WIDTH]
-            #y_fin = y_init + stats[idx, cv2.CC_STAT_HEIGHT]
-            #cv2.rectangle(original_image, (x_init, y_init), (x_fin, y_fin), (0, 255, 0), 2)
-            #print(gray_cropped_black_dots[y_init:y_fin, x_init:x_fin,].mean(), gray_cropped_black_dots[y_init:y_fin, x_init:x_fin,].std())
-            #if gray_cropped_black_dots[y_init:y_fin, x_init:x_fin,].std() < 4.0 and gray_cropped_black_dots[y_init:y_fin, x_init:x_fin,].mean() > 120:
-            #    continue
             
             if area*pixel_to_mm*pixel_to_mm >= max_acceptable_blackspot_area:
 
@@ -336,9 +304,6 @@ class BlackSpotsSegmentation:
             else:
 
                 blackspot_binary_image_ok[labels == idx] = True
-
-                #cv2.putText(annotated_image, str(area*pixel_area_in_mm), (int(centroid[0]), int(centroid[1])), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-
 
         return blackspot_binary_image_ok, blackspot_binary_image_nok
 
@@ -361,7 +326,7 @@ class BlackSpotsSegmentation:
             - Luego se aplica `create_bimodal_histogram()` para aumentar el contraste local.
         """
         
-        # Low-pass filter to avoid low-intensity areas that creates a third peak in the image histogram
+        # Limitar la intensidad máxima al valor de la mediana
         median_gray = np.median(image)
         image[image > median_gray] = median_gray
 
@@ -462,7 +427,7 @@ class BlackSpotsSegmentation:
         JSON_PATH = os.path.join(base_path, "formaspack_test_black_dots.json")
         IMAGES_ROLL_PATH = os.path.join(base_path, roll_name)
 
-        # Create mediciones and detecciones folders
+        # Crea las carpetas de salida para mediciones y detecciones si no existen
         detecciones_path = os.path.join(IMAGES_ROLL_PATH, "detecciones")
         mediciones_path = os.path.join(IMAGES_ROLL_PATH, "mediciones")
 

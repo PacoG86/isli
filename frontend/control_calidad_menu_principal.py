@@ -98,7 +98,7 @@ class HighQualityImageView(QGraphicsView):
         rect = QRectF(0, 0, view_width, view_height)
         self.scene.addRect(rect, brush=QBrush(QColor(self.current_bg_color)))
         
-        # Texto proporcional - ajustamos el tamaño de la fuente según las dimensiones actuales
+        # Texto proporcional, ajustamos el tamaño de la fuente según las dimensiones actuales
         font_size = max(10, int(min(view_width, view_height) * 0.08))
         font = QFont("Arial", font_size, QFont.Bold)
         
@@ -140,7 +140,8 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.png")
         ruta_icono = os.path.abspath(ruta_icono)
-        self.setWindowIcon(QIcon(ruta_icono))
+        icon = QIcon(ruta_icono)
+        self.setWindowIcon(icon)
         self.showMaximized()
         self.setWindowTitle("ISLI - Control de Calidad")
         self.setupUiConnections()
@@ -162,7 +163,7 @@ class MainWindow(QMainWindow):
         self.base_folder = base_folder
         
         # Inicializar variables
-        self.folder = None  # La carpeta actual seleccionada
+        self.folder = None  # Directorio actual seleccionado
         self.images = []
         self.index = 0
         self.analisis_completado = False
@@ -177,9 +178,8 @@ class MainWindow(QMainWindow):
         self.boton_color_original = self.ui.pushButton_5.styleSheet()
         
         # Configurar UI
-        #self.configurar_combobox()
         self.configurar_tabla()
-        self.reemplazar_qlabels()
+        self.remplazar_visores()
         self.ui.progressBar.setValue(0)
         
         # Conectar señales
@@ -190,7 +190,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_historico.clicked.connect(self.abrir_ventana_historico)
         self.ui.pushButton_gAlmacen.clicked.connect(self.seleccionar_ruta_almacen)
 
-        self.ui.pushButton_5.setEnabled(False)  # Disable 'Iniciar Control de Calidad' at start
+        self.ui.pushButton_5.setEnabled(False)  # Desabilita botón 'Iniciar Control de Calidad' al arrancar la app
         self.prompt_reiniciar_on_start()
 
     def abrir_ventana_historico(self):
@@ -267,7 +267,7 @@ class MainWindow(QMainWindow):
             self.configurar_combobox()
         return super().eventFilter(obj, event)
 
-    def reemplazar_qlabels(self):
+    def remplazar_visores(self): # Reemplaza los visores de imágenes por instancias de HighQualityImageView
         layout = self.ui.frame_3.layout()
         while layout.count():
             item = layout.takeAt(0)
@@ -442,7 +442,7 @@ class MainWindow(QMainWindow):
         self.ui.label_6.setText("Detalles imagen")
         self.ui.progressBar.setValue(0)
         
-        # Opcional: limpiar la tabla
+        # Limpiar la tabla
         self.ui.tableWidget.setRowCount(0)
 
         # Restablecer valores de los spinboxes
@@ -654,7 +654,7 @@ class MainWindow(QMainWindow):
 
             # Compilar estructura del payload
             data = {
-                "id_usuario": self.id_usuario,  # Sustituye esto cuando tengas login real
+                "id_usuario": self.id_usuario,
                 "umbral_tamano_defecto": umbral,
                 "num_defectos_tolerables_por_tamano": max_defectos,
                 "fecha_control": timestamp_actual,
@@ -662,7 +662,7 @@ class MainWindow(QMainWindow):
                     "ruta_local_rollo": ruta_rollo,
                     "nombre_rollo": nombre_rollo,
                     "num_defectos_rollo": num_defectos_en_rollo,
-                    "total_defectos_intolerables_rollo": 0,  # Se calculará más abajo
+                    "total_defectos_intolerables_rollo": 0,  # Se calcula más abajo
                     "resultado_rollo": "ok",  # Se modificará si se detectan defectos no tolerables
                     "orden_analisis": orden_analisis  # O el número correspondiente si haces múltiples controles por sesión
                 },
@@ -707,8 +707,6 @@ class MainWindow(QMainWindow):
             data["rollo"]["total_defectos_intolerables_rollo"] = defectos_intolerables
             data["rollo"]["resultado_rollo"] = "nok" if defectos_intolerables > 0 else "ok"
 
-            # Enviar al backend
-            print(f"Payload enviado al backend:\n{json.dumps(data, indent=2)}")
             response = requests.post("http://localhost:8000/controles/nuevo", json=data)
 
             if response.status_code == 200:
@@ -768,7 +766,7 @@ class MainWindow(QMainWindow):
 
         # Registrar el informe en la base de datos
         guardar_registro_informe(
-            id_control=int(id_control), # asegúrarse de que sea int
+            id_control=int(id_control),
             ruta_pdf=ruta_hist_pdf,
             generado_por=self.id_usuario
         )
@@ -864,7 +862,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_report.setEnabled(True)
         self.workflow_after_analysis()
 
-    # --- Workflog postcontrol de botones iluminados ---
+    # --- Workflow postcontrol de botones iluminados ---
     def iluminar_btn(self, button, color, tooltip):
         button.setStyleSheet(f"background-color: {color}; color: black; font-weight: bold;")
         button.setToolTip(tooltip)
@@ -876,7 +874,7 @@ class MainWindow(QMainWindow):
             button.setToolTip(tooltip)
 
     def workflow_after_analysis(self):
-        # Step 1: Highlight 'Guardar Resultados'
+        # Paso 1: Iluminar 'Guardar Resultados'
         self.workflow_guardar_resultados()
 
     def workflow_guardar_resultados(self):
@@ -885,7 +883,7 @@ class MainWindow(QMainWindow):
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Only enable the highlighted button, disable the others
+        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
@@ -903,7 +901,7 @@ class MainWindow(QMainWindow):
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Only enable the highlighted button, disable the others
+        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
@@ -921,7 +919,7 @@ class MainWindow(QMainWindow):
         btn3 = self.ui.pushButton_report  # Generar Informe
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Only enable the highlighted button, disable the others
+        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
@@ -932,7 +930,7 @@ class MainWindow(QMainWindow):
             self.reset_button(btn, orig_style, orig_tooltip)
         btn.clicked.connect(on_click)
 
-    # --- End Guided Workflow ---
+    # --- Fin de Workflow ---
 
     def seleccionar_ruta_almacen(self):
         """Permite al usuario cambiar la carpeta raíz donde se almacenan los rollos."""
@@ -968,7 +966,7 @@ class MainWindow(QMainWindow):
         btn.clicked.connect(on_click)
 
 
-# Este bloque servía para pruebas directas de MainWindow, pero ya no se usa
+# Bloque para pruebas directas de MainWindow, pero ya no se usa
 # porque el flujo completo comienza desde LoginWindow (main.py).
 # Se conserva aquí solo como referencia:
 #if __name__ == "__main__":

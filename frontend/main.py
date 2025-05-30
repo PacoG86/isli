@@ -97,6 +97,9 @@ class LoginWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.ico")
+    ruta_icono = os.path.abspath(ruta_icono)
+    app.setWindowIcon(QIcon(ruta_icono))
     ventana = LoginWindow()
     ventana.show()
     sys.exit(app.exec())

@@ -1,3 +1,11 @@
+<!--
+    Esta página se utiliza para validar la sesión de un usuario en el panel de administración ISLI.
+    Cuando un usuario es redirigido aquí (típicamente después de iniciar sesión),
+    la página extrae el parámetro 'token' de la URL y lo envía al backend para su validación.
+    Si el token es válido, el usuario permanece autenticado; si no, el usuario es redirigido
+    a una página de sesión expirada. Este mecanismo ayuda a garantizar que solo los usuarios con un
+    token de sesión válido puedan acceder a los recursos protegidos del administrador.
+-->
 <!DOCTYPE html>
 <html lang="es">
 <head>

@@ -14,7 +14,10 @@
     </style>
 </head>
 <body>
-    <h1>Panel de Control ISLI</h1>
+    <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+        <img src="/assets/logo_isli.png" alt="ISLI Logo" style="height: 60px;">
+        <h1 style="margin: 0;">Panel de Control ISLI</h1>
+    </div>
     <p>Esta sección está disponible solo para usuarios con rol <strong>administrador</strong>.</p>
 
     <hr>
@@ -157,7 +160,7 @@
     </button>
 
 <script>
-// --- Token polling for session expiration ---
+// --- Validación periódica de sesión de token ---
 function getTokenFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('token');
@@ -178,7 +181,7 @@ function checkTokenValidity() {
             window.location.href = '/admin/session_expired.html';
         });
 }
-setInterval(checkTokenValidity, 5000); // Check every 5 seconds
+setInterval(checkTokenValidity, 5000); // verifica cada 5 segundos
 </script>
 
 </body>

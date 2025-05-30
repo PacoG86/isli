@@ -5,8 +5,6 @@ from PySide6.QtWidgets import QDialog, QMessageBox
 from UI.solicitud_password_dialog import Ui_Dialog
 from datetime import datetime
 
-# solicitud_password_window.py - Ventana emergente para que el usuario solicite un cambio de contraseña.
-
 class SolicitudPasswordWindow(QDialog):
     """
     Ventana de diálogo para solicitar un cambio de contraseña.
@@ -31,7 +29,6 @@ class SolicitudPasswordWindow(QDialog):
         # Conectamos botones
         self.ui.pushButton_enviar.clicked.connect(self.enviar_solicitud)
         self.ui.pushButton_cancelar.clicked.connect(self.close)
-
     
     def enviar_solicitud(self):
         """
@@ -52,7 +49,7 @@ class SolicitudPasswordWindow(QDialog):
             QMessageBox.warning(self, "Campos requeridos", "Por favor, introduce una nueva contraseña.")
             return
 
-        # --- Validación sencilla de contraseña ---
+        # --- Validación de contraseña ---
         mensaje_restricciones = (
             "La contraseña debe tener al menos 8 caracteres, incluyendo "
             "letras, mayúsculas, números y caracteres especiales."

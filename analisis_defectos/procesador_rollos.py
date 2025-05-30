@@ -114,7 +114,6 @@ def analizar_rollo(base_path: str, rollo: str, json_filename: str = "formaspack_
         with open(json_tipo_path, "w", encoding="utf-8") as f_json:
             json.dump({"tipos": tipos_unicos}, f_json, indent=2, ensure_ascii=False)
 
-
         # Mover imagen original
         shutil.move(ruta_img, os.path.join(carpeta_originales, nombre_img))
 

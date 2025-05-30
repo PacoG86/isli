@@ -1,9 +1,11 @@
+# Script para inicializar la base de datos MySQL de ISLI: crea el esquema, las tablas y usuarios iniciales.
+# Lee la configuración de la base de datos desde .env y ejecuta el SQL de 01_crear_base_datos_isli_v3.sql.
+
 import mysql.connector
 from passlib.context import CryptContext
 import os
 from dotenv import load_dotenv
 
-# Load environment variables for DB connection
 load_dotenv()
 
 DB_HOST = os.getenv("DB_HOST", "localhost")

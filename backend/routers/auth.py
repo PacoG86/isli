@@ -9,19 +9,19 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
-import bcrypt  # Importar bcrypt directamente
+import bcrypt
 from unidecode import unidecode
 
 load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY", "superclave")
 ALGORITHM = "HS256"
-# Cambia aquí el tiempo de expiración del token (por ejemplo, 8 horas = 480 minutos)
-ACCESS_TOKEN_EXPIRE_MINUTES = 480
+# Establece tiempo de expiración del token
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 login_router = APIRouter()
 
-# In-memory token blacklist (for demo; use DB for production)
+# Conjunto para almacenar tokens revocados (blacklist temporal)
 REVOKED_TOKENS = set()
 
 def verificar_contrasena(plain_password, hashed_password):

@@ -94,7 +94,7 @@ def guardar_control_calidad(control: ControlCalidadInput):
             id_imagen = cursor.lastrowid
 
             for defecto in img.defectos:
-                # Este bloque ahora guarda tipo y valor del defecto (min o max)
+                # Este bloque guarda tipo y valor del defecto (min o max)
                 cursor.execute("""
                     INSERT INTO DEFECTO_MEDIDO (id_imagen, area_mm, tipo_valor, tipo_defecto)
                     VALUES (%s, %s, %s, %s)
@@ -139,7 +139,6 @@ def obtener_ultimo_id_control():
         cursor.close()
         conn.close()
 
-# backend/rutas/controles.py
 @router.get("/historico", response_model=List[dict])
 def obtener_historico_controles(
     max_defectos: Optional[int] = Query(None),
@@ -376,7 +375,7 @@ def registrar_solicitud_cambio(solicitud: SolicitudCambioPassword):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        # Validar existencia del correo
+        # Validar si correo existe
         cursor.execute("SELECT COUNT(*) FROM USUARIO WHERE email_usuario = %s", (solicitud.email_usuario,))
         existe = cursor.fetchone()[0]
 

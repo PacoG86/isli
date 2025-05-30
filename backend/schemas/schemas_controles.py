@@ -10,7 +10,7 @@ class DefectoMedido(BaseModel):
     """
     area: Annotated[Decimal, condecimal(gt=0, max_digits=6, decimal_places=2)]
     tipo_valor: Literal["min", "max"]
-    tipo_defecto: str  # tipo de defecto como 'punto-negro', 'cascarilla', etc.
+    tipo_defecto: str
 
 
 class ImagenDefecto(BaseModel):
