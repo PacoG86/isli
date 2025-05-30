@@ -22,7 +22,7 @@ def guardar_config_ruta(ruta):
     """
     try:
         CONFIG_FILE = "config.json"
-        # Convert to forward slashes for config portability
+        # Convertir forward slashes a backslashes para compatibilidad
         ruta = ruta.replace("\\", "/")
         # Leer configuración actual si existe
         if os.path.exists(CONFIG_FILE):
@@ -111,7 +111,6 @@ def logout(parent):
     """
     from main import LoginWindow
     import requests
-    import webbrowser
 
     msg_box = QMessageBox(parent)
     msg_box.setWindowTitle("Cerrar sesión")
@@ -126,7 +125,7 @@ def logout(parent):
     clicked_button = msg_box.clickedButton()
 
     if clicked_button == btn_yes:
-        # --- Secure logout logic ---
+        # --- Asegurar lógica de logout ---
         token = getattr(parent, 'token_jwt', None)
         if token:
             try:
@@ -140,7 +139,7 @@ def logout(parent):
                 print(f"Error al llamar /logout: {e}")
         else:
             print("No se encontró token_jwt en la ventana principal.")
-        # --- End secure logout logic ---
+        # --- Fin de lógica de seguridad ---
         despedida = QMessageBox(parent)
         despedida.setWindowTitle("Gracias")
         despedida.setText("Muchas gracias por confiar en ISLI.\n¡Hasta pronto!")

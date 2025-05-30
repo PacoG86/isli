@@ -4,7 +4,7 @@ from jose import jwt
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
-import bcrypt  # Importar bcrypt directamente
+import bcrypt
 from unidecode import unidecode
 
 load_dotenv()

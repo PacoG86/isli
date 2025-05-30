@@ -1,8 +1,6 @@
 import unittest
 import numpy as np
 import cv2
-import os
-import json
 
 # Para esta prueba unitaria, hemos simulado una pequeña función equivalente a parte del flujo 
 # de procesador_rollos.py
