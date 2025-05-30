@@ -23,13 +23,14 @@ def generar_pdf_completo(
     tolerancia_cantidad,
     ruta_destino,
     logo_path=None,
-    parent_widget=None
+    parent_widget=None,
+    abrir_pdf_automaticamente=True
 ):
     """
     Genera un informe PDF completo con datos del análisis y visores de imágenes.
 
     El informe incluye encabezado, resumen del análisis, y hasta 6 imágenes procesadas.
-    Se guarda en la ruta especificada y se abre automáticamente tras generarse.
+    Se guarda en la ruta especificada y se abre automáticamente tras generarse (si abrir_pdf_automaticamente es True).
     """
     try:
         c = canvas.Canvas(ruta_destino, pagesize=A4)
@@ -120,7 +121,8 @@ def generar_pdf_completo(
         # Mostrar mensaje de éxito
         if parent_widget:
             QMessageBox.information(parent_widget, "Informe generado", f"Informe guardado en:\n{ruta_destino}")
-        abrir_pdf(ruta_destino)
+        if abrir_pdf_automaticamente:
+            abrir_pdf(ruta_destino)
 
     except Exception as e:
         print(f"Error al generar el PDF: {e}")

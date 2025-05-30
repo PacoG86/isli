@@ -11,10 +11,15 @@ from PySide6.QtCore import QTimer, Qt
 from UI.login_window import Ui_Form
 from control_calidad_menu_principal import MainWindow
 from solicitud_password_window import SolicitudPasswordWindow
+import json
 
 API_URL = "http://localhost:8000"
-BASE_FOLDER = r"C:\Users\pgago\Desktop\arboles"
-#BASE_FOLDER = r"/Users/pacomunozgago/Downloads/arboles" (pruebas con plataforma linux)
+
+# Cargar BASE_FOLDER desde config.json
+CONFIG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config.json'))
+with open(CONFIG_PATH, encoding='utf-8') as f:
+    config = json.load(f)
+BASE_FOLDER = config.get('base_folder', os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'arboles')))
 
 class LoginWindow(QMainWindow):
     """

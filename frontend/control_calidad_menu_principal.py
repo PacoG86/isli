@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "assets", "logo_isli.png")
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "logo_isli.png")
         ruta_icono = os.path.abspath(ruta_icono)
         icon = QIcon(ruta_icono)
         self.setWindowIcon(icon)
