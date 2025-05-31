@@ -62,7 +62,7 @@ class Ui_MainWindow(object):
 "    background: transparent;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"logo_isli_white.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"logo_isli_white.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_15.setIcon(icon)
         self.pushButton_15.setIconSize(QSize(150, 150))
         self.pushButton_15.setFlat(True)

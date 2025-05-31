@@ -23,7 +23,7 @@ class SolicitudPasswordWindow(QDialog):
         self.ui = Ui_Dialog()
         self.ui.setupUi(self)
         self.setWindowTitle("Solicitud de cambio de contraseña")
-        ruta_icono = os.path.abspath("logo_isli.png")  # Ajusta según tu estructura
+        ruta_icono = os.path.abspath("logo_isli.ico")  # Ajusta según tu estructura
         self.setWindowIcon(QIcon(ruta_icono))
 
         # Conectamos botones
