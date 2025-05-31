@@ -516,9 +516,7 @@ class MainWindow(QMainWindow):
         self.timer.stop()
         self.blink_timer.stop()
         self.ui.pushButton_5.setStyleSheet("")
-        # --- MARCAR INTERRUPCIÓN ---
-        self.control_interrumpido = True
-
+        # --- MARCAR INTERRUPCIÓN SOLO SI SE CONFIRMA ---
         respuesta = QMessageBox.question(
             self,
             "Confirmar interrupción",
@@ -527,6 +525,7 @@ class MainWindow(QMainWindow):
         )
 
         if respuesta == QMessageBox.Yes:
+            self.control_interrumpido = True
             # Mostrar mensaje en visores
             if not self.analisis_completado and self.images:
                 self.image_view1.showMessage("⚠️ Control cancelado", "#708090")
