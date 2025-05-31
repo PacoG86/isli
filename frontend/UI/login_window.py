@@ -41,7 +41,12 @@ class Ui_Form(object):
         self.frame.setObjectName(u"frame")
         sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
         self.frame.setSizePolicy(sizePolicy)
-        self.frame.setStyleSheet(u"background-color: rgb(205, 222, 195)")
+        self.frame.setStyleSheet(u"QFrame {\n"
+"    background-color: #D1D1D1;\n"
+"    border-radius: 18px;\n"
+"    border: 1px solid #d1dbe6;\n"
+"}\n"
+"")
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.pushButton = QPushButton(self.frame)
@@ -57,8 +62,9 @@ class Ui_Form(object):
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setGeometry(QRect(80, 240, 451, 201))
         self.scrollArea.setStyleSheet(u"border: 1 solid;\n"
-"border-color: rgb(170, 170, 0);\n"
-"border-radius: 5;")
+"border-color: #708090;\n"
+"border-radius: 5;\n"
+"background-color: #D1D1D1;")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
@@ -72,30 +78,38 @@ class Ui_Form(object):
         font.setBold(True)
         font.setItalic(False)
         self.label_2.setFont(font)
-        self.label_2.setStyleSheet(u"border: 2 solid;\n"
-"border-color: rgb(170, 170, 127);\n"
+        self.label_2.setStyleSheet(u"border: 1px solid rgb(89, 89, 89);\n"
 "font: 700 11pt \"Segoe UI\";\n"
 "border-radius: 5;\n"
-"background-color: rgb(227, 227, 169);")
+"background-color: #708090;\n"
+"color: rgb(255, 255, 255);")
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.label_4 = QLabel(self.scrollAreaWidgetContents)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setGeometry(QRect(20, 80, 411, 31))
         self.label_4.setFont(font)
-        self.label_4.setStyleSheet(u"border: 2 solid;\n"
-"border-color: rgb(170, 170, 127);\n"
+        self.label_4.setStyleSheet(u"border: 1px solid rgb(89, 89, 89);\n"
 "font: 700 11pt \"Segoe UI\";\n"
 "border-radius: 5;\n"
-"background-color: rgb(227, 227, 169);")
+"background-color: #708090;\n"
+"color: rgb(255, 255, 255);")
         self.label_4.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.lineEdit = QLineEdit(self.scrollAreaWidgetContents)
         self.lineEdit.setObjectName(u"lineEdit")
         self.lineEdit.setGeometry(QRect(140, 20, 291, 31))
-        self.lineEdit.setStyleSheet(u"background-color: rgb(241, 241, 241);\n"
-"border: 2 solid;\n"
-"border-color: rgb(170, 170, 0);\n"
-"border-radius: 5;\n"
-"color: rgb(170, 170, 127);")
+        self.lineEdit.setStyleSheet(u"QLineEdit {\n"
+"    background-color: #ffffff;\n"
+"	border: 1px solid rgb(89, 89, 89);\n"
+"    border-radius: 8px;\n"
+"    color: #2d4059;\n"
+"    padding-left: 8px;\n"
+"    font-size: 12pt;\n"
+"}\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #304ffe;\n"
+"    background-color: #f0f4ff;\n"
+"}\n"
+"")
         self.lineEdit.setMaxLength(40)
         self.lineEdit.setEchoMode(QLineEdit.EchoMode.Normal)
         self.lineEdit.setClearButtonEnabled(True)
@@ -107,17 +121,18 @@ class Ui_Form(object):
         self.pushButton_login.setAcceptDrops(False)
         self.pushButton_login.setStyleSheet(u"QPushButton {\n"
 "    font: 700 11pt \"Segoe UI\";\n"
-"    border: 2px solid rgb(170, 170, 127);\n"
+"    border: 1px solid rgb(89, 89, 89);\n"
 "    border-radius: 10;\n"
-"    background-color: rgb(227, 227, 169);\n"
+"    background-color: #708090;\n"
+"    color: #FFFFFF;\n"
 "}\n"
-"\n"
 "QPushButton:hover {\n"
-"    background-color: rgb(240, 240, 180);\n"
+"    background-color: #607080;\n"
+"    color: #FFFFFF;\n"
 "}\n"
-"\n"
 "QPushButton:pressed {\n"
-"    background-color: rgb(200, 200, 140);\n"
+"    background-color: #505A6A;\n"
+"    color: #FFFFFF;\n"
 "}")
         self.pushButton_login.setCheckable(False)
         self.pushButton_login.setAutoDefault(False)
@@ -125,11 +140,19 @@ class Ui_Form(object):
         self.lineEdit_3 = QLineEdit(self.scrollAreaWidgetContents)
         self.lineEdit_3.setObjectName(u"lineEdit_3")
         self.lineEdit_3.setGeometry(QRect(140, 80, 291, 31))
-        self.lineEdit_3.setStyleSheet(u"background-color: rgb(241, 241, 241);\n"
-"border: 2 solid;\n"
-"border-color: rgb(170, 170, 0);\n"
-"border-radius: 5;\n"
-"color: rgb(170, 170, 127);")
+        self.lineEdit_3.setStyleSheet(u"QLineEdit {\n"
+"    background-color: #ffffff;\n"
+"    border: 1px solid rgb(89, 89, 89);\n"
+"    border-radius: 8px;\n"
+"    color: #2d4059;\n"
+"    padding-left: 8px;\n"
+"    font-size: 12pt;\n"
+"}\n"
+"QLineEdit:focus {\n"
+"    border: 2px solid #304ffe;\n"
+"    background-color: #f0f4ff;\n"
+"}\n"
+"")
         self.lineEdit_3.setMaxLength(40)
         self.lineEdit_3.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
         self.lineEdit_3.setClearButtonEnabled(True)
@@ -162,11 +185,12 @@ class Ui_Form(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
-        self.label.setGeometry(QRect(100, 190, 411, 21))
+        self.label.setGeometry(QRect(100, 190, 411, 28))
         font2 = QFont()
-        font2.setPointSize(14)
+        font2.setPointSize(18)
         font2.setBold(True)
         self.label.setFont(font2)
+        self.label.setStyleSheet(u"color: #2d4059; border: none; background: transparent;")
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.gridLayout_3.addWidget(self.frame, 0, 0, 1, 1)

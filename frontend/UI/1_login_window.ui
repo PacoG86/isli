@@ -50,12 +50,7 @@
        </sizepolicy>
       </property>
       <property name="styleSheet">
-       <string notr="true">QFrame {
-    background-color: #D1D1D1;
-    border-radius: 18px;
-    border: 1px solid #d1dbe6;
-}
-</string>
+       <string notr="true">background-color: rgb(205, 222, 195)</string>
       </property>
       <property name="frameShape">
        <enum>QFrame::Shape::StyledPanel</enum>
@@ -101,9 +96,8 @@ border-radius:5;</string>
        </property>
        <property name="styleSheet">
         <string notr="true">border: 1 solid;
-border-color: #708090;
-border-radius: 5;
-background-color: #D1D1D1;</string>
+border-color: rgb(170, 170, 0);
+border-radius: 5;</string>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
@@ -135,11 +129,11 @@ background-color: #D1D1D1;</string>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">border: 1px solid rgb(89, 89, 89);
+          <string notr="true">border: 2 solid;
+border-color: rgb(170, 170, 127);
 font: 700 11pt &quot;Segoe UI&quot;;
 border-radius: 5;
-background-color: #708090;
-color: rgb(255, 255, 255);</string>
+background-color: rgb(227, 227, 169);</string>
          </property>
          <property name="text">
           <string>Usuario</string>
@@ -166,11 +160,11 @@ color: rgb(255, 255, 255);</string>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">border: 1px solid rgb(89, 89, 89);
+          <string notr="true">border: 2 solid;
+border-color: rgb(170, 170, 127);
 font: 700 11pt &quot;Segoe UI&quot;;
 border-radius: 5;
-background-color: #708090;
-color: rgb(255, 255, 255);</string>
+background-color: rgb(227, 227, 169);</string>
          </property>
          <property name="text">
           <string>Contraseña</string>
@@ -189,19 +183,11 @@ color: rgb(255, 255, 255);</string>
           </rect>
          </property>
          <property name="styleSheet">
-          <string notr="true">QLineEdit {
-    background-color: #ffffff;
-	border: 1px solid rgb(89, 89, 89);
-    border-radius: 8px;
-    color: #2d4059;
-    padding-left: 8px;
-    font-size: 12pt;
-}
-QLineEdit:focus {
-    border: 2px solid #304ffe;
-    background-color: #f0f4ff;
-}
-</string>
+          <string notr="true">background-color: rgb(241, 241, 241);
+border: 2 solid;
+border-color: rgb(170, 170, 0);
+border-radius: 5;
+color: rgb(170, 170, 127);</string>
          </property>
          <property name="maxLength">
           <number>40</number>
@@ -237,10 +223,9 @@ QLineEdit:focus {
          <property name="styleSheet">
           <string notr="true">QPushButton {
     font: 700 11pt &quot;Segoe UI&quot;;
-    border: 1px solid rgb(89, 89, 89);
+    border: 2px solid rgb(170, 170, 127);
     border-radius: 10;
-    background-color: #708090;
-	color: rgb(255, 255, 255);
+    background-color: rgb(227, 227, 169);
 }
 
 QPushButton:hover {
@@ -277,19 +262,11 @@ QPushButton:pressed {
           </rect>
          </property>
          <property name="styleSheet">
-          <string notr="true">QLineEdit {
-    background-color: #ffffff;
-    border: 1px solid rgb(89, 89, 89);
-    border-radius: 8px;
-    color: #2d4059;
-    padding-left: 8px;
-    font-size: 12pt;
-}
-QLineEdit:focus {
-    border: 2px solid #304ffe;
-    background-color: #f0f4ff;
-}
-</string>
+          <string notr="true">background-color: rgb(241, 241, 241);
+border: 2 solid;
+border-color: rgb(170, 170, 0);
+border-radius: 5;
+color: rgb(170, 170, 127);</string>
          </property>
          <property name="maxLength">
           <number>40</number>
@@ -367,17 +344,14 @@ QPushButton:hover {
          <x>100</x>
          <y>190</y>
          <width>411</width>
-         <height>28</height>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>18</pointsize>
+         <pointsize>14</pointsize>
          <bold>true</bold>
         </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color: #2d4059; border: none; background: transparent;</string>
        </property>
        <property name="text">
         <string>Bienvenid@ a ISLI</string>

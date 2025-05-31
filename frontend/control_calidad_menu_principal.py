@@ -13,8 +13,8 @@ import json
 from datetime import datetime
 import requests
 from PySide6.QtWidgets import (
-    QMainWindow, QSizePolicy, QGraphicsView,
-    QGraphicsScene, QFrame, QGraphicsTextItem,
+    QMainWindow, QSizePolicy, QGraphicsView, QAbstractItemView,
+    QGraphicsScene, QFrame, QGraphicsTextItem, 
     QTableWidgetItem, QMessageBox, QFileDialog, QProgressDialog
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush, QIcon
@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "logo_isli.png")
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "logo_isli_white.png")
         ruta_icono = os.path.abspath(ruta_icono)
         icon = QIcon(ruta_icono)
         self.setWindowIcon(icon)
@@ -193,6 +193,8 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.setEnabled(False)  # Desabilita botón 'Iniciar Control de Calidad' al arrancar la app
         self.prompt_reiniciar_on_start()
 
+        self.control_interrumpido = False  # Nuevo flag para bloquear pushButton_5 tras interrupción
+
     def abrir_ventana_historico(self):
         progress = QProgressDialog("Cargando historial...", None, 0, 0, self)
         progress.setWindowTitle("ISLI - Controles")
@@ -218,8 +220,8 @@ class MainWindow(QMainWindow):
     def cargar_datos_iniciales(self):
         mostrar_siguiente_id_control(self.ui)
         self.configurar_combobox()
-        self.image_view1.showMessage("Reinicia el sistema antes\nIniciar Control de Calidad", "#2C7873", textColor= '#FBC02D')
-        self.image_view2.showMessage("Selecciona una carpeta\ny haz clic en\nIniciar Control de Calidad", "#2C7873")
+        self.image_view1.showMessage("♻️ Reinicia sistema antes de\n'Iniciar Control de Calidad'", "#708090", textColor= '#FBC02D')
+        self.image_view2.showMessage("🌀 Selecciona rollo y\n haz clic en\n'Iniciar Control de Calidad'", "#708090")
 
     def configurar_combobox(self):
         """Configura el ComboBox con las subcarpetas del directorio base, filtrando por el número máximo de imágenes"""
@@ -233,7 +235,7 @@ class MainWindow(QMainWindow):
                 print("El valor del spinBox es 0, no se cargarán carpetas.")
                 return
             
-            self.ui.comboBox.addItem("-- Seleccione un rollo --")
+            self.ui.comboBox.addItem("-- Selecciona un rollo --")
 
             subcarpetas = [
                 d for d in os.listdir(self.base_folder)
@@ -280,8 +282,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.image_view2)
         
         # Mostrar mensaje inicial en los visores
-        self.image_view1.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
-        self.image_view2.showMessage("Seleccione una carpeta\ny haga clic en\nIniciar Control de Calidad", "#2C7873")
+        self.image_view1.showMessage("♻️ Reinicia sistema antes de\n'Iniciar Control de Calidad'", "#708090", textColor= '#FBC02D')
+        self.image_view2.showMessage("🌀 Selecciona rollo y\n haz clic en\n'Iniciar Control de Calidad'", "#708090")
 
     def cargar_imagenes(self, folder):
         """Carga la lista de rutas de imágenes válidas en la carpeta"""
@@ -314,6 +316,9 @@ class MainWindow(QMainWindow):
             header.setSectionResizeMode(col, header.ResizeMode.Stretch)  # que todas se estiren por igual
 
         self.ui.tableWidget.setRowCount(0)
+
+        # --- Hacer la tabla no editable ---
+        self.ui.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def agregar_registro_a_tabla(self, ruta_imagen_original, ruta_imagen_procesada):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -372,14 +377,35 @@ class MainWindow(QMainWindow):
         Procesa las imágenes mediante la función `analizar_rollo`,
         carga las imágenes originales/procesadas, y lanza la visualización secuencial.
         """
+        # --- BLOQUEO SI INTERRUPCION ---
+        if getattr(self, 'control_interrumpido', False):
+            QMessageBox.warning(self, "Advertencia", "Reinicia sistema para continuar")
+            return
+        # --- PAUSA/RESUME LOGIC ---
         if self.timer and self.timer.isActive():
-            self.interrumpir_control()
+            # PAUSE: Stop timer, show 'Control pausado', change button text, highlight button
+            self.timer.stop()
+            self.blink_timer.stop()
+            self.ui.pushButton_5.setStyleSheet("background-color: #FFC107; color: black; font-weight: bold;")
+            self.ui.pushButton_5.setToolTip('Haz clic para reanudar el control de calidad')
+            self.image_view1.showMessage("⏸️ Control pausado", "#708090")
+            self.image_view2.showMessage("🔄 Reanude o cancele control", "#708090", textColor="#FBC02D")
+            self.ui.pushButton_5.setText("Reanudar Control de Calidad")
+            return
+        elif self.timer and not self.timer.isActive() and self.images and not self.analisis_completado:
+            # RESUME: Restart timer, restore button text and style
+            self.timer.start(2000)
+            self.blink_timer.start(500)
+            self.ui.pushButton_5.setStyleSheet("")
+            self.ui.pushButton_5.setToolTip('')
+            self.ui.pushButton_5.setText("Pausar Control de Calidad")
             return
 
         seleccion = self.ui.comboBox.currentText()
 
-        if seleccion == "-- Seleccione un rollo --":
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione una carpeta primero.")
+        # Solo mostrar un mensaje y no cambiar los QGraphicsView si no hay selección válida
+        if seleccion == "-- Seleccione un rollo --" or not seleccion or seleccion.startswith("--"):
+            QMessageBox.warning(self, "Advertencia", "No has seleccionado ningún rollo para analizar")
             return
 
         self.folder = os.path.join(self.base_folder, seleccion)
@@ -426,6 +452,7 @@ class MainWindow(QMainWindow):
         self.timer.start(2000)
 
         self.blink_timer.start(500)
+        self.ui.pushButton_5.setText("Pausar Control de Calidad")
         self.mostrar_siguiente_imagen()
 
 
@@ -434,8 +461,8 @@ class MainWindow(QMainWindow):
         self.interrumpir_control()
         
         # Limpiar visores
-        self.image_view1.showMessage("Sistema reiniciado", "#2C7873")
-        self.image_view2.showMessage("Sistema listo para\npróximo Control de Calidad", "#2C7873")
+        self.image_view1.showMessage("🟢 Sistema reiniciado", "#708090")
+        self.image_view2.showMessage("🔍 Listo para\nControl de Calidad", "#708090")
         
         # Restablecer etiquetas y barra de progreso
         self.ui.label_5.setText("Detalles imagen")
@@ -475,15 +502,22 @@ class MainWindow(QMainWindow):
                     print(f"Error al restaurar {carpeta}: {e}")
 
         self.ui.pushButton_5.setEnabled(True)  # Enable 'Iniciar Control de Calidad' after reinicio
+        # --- RESTAURAR ESTADO DE INTERRUPCIÓN ---
+        self.control_interrumpido = False
+        # Restaurar estilo original del botón tras limpiar
+        self.ui.pushButton_5.setStyleSheet(self.boton_color_original)
 
     def confirmar_interrumpir(self):
         """Muestra diálogo de confirmación antes de interrumpir el control"""
-        if not self.timer or not self.timer.isActive():
-            return  # No hay control activo que interrumpir
+        # Permitir interrupción tanto si el timer está activo como si está pausado (pero hay imágenes y no está completado)
+        if not (self.timer and (self.timer.isActive() or (not self.timer.isActive() and self.images and not self.analisis_completado))):
+            return  # No hay control activo o pausado que interrumpir
 
         self.timer.stop()
         self.blink_timer.stop()
         self.ui.pushButton_5.setStyleSheet("")
+        # --- MARCAR INTERRUPCIÓN ---
+        self.control_interrumpido = True
 
         respuesta = QMessageBox.question(
             self,
@@ -495,21 +529,25 @@ class MainWindow(QMainWindow):
         if respuesta == QMessageBox.Yes:
             # Mostrar mensaje en visores
             if not self.analisis_completado and self.images:
-                self.image_view1.showMessage("Control cancelado", "#F57C00")
-                self.image_view2.showMessage("Control cancelado", "#F57C00")
-                self.ui.label_5.setText("Control cancelado")
-                self.ui.label_6.setText("Control cancelado")
+                self.image_view1.showMessage("⚠️ Control cancelado", "#708090")
+                self.image_view2.showMessage("♻️ Reinicia sistema\npara continuar", "#708090", textColor= '#FBC02D')
+                self.ui.label_5.setText("🚫 Control cancelado")
+                self.ui.label_6.setText("🚫 Control cancelado")
             # Restaurar estilo del botón
             self.ui.pushButton_5.setText("Iniciar Control de Calidad")
-            self.ui.pushButton_5.setStyleSheet("")
+            # Restaurar estilo original del botón (no solo vaciar stylesheet)
+            self.ui.pushButton_5.setStyleSheet(self.boton_color_original)
             self.timer = None
+            # --- Volver a estado inicial: requiere reinicio ---
+            self.prompt_reiniciar_on_start()
+            self.ui.pushButton_2.setEnabled(True)
         else:
             self.timer.start(2000)
-            self.blink_timer.start(500)
+            self.blink_timer.start()
 
     def interrumpir_control(self):
         """Detiene el proceso de control de calidad"""
-        if self.timer and self.timer.isActive():
+        if self.timer and (self.timer.isActive() or (not self.timer.isActive() and self.images and not self.analisis_completado)):
             self.timer.stop()
             print("Control de calidad interrumpido")
             
@@ -519,7 +557,7 @@ class MainWindow(QMainWindow):
             
             # Mostrar mensaje de interrupción si no estaba completado
             if not self.analisis_completado and self.images:
-                self.image_view1.showMessage("Control cancelado", "#F57C00")
+                self.image_view1.showMessage("⚠️ Control cancelado", "#F57C00")
                 self.image_view2.showMessage("Control cancelado", "#F57C00")
                 self.ui.label_5.setText("Control cancelado")
                 self.ui.label_6.setText("Control cancelado")
@@ -780,7 +818,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_4.clicked.connect(lambda: self.ui.pushButton_report.setEnabled(False))  # interrumpir_control  # Deshabilitado por defecto
 
 
-    def mostrar_analisis_completado(self, mensaje="Análisis completado", color="#2E7D32"):
+    def mostrar_analisis_completado(self, mensaje="🎯 Análisis completado", color="#708090"):
         """
         Finaliza el flujo de análisis, muestra resumen global y activa la opción de generar informe.
 
@@ -798,7 +836,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_5.setStyleSheet("")
 
         self.image_view1.showMessage(f"{mensaje}\n{len(self.images)} imágenes procesadas", color)
-        self.image_view2.showMessage(f"Siga el flujo de botones\niluminados para\ncompletar proceso", color)
+        self.image_view2.showMessage(f"🔅 Siga el flujo de botones\niluminados para\ncompletar proceso", color, textColor="#FBC02D")
 
         self.ui.label_5.setText("Análisis finalizado")
         self.ui.label_6.setText("Análisis finalizado")
@@ -847,11 +885,14 @@ class MainWindow(QMainWindow):
 
             for item in items:
                 item.setFont(QFont("Arial", 10, QFont.Bold))
-                item.setBackground(QColor("#C8E6C9"))
+                item.setBackground(QColor("#FFFFFF"))
 
             if resultado_global == "nok":
-                item_limite.setBackground(QColor("#FFCDD2"))
-                item_resultado.setBackground(QColor("#FFCDD2"))
+                item_limite.setBackground(QColor("#FF6F61"))
+                item_resultado.setBackground(QColor("#FF6F61"))
+            elif resultado_global == "ok":
+                item_limite.setBackground(QColor("#9CAF88"))
+                item_resultado.setBackground(QColor("#9CAF88"))
 
             for col, item in enumerate(items):
                 self.ui.tableWidget.setItem(fila_actual, col, item)
@@ -873,6 +914,24 @@ class MainWindow(QMainWindow):
         if tooltip is not None:
             button.setToolTip(tooltip)
 
+    def reset_to_initial_state(self, show_message=True, highlight_reiniciar=True):
+        """
+        Restaura la ventana al estado inicial como si se acabara de abrir.
+        Si highlight_reiniciar es False, no ilumina el botón Reiniciar ni muestra mensajes.
+        """
+        # Limpiar pantalla y resetear variables
+        self.limpiar_pantalla()
+        if highlight_reiniciar:
+            # Reiniciar el workflow de botones
+            self.prompt_reiniciar_on_start()
+        # Restaurar estilos y deshabilitar botones de workflow
+        self.ui.pushButton_8.setEnabled(False)
+        self.ui.pushButton_8.setStyleSheet("")
+        self.ui.pushButton_report.setEnabled(False)
+        self.ui.pushButton_report.setStyleSheet("")
+        if show_message:
+            QMessageBox.information(self, "Interrumpido", "El flujo ha sido interrumpido. El sistema está listo para un nuevo control.")
+
     def workflow_after_analysis(self):
         # Paso 1: Iluminar 'Guardar Resultados'
         self.workflow_guardar_resultados()
@@ -881,17 +940,36 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_8  # Guardar Resultados
         btn2 = self.ui.pushButton_report  # Generar Informe
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
-        # Deshabilitar también el botón de iniciar control
+        btn4 = self.ui.pushButton_4  # Interrumpir control
         self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
-        self.iluminar_btn(btn, '#FBC02D', 'Haz clic para guardar los resultados del análisis')
-        
+        self.iluminar_btn(btn, "#FFC107", 'Haz clic para guardar los resultados del análisis')
+        # --- Interrumpir control durante workflow ---
+        def on_interrupt():
+            reply = QMessageBox.question(
+                self,
+                "Confirmar interrupción",
+                "¿Desea interrumpir el flujo y reiniciar el sistema?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                try:
+                    btn.clicked.disconnect(on_click)
+                except Exception:
+                    pass
+                btn4.clicked.disconnect(on_interrupt)
+                self.reset_to_initial_state(show_message=False, highlight_reiniciar=False)
+            # Si elige No, no hace nada y sigue el workflow
+        btn4.clicked.connect(on_interrupt)
         def on_click():
+            try:
+                btn4.clicked.disconnect(on_interrupt)
+            except Exception:
+                pass
             btn.clicked.disconnect(on_click)
             self.reset_button(btn, orig_style, orig_tooltip)
             self.workflow_generar_informe()
@@ -901,17 +979,35 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_report  # Generar Informe
         btn2 = self.ui.pushButton_8  # Guardar Resultados
         btn3 = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
-        # Deshabilitar también el botón de iniciar control
+        btn4 = self.ui.pushButton_4  # Interrumpir control
         self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Genera el informe PDF del análisis')
-        
+        # --- Interrumpir control durante workflow ---
+        def on_interrupt():
+            reply = QMessageBox.question(
+                self,
+                "Confirmar interrupción",
+                "¿Desea interrumpir el flujo y reiniciar el sistema?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                try:
+                    btn.clicked.disconnect(on_click)
+                except Exception:
+                    pass
+                btn4.clicked.disconnect(on_interrupt)
+                self.reset_to_initial_state(show_message=False, highlight_reiniciar=False)
+        btn4.clicked.connect(on_interrupt)
         def on_click():
+            try:
+                btn4.clicked.disconnect(on_interrupt)
+            except Exception:
+                pass
             btn.clicked.disconnect(on_click)
             self.reset_button(btn, orig_style, orig_tooltip)
             self.workflow_reiniciar()
@@ -921,17 +1017,35 @@ class MainWindow(QMainWindow):
         btn = self.ui.pushButton_2  # Limpiar pantalla / Reiniciar
         btn2 = self.ui.pushButton_8  # Guardar Resultados
         btn3 = self.ui.pushButton_report  # Generar Informe
-        # Deshabilitar también el botón de iniciar control
+        btn4 = self.ui.pushButton_4  # Interrumpir control
         self.ui.pushButton_5.setEnabled(False)
         orig_style = btn.styleSheet()
         orig_tooltip = btn.toolTip()
-        # Solo habilitar el botón resaltado, deshabilitar los otros
         btn.setEnabled(True)
         btn2.setEnabled(False)
         btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Reinicia el sistema para un nuevo análisis')
-        
+        # --- Interrumpir control durante workflow ---
+        def on_interrupt():
+            reply = QMessageBox.question(
+                self,
+                "Confirmar interrupción",
+                "¿Desea interrumpir el flujo y reiniciar el sistema?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                try:
+                    btn.clicked.disconnect(on_click)
+                except Exception:
+                    pass
+                btn4.clicked.disconnect(on_interrupt)
+                self.reset_to_initial_state(show_message=False, highlight_reiniciar=False)
+        btn4.clicked.connect(on_interrupt)
         def on_click():
+            try:
+                btn4.clicked.disconnect(on_interrupt)
+            except Exception:
+                pass
             btn.clicked.disconnect(on_click)
             self.reset_button(btn, orig_style, orig_tooltip)
             self.ui.pushButton_5.setEnabled(True)  # Rehabilitar solo al final del workflow

@@ -26,6 +26,7 @@ class Ui_Form_historico(object):
         if not Form_historico.objectName():
             Form_historico.setObjectName(u"Form_historico")
         Form_historico.resize(1117, 643)
+        Form_historico.setStyleSheet(u"background-color: #D1D1D1;")
         self.horizontalLayout_4 = QHBoxLayout(Form_historico)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_ventanaPpal = QHBoxLayout()
@@ -38,17 +39,29 @@ class Ui_Form_historico(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.barra_izq_frame.sizePolicy().hasHeightForWidth())
         self.barra_izq_frame.setSizePolicy(sizePolicy)
-        self.barra_izq_frame.setStyleSheet(u"background-color: rgb(205, 222, 195);")
+        self.barra_izq_frame.setStyleSheet(u"background-color: #708090;")
         self.barra_izq_frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.barra_izq_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_6 = QVBoxLayout(self.barra_izq_frame)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.pushButton_16 = QPushButton(self.barra_izq_frame)
         self.pushButton_16.setObjectName(u"pushButton_16")
+        self.pushButton_16.setEnabled(False)
+        self.pushButton_16.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background: transparent;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background: transparent;\n"
+"}")
         icon = QIcon()
-        icon.addFile(u"logo_isli.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"logo_isli_white.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_16.setIcon(icon)
         self.pushButton_16.setIconSize(QSize(150, 150))
+        self.pushButton_16.setFlat(True)
 
         self.verticalLayout_6.addWidget(self.pushButton_16)
 
@@ -58,17 +71,27 @@ class Ui_Form_historico(object):
         font.setPointSize(13)
         font.setBold(True)
         self.label_titBarraIzqda.setFont(font)
+        self.label_titBarraIzqda.setStyleSheet(u"color: rgb(255, 255, 255);")
         self.label_titBarraIzqda.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_6.addWidget(self.label_titBarraIzqda)
 
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_6.addItem(self.verticalSpacer)
+
         self.label_titUsuario = QLabel(self.barra_izq_frame)
         self.label_titUsuario.setObjectName(u"label_titUsuario")
+        font1 = QFont()
+        font1.setBold(True)
+        self.label_titUsuario.setFont(font1)
+        self.label_titUsuario.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.label_titUsuario)
 
         self.label_3 = QLabel(self.barra_izq_frame)
         self.label_3.setObjectName(u"label_3")
+        self.label_3.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.label_3)
 
@@ -78,22 +101,29 @@ class Ui_Form_historico(object):
 
         self.pushButton_menuPpal = QPushButton(self.barra_izq_frame)
         self.pushButton_menuPpal.setObjectName(u"pushButton_menuPpal")
+        self.pushButton_menuPpal.setMinimumSize(QSize(0, 38))
+        self.pushButton_menuPpal.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.pushButton_menuPpal)
 
         self.pushButton_pcontrol = QPushButton(self.barra_izq_frame)
         self.pushButton_pcontrol.setObjectName(u"pushButton_pcontrol")
+        self.pushButton_pcontrol.setMinimumSize(QSize(0, 38))
+        self.pushButton_pcontrol.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.pushButton_pcontrol)
 
         self.pushButton_rutaInforme = QPushButton(self.barra_izq_frame)
         self.pushButton_rutaInforme.setObjectName(u"pushButton_rutaInforme")
+        self.pushButton_rutaInforme.setMinimumSize(QSize(0, 38))
+        self.pushButton_rutaInforme.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.pushButton_rutaInforme)
 
         self.pushButton_manual = QPushButton(self.barra_izq_frame)
         self.pushButton_manual.setObjectName(u"pushButton_manual")
-        self.pushButton_manual.setMinimumSize(QSize(2, 9))
+        self.pushButton_manual.setMinimumSize(QSize(0, 38))
+        self.pushButton_manual.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.pushButton_manual)
 
@@ -103,6 +133,8 @@ class Ui_Form_historico(object):
 
         self.pushButton_3 = QPushButton(self.barra_izq_frame)
         self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setMinimumSize(QSize(0, 38))
+        self.pushButton_3.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_6.addWidget(self.pushButton_3)
 
@@ -132,8 +164,6 @@ class Ui_Form_historico(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_umbralDefectos = QLabel(self.frame_umbralDefectos)
         self.label_umbralDefectos.setObjectName(u"label_umbralDefectos")
-        font1 = QFont()
-        font1.setBold(True)
         self.label_umbralDefectos.setFont(font1)
 
         self.horizontalLayout_8.addWidget(self.label_umbralDefectos)
@@ -153,6 +183,7 @@ class Ui_Form_historico(object):
 
         self.spinBox_numDefectos = QSpinBox(self.frame_umbralDefectos)
         self.spinBox_numDefectos.setObjectName(u"spinBox_numDefectos")
+        self.spinBox_numDefectos.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_8.addWidget(self.spinBox_numDefectos)
 
@@ -169,6 +200,7 @@ class Ui_Form_historico(object):
 
         self.doubleSpinBox_dimDefectos = QDoubleSpinBox(self.frame_umbralDefectos)
         self.doubleSpinBox_dimDefectos.setObjectName(u"doubleSpinBox_dimDefectos")
+        self.doubleSpinBox_dimDefectos.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.doubleSpinBox_dimDefectos.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.doubleSpinBox_dimDefectos.setStepType(QAbstractSpinBox.StepType.AdaptiveDecimalStepType)
 
@@ -189,12 +221,9 @@ class Ui_Form_historico(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.comboBox_listaUsuarios = QComboBox(self.frame_ComboBoxUsuarios)
         self.comboBox_listaUsuarios.setObjectName(u"comboBox_listaUsuarios")
+        self.comboBox_listaUsuarios.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_7.addWidget(self.comboBox_listaUsuarios)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
 
         self.horizontalLayout_7.setStretch(0, 2)
 
@@ -213,6 +242,7 @@ class Ui_Form_historico(object):
 
         self.dateEdit_desde = QDateEdit(self.frame_fecha)
         self.dateEdit_desde.setObjectName(u"dateEdit_desde")
+        self.dateEdit_desde.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.dateEdit_desde.setCalendarPopup(True)
 
         self.horizontalLayout.addWidget(self.dateEdit_desde)
@@ -224,6 +254,7 @@ class Ui_Form_historico(object):
 
         self.dateEdit_hasta = QDateEdit(self.frame_fecha)
         self.dateEdit_hasta.setObjectName(u"dateEdit_hasta")
+        self.dateEdit_hasta.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.dateEdit_hasta.setCalendarPopup(True)
 
         self.horizontalLayout.addWidget(self.dateEdit_hasta)
@@ -235,18 +266,16 @@ class Ui_Form_historico(object):
         self.pushButton_filtrar = QPushButton(self.frame_fecha)
         self.pushButton_filtrar.setObjectName(u"pushButton_filtrar")
         self.pushButton_filtrar.setMinimumSize(QSize(0, 50))
+        self.pushButton_filtrar.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout.addWidget(self.pushButton_filtrar)
 
         self.pushButton_limpiarFiltros = QPushButton(self.frame_fecha)
         self.pushButton_limpiarFiltros.setObjectName(u"pushButton_limpiarFiltros")
         self.pushButton_limpiarFiltros.setMinimumSize(QSize(0, 50))
+        self.pushButton_limpiarFiltros.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout.addWidget(self.pushButton_limpiarFiltros)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout.addItem(self.horizontalSpacer_3)
 
         self.horizontalLayout.setStretch(4, 1)
         self.horizontalLayout.setStretch(5, 2)
@@ -280,8 +309,21 @@ class Ui_Form_historico(object):
         __qtablewidgetitem5 = QTableWidgetItem()
         self.tableWidget_results.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         self.tableWidget_results.setObjectName(u"tableWidget_results")
-        self.tableWidget_results.setStyleSheet(u"QTableWidget::item {\n"
+        self.tableWidget_results.setStyleSheet(u"QTableWidget::item:selected {\n"
+"    background-color: #708090;\n"
+"    color: white;\n"
+"}\n"
+"QTableWidget::item {\n"
 "    padding: 5px;\n"
+"}\n"
+"QHeaderView::section {\n"
+"    font-weight: bold;\n"
+"}\n"
+"QTableWidget {\n"
+"    background-color: white;\n"
+"}\n"
+"QTableWidget::item {\n"
+"    font-weight: normal;\n"
 "}")
         self.tableWidget_results.horizontalHeader().setCascadingSectionResizes(True)
         self.tableWidget_results.horizontalHeader().setStretchLastSection(True)
@@ -308,7 +350,9 @@ class Ui_Form_historico(object):
         self.pushButton_saveObs.setMinimumSize(QSize(0, 50))
         self.pushButton_saveObs.setStyleSheet(u"QPushButton {\n"
 "    padding: 0px 12px; \n"
+"	background-color: rgb(255, 255, 255);\n"
 "}\n"
+"\n"
 "")
 
         self.horizontalLayout_3.addWidget(self.pushButton_saveObs)
@@ -317,9 +361,9 @@ class Ui_Form_historico(object):
         self.pushButton_report.setObjectName(u"pushButton_report")
         self.pushButton_report.setMinimumSize(QSize(0, 50))
         self.pushButton_report.setStyleSheet(u"QPushButton {\n"
-"    padding: 0px 12px; \n"
-"}\n"
-"")
+"    padding: 0px 12px;\n"
+"	background-color: rgb(255, 255, 255);\n"
+"}")
 
         self.horizontalLayout_3.addWidget(self.pushButton_report)
 

@@ -21,7 +21,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(182, 197, 173);</string>
+    <string notr="true">background-color: #D1D1D1;</string>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
@@ -38,7 +38,7 @@
          </sizepolicy>
         </property>
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(205, 222, 195);</string>
+         <string notr="true">background-color: #708090</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Shape::StyledPanel</enum>
@@ -46,21 +46,39 @@
         <property name="frameShadow">
          <enum>QFrame::Shadow::Raised</enum>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,0,2,0,0,0,0,0,0">
+        <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0,0,0,0,1,0,0,2,0,0,0,0,0,0">
          <item>
           <widget class="QPushButton" name="pushButton_15">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QPushButton {
+    border: none;
+    background: transparent;
+}
+QPushButton:hover {
+    background: transparent;
+}
+QPushButton:pressed {
+    background: transparent;
+}</string>
+           </property>
            <property name="text">
             <string/>
            </property>
            <property name="icon">
             <iconset>
-             <normaloff>logo_isli.png</normaloff>logo_isli.png</iconset>
+             <normaloff>logo_isli_white.png</normaloff>logo_isli_white.png</iconset>
            </property>
            <property name="iconSize">
             <size>
              <width>150</width>
              <height>150</height>
             </size>
+           </property>
+           <property name="flat">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -72,6 +90,9 @@
              <bold>true</bold>
             </font>
            </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>CONTROL DE CALIDAD</string>
            </property>
@@ -81,7 +102,28 @@
           </widget>
          </item>
          <item>
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <widget class="QLabel" name="label_2">
+           <property name="font">
+            <font>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>OPERARIO</string>
            </property>
@@ -89,13 +131,43 @@
          </item>
          <item>
           <widget class="QLabel" name="label_3">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>nombre_usuario</string>
            </property>
           </widget>
          </item>
          <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Orientation::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <widget class="QLabel" name="label_10">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>ID CONTROL</string>
            </property>
@@ -103,6 +175,9 @@
          </item>
          <item>
           <widget class="QLabel" name="label_11">
+           <property name="styleSheet">
+            <string notr="true">color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>ref_control</string>
            </property>
@@ -123,6 +198,15 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_historico">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Histórico de controles</string>
            </property>
@@ -130,6 +214,15 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_pcontrol">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Panel de Control</string>
            </property>
@@ -137,6 +230,15 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_gAlmacen">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Gestión Almacén</string>
            </property>
@@ -146,9 +248,12 @@
           <widget class="QPushButton" name="pushButton_manual">
            <property name="minimumSize">
             <size>
-             <width>2</width>
-             <height>9</height>
+             <width>0</width>
+             <height>38</height>
             </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
            </property>
            <property name="text">
             <string>Manual Usuario</string>
@@ -170,6 +275,15 @@
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_3">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>38</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
            <property name="text">
             <string>Logout</string>
            </property>
@@ -196,6 +310,9 @@
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QFrame" name="frame_6">
+           <property name="styleSheet">
+            <string notr="true">background-color: #D1D1D1;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -244,7 +361,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBox"/>
+             <widget class="QSpinBox" name="spinBox">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_2">
@@ -267,7 +388,7 @@
                </font>
               </property>
               <property name="text">
-               <string>Tamaño máx en mm</string>
+               <string>Tamaño máx en mm2</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -276,6 +397,9 @@
             </item>
             <item>
              <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
               <property name="alignment">
                <set>Qt::AlignmentFlag::AlignCenter</set>
               </property>
@@ -302,6 +426,9 @@
          </item>
          <item>
           <widget class="QComboBox" name="comboBox">
+           <property name="styleSheet">
+            <string notr="true">background-color: rgb(255, 255, 255);</string>
+           </property>
            <property name="placeholderText">
             <string/>
            </property>
@@ -309,6 +436,9 @@
          </item>
          <item>
           <widget class="QFrame" name="frame_5">
+           <property name="styleSheet">
+            <string notr="true">background-color: #D1D1D1;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -335,6 +465,9 @@
                 <bold>true</bold>
                </font>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
               <property name="text">
                <string>Iniciar Control de Calidad</string>
               </property>
@@ -348,6 +481,9 @@
                 <height>50</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
               <property name="text">
                <string>Interrumpir control</string>
               </property>
@@ -358,6 +494,9 @@
          </item>
          <item>
           <widget class="QFrame" name="frame_3">
+           <property name="styleSheet">
+            <string notr="true">background-color: #D1D1D1;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -376,6 +515,9 @@
          </item>
          <item>
           <widget class="QFrame" name="frame_2">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -385,6 +527,11 @@
            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,1">
             <item>
              <widget class="QLabel" name="label_6">
+              <property name="font">
+               <font>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>Detalles imagen</string>
               </property>
@@ -395,6 +542,11 @@
             </item>
             <item>
              <widget class="QLabel" name="label_contador">
+              <property name="font">
+               <font>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>Num_imgs</string>
               </property>
@@ -402,6 +554,14 @@
             </item>
             <item>
              <widget class="QLabel" name="label_5">
+              <property name="font">
+               <font>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="text">
                <string>Detalles imagen</string>
               </property>
@@ -429,13 +589,13 @@
            </property>
            <property name="styleSheet">
             <string notr="true">QProgressBar {
-    border: 2px solid grey;
+    border: 1px solid grey;
     border-radius: 5px;
     text-align: center;
 }
 
 QProgressBar::chunk {
-    background-color: #4CAF50;
+    background-color: #9CAF88;
     width: 10px;
 }</string>
            </property>
@@ -449,6 +609,9 @@ QProgressBar::chunk {
          </item>
          <item>
           <widget class="QFrame" name="frame">
+           <property name="styleSheet">
+            <string notr="true">background-color: #D1D1D1;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -458,6 +621,22 @@ QProgressBar::chunk {
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
              <widget class="QTableWidget" name="tableWidget">
+              <property name="font">
+               <font>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QHeaderView::section {
+    font-weight: bold;
+}
+QTableWidget {
+    background-color: white;
+}
+QTableWidget::item {
+    font-weight: normal;
+}</string>
+              </property>
               <column>
                <property name="text">
                 <string>New Column</string>
@@ -490,6 +669,9 @@ QProgressBar::chunk {
          </item>
          <item>
           <widget class="QFrame" name="frame_4">
+           <property name="styleSheet">
+            <string notr="true">background-color: #D1D1D1;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Shape::StyledPanel</enum>
            </property>
@@ -511,6 +693,9 @@ QProgressBar::chunk {
                 <height>16777215</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
               <property name="text">
                <string>Reiniciar</string>
               </property>
@@ -524,6 +709,9 @@ QProgressBar::chunk {
                 <height>50</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
+              </property>
               <property name="text">
                <string>Guardar resultados</string>
               </property>
@@ -536,6 +724,9 @@ QProgressBar::chunk {
                 <width>0</width>
                 <height>50</height>
                </size>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 255, 255);</string>
               </property>
               <property name="text">
                <string>Generar informe</string>

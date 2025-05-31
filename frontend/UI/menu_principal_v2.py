@@ -30,7 +30,7 @@ class Ui_MainWindow(object):
         MainWindow.setMinimumSize(QSize(300, 300))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.centralwidget.setStyleSheet(u"background-color: rgb(182, 197, 173);")
+        self.centralwidget.setStyleSheet(u"background-color: #D1D1D1;")
         self.horizontalLayout_4 = QHBoxLayout(self.centralwidget)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.horizontalLayout_5 = QHBoxLayout()
@@ -43,17 +43,29 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.barra_izq_frame.sizePolicy().hasHeightForWidth())
         self.barra_izq_frame.setSizePolicy(sizePolicy)
-        self.barra_izq_frame.setStyleSheet(u"background-color: rgb(205, 222, 195);")
+        self.barra_izq_frame.setStyleSheet(u"background-color: #708090")
         self.barra_izq_frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.barra_izq_frame.setFrameShadow(QFrame.Shadow.Raised)
         self.verticalLayout_5 = QVBoxLayout(self.barra_izq_frame)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.pushButton_15 = QPushButton(self.barra_izq_frame)
         self.pushButton_15.setObjectName(u"pushButton_15")
+        self.pushButton_15.setEnabled(False)
+        self.pushButton_15.setStyleSheet(u"QPushButton {\n"
+"    border: none;\n"
+"    background: transparent;\n"
+"}\n"
+"QPushButton:hover {\n"
+"    background: transparent;\n"
+"}\n"
+"QPushButton:pressed {\n"
+"    background: transparent;\n"
+"}")
         icon = QIcon()
-        icon.addFile(u"logo_isli.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"logo_isli_white.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_15.setIcon(icon)
         self.pushButton_15.setIconSize(QSize(150, 150))
+        self.pushButton_15.setFlat(True)
 
         self.verticalLayout_5.addWidget(self.pushButton_15)
 
@@ -63,27 +75,45 @@ class Ui_MainWindow(object):
         font.setPointSize(13)
         font.setBold(True)
         self.label.setFont(font)
+        self.label.setStyleSheet(u"color: rgb(255, 255, 255);")
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_5.addWidget(self.label)
 
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_5.addItem(self.verticalSpacer_2)
+
         self.label_2 = QLabel(self.barra_izq_frame)
         self.label_2.setObjectName(u"label_2")
+        font1 = QFont()
+        font1.setBold(True)
+        self.label_2.setFont(font1)
+        self.label_2.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.label_2)
 
         self.label_3 = QLabel(self.barra_izq_frame)
         self.label_3.setObjectName(u"label_3")
+        self.label_3.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.label_3)
 
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_5.addItem(self.verticalSpacer_3)
+
         self.label_10 = QLabel(self.barra_izq_frame)
         self.label_10.setObjectName(u"label_10")
+        self.label_10.setMinimumSize(QSize(0, 0))
+        self.label_10.setFont(font1)
+        self.label_10.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.label_10)
 
         self.label_11 = QLabel(self.barra_izq_frame)
         self.label_11.setObjectName(u"label_11")
+        self.label_11.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.label_11)
 
@@ -93,22 +123,29 @@ class Ui_MainWindow(object):
 
         self.pushButton_historico = QPushButton(self.barra_izq_frame)
         self.pushButton_historico.setObjectName(u"pushButton_historico")
+        self.pushButton_historico.setMinimumSize(QSize(0, 38))
+        self.pushButton_historico.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.pushButton_historico)
 
         self.pushButton_pcontrol = QPushButton(self.barra_izq_frame)
         self.pushButton_pcontrol.setObjectName(u"pushButton_pcontrol")
+        self.pushButton_pcontrol.setMinimumSize(QSize(0, 38))
+        self.pushButton_pcontrol.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.pushButton_pcontrol)
 
         self.pushButton_gAlmacen = QPushButton(self.barra_izq_frame)
         self.pushButton_gAlmacen.setObjectName(u"pushButton_gAlmacen")
+        self.pushButton_gAlmacen.setMinimumSize(QSize(0, 38))
+        self.pushButton_gAlmacen.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.pushButton_gAlmacen)
 
         self.pushButton_manual = QPushButton(self.barra_izq_frame)
         self.pushButton_manual.setObjectName(u"pushButton_manual")
-        self.pushButton_manual.setMinimumSize(QSize(2, 9))
+        self.pushButton_manual.setMinimumSize(QSize(0, 38))
+        self.pushButton_manual.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.pushButton_manual)
 
@@ -118,10 +155,13 @@ class Ui_MainWindow(object):
 
         self.pushButton_3 = QPushButton(self.barra_izq_frame)
         self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setMinimumSize(QSize(0, 38))
+        self.pushButton_3.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_5.addWidget(self.pushButton_3)
 
-        self.verticalLayout_5.setStretch(6, 2)
+        self.verticalLayout_5.setStretch(5, 1)
+        self.verticalLayout_5.setStretch(8, 2)
 
         self.horizontalLayout_5.addWidget(self.barra_izq_frame)
 
@@ -140,14 +180,13 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.frame_6 = QFrame(self.ventana_dcha)
         self.frame_6.setObjectName(u"frame_6")
+        self.frame_6.setStyleSheet(u"background-color: #D1D1D1;")
         self.frame_6.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_6.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_8 = QHBoxLayout(self.frame_6)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_8 = QLabel(self.frame_6)
         self.label_8.setObjectName(u"label_8")
-        font1 = QFont()
-        font1.setBold(True)
         self.label_8.setFont(font1)
 
         self.horizontalLayout_8.addWidget(self.label_8)
@@ -167,6 +206,7 @@ class Ui_MainWindow(object):
 
         self.spinBox = QSpinBox(self.frame_6)
         self.spinBox.setObjectName(u"spinBox")
+        self.spinBox.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_8.addWidget(self.spinBox)
 
@@ -183,6 +223,7 @@ class Ui_MainWindow(object):
 
         self.doubleSpinBox = QDoubleSpinBox(self.frame_6)
         self.doubleSpinBox.setObjectName(u"doubleSpinBox")
+        self.doubleSpinBox.setStyleSheet(u"background-color: rgb(255, 255, 255);")
         self.doubleSpinBox.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.doubleSpinBox.setStepType(QAbstractSpinBox.StepType.AdaptiveDecimalStepType)
 
@@ -197,11 +238,13 @@ class Ui_MainWindow(object):
 
         self.comboBox = QComboBox(self.ventana_dcha)
         self.comboBox.setObjectName(u"comboBox")
+        self.comboBox.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_3.addWidget(self.comboBox)
 
         self.frame_5 = QFrame(self.ventana_dcha)
         self.frame_5.setObjectName(u"frame_5")
+        self.frame_5.setStyleSheet(u"background-color: #D1D1D1;")
         self.frame_5.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_5.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.frame_5)
@@ -211,12 +254,14 @@ class Ui_MainWindow(object):
         self.pushButton_5.setMinimumSize(QSize(0, 50))
         self.pushButton_5.setMaximumSize(QSize(16777215, 16777215))
         self.pushButton_5.setFont(font1)
+        self.pushButton_5.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_7.addWidget(self.pushButton_5)
 
         self.pushButton_4 = QPushButton(self.frame_5)
         self.pushButton_4.setObjectName(u"pushButton_4")
         self.pushButton_4.setMinimumSize(QSize(0, 50))
+        self.pushButton_4.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_7.addWidget(self.pushButton_4)
 
@@ -225,6 +270,7 @@ class Ui_MainWindow(object):
 
         self.frame_3 = QFrame(self.ventana_dcha)
         self.frame_3.setObjectName(u"frame_3")
+        self.frame_3.setStyleSheet(u"background-color: #D1D1D1;")
         self.frame_3.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_3.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout = QHBoxLayout(self.frame_3)
@@ -244,23 +290,28 @@ class Ui_MainWindow(object):
 
         self.frame_2 = QFrame(self.ventana_dcha)
         self.frame_2.setObjectName(u"frame_2")
+        self.frame_2.setStyleSheet(u"")
         self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_3 = QHBoxLayout(self.frame_2)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_6 = QLabel(self.frame_2)
         self.label_6.setObjectName(u"label_6")
+        self.label_6.setFont(font1)
         self.label_6.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.label_6)
 
         self.label_contador = QLabel(self.frame_2)
         self.label_contador.setObjectName(u"label_contador")
+        self.label_contador.setFont(font1)
 
         self.horizontalLayout_3.addWidget(self.label_contador)
 
         self.label_5 = QLabel(self.frame_2)
         self.label_5.setObjectName(u"label_5")
+        self.label_5.setFont(font1)
+        self.label_5.setStyleSheet(u"")
         self.label_5.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.horizontalLayout_3.addWidget(self.label_5)
@@ -279,13 +330,13 @@ class Ui_MainWindow(object):
         self.progressBar.setMouseTracking(False)
         self.progressBar.setAutoFillBackground(False)
         self.progressBar.setStyleSheet(u"QProgressBar {\n"
-"    border: 2px solid grey;\n"
+"    border: 1px solid grey;\n"
 "    border-radius: 5px;\n"
 "    text-align: center;\n"
 "}\n"
 "\n"
 "QProgressBar::chunk {\n"
-"    background-color: #4CAF50;\n"
+"    background-color: #9CAF88;\n"
 "    width: 10px;\n"
 "}")
         self.progressBar.setMaximum(100)
@@ -295,6 +346,7 @@ class Ui_MainWindow(object):
 
         self.frame = QFrame(self.ventana_dcha)
         self.frame.setObjectName(u"frame")
+        self.frame.setStyleSheet(u"background-color: #D1D1D1;")
         self.frame.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_2 = QHBoxLayout(self.frame)
@@ -313,6 +365,18 @@ class Ui_MainWindow(object):
         __qtablewidgetitem4 = QTableWidgetItem()
         self.tableWidget.setHorizontalHeaderItem(4, __qtablewidgetitem4)
         self.tableWidget.setObjectName(u"tableWidget")
+        font4 = QFont()
+        font4.setBold(False)
+        self.tableWidget.setFont(font4)
+        self.tableWidget.setStyleSheet(u"QHeaderView::section {\n"
+"    font-weight: bold;\n"
+"}\n"
+"QTableWidget {\n"
+"    background-color: white;\n"
+"}\n"
+"QTableWidget::item {\n"
+"    font-weight: normal;\n"
+"}")
 
         self.horizontalLayout_2.addWidget(self.tableWidget)
 
@@ -321,6 +385,7 @@ class Ui_MainWindow(object):
 
         self.frame_4 = QFrame(self.ventana_dcha)
         self.frame_4.setObjectName(u"frame_4")
+        self.frame_4.setStyleSheet(u"background-color: #D1D1D1;")
         self.frame_4.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_4.setFrameShadow(QFrame.Shadow.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.frame_4)
@@ -329,18 +394,21 @@ class Ui_MainWindow(object):
         self.pushButton_2.setObjectName(u"pushButton_2")
         self.pushButton_2.setMinimumSize(QSize(0, 50))
         self.pushButton_2.setMaximumSize(QSize(16777215, 16777215))
+        self.pushButton_2.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_6.addWidget(self.pushButton_2)
 
         self.pushButton_8 = QPushButton(self.frame_4)
         self.pushButton_8.setObjectName(u"pushButton_8")
         self.pushButton_8.setMinimumSize(QSize(0, 50))
+        self.pushButton_8.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_6.addWidget(self.pushButton_8)
 
         self.pushButton_report = QPushButton(self.frame_4)
         self.pushButton_report.setObjectName(u"pushButton_report")
         self.pushButton_report.setMinimumSize(QSize(0, 50))
+        self.pushButton_report.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.horizontalLayout_6.addWidget(self.pushButton_report)
 
@@ -384,7 +452,7 @@ class Ui_MainWindow(object):
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Logout", None))
         self.label_8.setText(QCoreApplication.translate("MainWindow", u"TOLERANCIA DEFECTOS", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"Cantidad m\u00e1x rollo", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Tama\u00f1o m\u00e1x en mm", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Tama\u00f1o m\u00e1x en mm2", None))
         self.comboBox.setPlaceholderText("")
         self.pushButton_5.setText(QCoreApplication.translate("MainWindow", u"Iniciar Control de Calidad", None))
         self.pushButton_4.setText(QCoreApplication.translate("MainWindow", u"Interrumpir control", None))

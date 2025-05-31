@@ -24,6 +24,7 @@ class Ui_Dialog(object):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
         Dialog.resize(400, 483)
+        Dialog.setStyleSheet(u"background-color: #D1D1D1;")
         self.verticalLayout = QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.frame = QFrame(Dialog)
@@ -68,6 +69,7 @@ class Ui_Dialog(object):
 
         self.lineEdit_email = QLineEdit(self.frame)
         self.lineEdit_email.setObjectName(u"lineEdit_email")
+        self.lineEdit_email.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_2.addWidget(self.lineEdit_email)
 
@@ -79,6 +81,7 @@ class Ui_Dialog(object):
 
         self.lineEdit_password = QLineEdit(self.frame)
         self.lineEdit_password.setObjectName(u"lineEdit_password")
+        self.lineEdit_password.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_2.addWidget(self.lineEdit_password)
 
@@ -90,6 +93,7 @@ class Ui_Dialog(object):
 
         self.textEdit_motivo = QTextEdit(self.frame)
         self.textEdit_motivo.setObjectName(u"textEdit_motivo")
+        self.textEdit_motivo.setStyleSheet(u"background-color: rgb(255, 255, 255);")
 
         self.verticalLayout_2.addWidget(self.textEdit_motivo)
 
@@ -104,6 +108,7 @@ class Ui_Dialog(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.pushButton_enviar = QPushButton(self.frame_2)
         self.pushButton_enviar.setObjectName(u"pushButton_enviar")
+        self.pushButton_enviar.setMinimumSize(QSize(0, 38))
         font2 = QFont()
         font2.setBold(False)
         self.pushButton_enviar.setFont(font2)
@@ -112,6 +117,7 @@ class Ui_Dialog(object):
 
         self.pushButton_cancelar = QPushButton(self.frame_2)
         self.pushButton_cancelar.setObjectName(u"pushButton_cancelar")
+        self.pushButton_cancelar.setMinimumSize(QSize(0, 38))
 
         self.horizontalLayout.addWidget(self.pushButton_cancelar)
 
