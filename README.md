@@ -1,34 +1,6 @@
 # ISLI – Sistema de Inspección de Lotes Industriales
 
-## 📚 Índice
-
-1. [Introducción](#1-introducción)  
-2. [Instalación y Requisitos](#2-instalación-y-requisitos)  
-3. [Pantalla de Inicio de Sesión](#3-pantalla-de-inicio-de-sesión)  
-   - [3.1 Recuperación de contraseña](#31-recuperación-de-contraseña)  
-4. [Menú Principal – Control de Calidad](#4-menú-principal--control-de-calidad)  
-   - [4.1 Ejecución paso a paso del control de calidad](#41-ejecución-paso-a-paso-del-control-de-calidad)  
-   - [4.2 Guardado de resultados](#42-guardado-de-resultados)  
-   - [4.3 Generación de informes PDF](#43-generación-de-informes-pdf)  
-5. [Histórico de Controles](#5-histórico-de-controles)  
-   - [5.1 Filtrado por usuario, fecha y tolerancia](#51-filtrado-por-usuario-fecha-y-tolerancia)  
-   - [5.2 Edición de comentarios](#52-edición-de-comentarios)  
-   - [5.3 Visualización de informes](#53-visualización-de-informes)  
-6. [Panel Lateral de Navegación](#6-panel-lateral-de-navegación)  
-   - [6.1 Visualización del usuario actual](#61-visualización-del-usuario-actual)  
-   - [6.2 Navegación entre ventanas](#62-navegación-entre-ventanas)  
-   - [6.3 Acceso al Panel de Administración (solo administradores)](#63-acceso-al-panel-de-administración-solo-administradores)  
-   - [6.4 Gestor de rutas de almacén (solo administradores)](#64-gestor-de-rutas-de-almacén-solo-administradores)  
-   - [6.5 Acceso al Manual de Usuario](#65-acceso-al-manual-de-usuario)  
-   - [6.6 Cierre de sesión](#66-cierre-de-sesión)  
-7. [Créditos y Mantenimiento](#7-créditos-y-mantenimiento)  
-8. [Preguntas Frecuentes (FAQ)](#8-preguntas-frecuentes-faq)
-9. [Funcionalidades implementadas](#9-funcionalidades-implementadas)  
-10. [Estructura del repositorio](#10-estructura-del-repositorio)
-
----
-
-## 1. 📖 Introducción
+## 1. Introducción
 
 **ISLI – Control de Calidad** es una aplicación de escritorio diseñada para facilitar el proceso de inspección y validación de calidad de superficies industriales planas y continuas mediante visión artificial. La herramienta puede ser útil a un amplio espectro de industrias (plásticos, maderas, textiles, entre otros ), permitiendo a los operarios:
 
@@ -42,7 +14,7 @@ Además, incluye funcionalidades exclusivas para administradores, como el acceso
 
 Este manual de usuario está pensado para guiar paso a paso tanto a usuarios operarios como a administradores en el uso completo de la aplicación, desde la instalación hasta la interpretación de informes.
 
-## 2. ⚙️ Instalación y Requisitos
+## 2. Instalación y Requisitos
 
 ### Requisitos del sistema
 
@@ -92,7 +64,7 @@ La aplicación ISLI consta de dos componentes principales: un **frontend de escr
 
 ---
 
-#### 🔹 Backend (FastAPI)
+#### Backend (FastAPI)
 
 1. Abre una terminal y accede a la carpeta `backend/`:
 
@@ -147,10 +119,6 @@ La aplicación ISLI consta de dos componentes principales: un **frontend de escr
 | **API HTTP**      | `requests`                          |
 
 
-
-...
-
-## 3. Pantalla de Inicio de Sesión
 
 ## 3. Pantalla de Inicio de Sesión
 
@@ -336,7 +304,7 @@ Desde el histórico puedes acceder al informe PDF asociado a cada control y visu
 
 > Todos los informes generados se almacenan en la carpeta designada por los administradores mediante el botón **Gestor de históricos**.
 
-## 5. Panel Lateral de Navegación
+## 6. Panel Lateral de Navegación
 
 En el lateral izquierdo de la aplicación encontrarás un panel fijo que permite una navegación rápida entre las diferentes secciones del sistema.
 
@@ -346,7 +314,7 @@ Este panel incluye información del usuario, el ID del próximo control, botones
 
 ---
 
-### 5.1 Visualización del usuario actual
+### 6.1 Visualización del usuario actual
 
 En la parte superior del panel se muestra:
 
@@ -357,7 +325,7 @@ Esto permite al usuario conocer con claridad su nivel de acceso y el número cor
 
 ---
 
-### 5.2 Navegación entre ventanas
+### 6.2 Navegación entre ventanas
 
 Desde el panel lateral se puede acceder directamente a:
 
@@ -380,7 +348,7 @@ Estos botones están siempre disponibles para todos los usuarios registrados.
 
 ---
 
-### 5.3 Acceso al Panel de Administración (solo administradores)
+### 6.3 Acceso al Panel de Administración (solo administradores)
 
 El botón **Panel de control** permite a los usuarios con rol `administrador` acceder a la interfaz web de administración.
 
@@ -391,7 +359,7 @@ El botón **Panel de control** permite a los usuarios con rol `administrador` ac
 
 ---
 
-### 5.4 Gestor de rutas de almacén y de históricos (solo administradores)
+### 6.4 Gestor de rutas de almacén y de históricos (solo administradores)
 
 Los botones **Gestor de almacén** y **Gestor de históricos** permiten definir o modificar:
 
@@ -421,8 +389,6 @@ Al pulsar cualquiera de estos botones, se abre un diálogo para seleccionar la c
 | Gestor de ruta de informes históricos|          |      ✅       |
 
 > ✅ **Leyenda**: una marca indica que la funcionalidad está disponible para ese rol.
-
-...
 
 ## 7. Créditos y Mantenimiento
 
@@ -525,7 +491,7 @@ Sí. Usa el botón **Gestor de almacén** (solo visible para administradores) pa
 
 ---
 
-## 9. ✨ Funcionalidades implementadas
+## 9. Funcionalidades implementadas
 
 - ✅ Inicio de sesión con autenticación de usuarios  
 - ✅ Visualización de imágenes con visor dual en alta calidad  
@@ -549,7 +515,7 @@ Sí. Usa el botón **Gestor de almacén** (solo visible para administradores) pa
 
 ---
 
-## 10. 📁 Estructura del repositorio
+## 10. Estructura del repositorio
 
 ISLI/
 ├── frontend/ # Interfaz gráfica (PySide6)
@@ -573,5 +539,4 @@ ISLI/
 ├── config.json # Configuración de rutas base
 ├── requirements.txt # Dependencias del proyecto
 └── README.md # Manual de usuario
----
 

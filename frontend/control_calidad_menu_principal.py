@@ -156,7 +156,7 @@ class MainWindow(QMainWindow):
         self.ui.comboBox.installEventFilter(self)
         self.ui.spinBox.valueChanged.connect(self.configurar_combobox)
         
-        # Diferir carga pesada tras mostrar la interfaz
+        # Postergamos toda carga pesada tras mostrar la interfaz
         QTimer.singleShot(100, self.cargar_datos_iniciales)
 
         # Directorio base donde se encuentran las subcarpetas
@@ -269,7 +269,8 @@ class MainWindow(QMainWindow):
             self.configurar_combobox()
         return super().eventFilter(obj, event)
 
-    def remplazar_visores(self): # Reemplaza los visores de imágenes por instancias de HighQualityImageView
+    def remplazar_visores(self): # Reemplaza los visores de imágenes por 
+        #instancias de HighQualityImageView para mejorar calidad imágenes
         layout = self.ui.frame_3.layout()
         while layout.count():
             item = layout.takeAt(0)
@@ -317,7 +318,7 @@ class MainWindow(QMainWindow):
 
         self.ui.tableWidget.setRowCount(0)
 
-        # --- Hacer la tabla no editable ---
+        # Hacer la tabla no editable
         self.ui.tableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
     def agregar_registro_a_tabla(self, ruta_imagen_original, ruta_imagen_procesada):
@@ -377,13 +378,13 @@ class MainWindow(QMainWindow):
         Procesa las imágenes mediante la función `analizar_rollo`,
         carga las imágenes originales/procesadas, y lanza la visualización secuencial.
         """
-        # --- BLOQUEO SI INTERRUPCION ---
+        # BLOQUEO SI INTERRUPCION
         if getattr(self, 'control_interrumpido', False):
             QMessageBox.warning(self, "Advertencia", "Reinicia sistema para continuar")
             return
-        # --- PAUSA/RESUME LOGIC ---
+        # LÓGICA DE PAUSA/REANUDACIÓN
         if self.timer and self.timer.isActive():
-            # PAUSE: Stop timer, show 'Control pausado', change button text, highlight button
+            # PAUSA: para el timer, muestra 'Control pausado', cambia texto en btn y lo ilumina
             self.timer.stop()
             self.blink_timer.stop()
             self.ui.pushButton_5.setStyleSheet("background-color: #FFC107; color: black; font-weight: bold;")
@@ -393,7 +394,7 @@ class MainWindow(QMainWindow):
             self.ui.pushButton_5.setText("Reanudar Control de Calidad")
             return
         elif self.timer and not self.timer.isActive() and self.images and not self.analisis_completado:
-            # RESUME: Restart timer, restore button text and style
+            # REANUDAR: Reanuda el timer, restaura txt y estilo del botón
             self.timer.start(2000)
             self.blink_timer.start(500)
             self.ui.pushButton_5.setStyleSheet("")
@@ -501,22 +502,22 @@ class MainWindow(QMainWindow):
                 except Exception as e:
                     print(f"Error al restaurar {carpeta}: {e}")
 
-        self.ui.pushButton_5.setEnabled(True)  # Enable 'Iniciar Control de Calidad' after reinicio
-        # --- RESTAURAR ESTADO DE INTERRUPCIÓN ---
+        self.ui.pushButton_5.setEnabled(True)  # Habilitar btn 'Iniciar Control de Calidad' tras reinicio
+        # RESTAURAR ESTADO DE INTERRUPCIÓN
         self.control_interrumpido = False
         # Restaurar estilo original del botón tras limpiar
         self.ui.pushButton_5.setStyleSheet(self.boton_color_original)
 
     def confirmar_interrumpir(self):
         """Muestra diálogo de confirmación antes de interrumpir el control"""
-        # Permitir interrupción tanto si el timer está activo como si está pausado (pero hay imágenes y no está completado)
+        # Permitir interrupción tanto si el timer está activo como si está pausado
         if not (self.timer and (self.timer.isActive() or (not self.timer.isActive() and self.images and not self.analisis_completado))):
             return  # No hay control activo o pausado que interrumpir
 
         self.timer.stop()
         self.blink_timer.stop()
         self.ui.pushButton_5.setStyleSheet("")
-        # --- MARCAR INTERRUPCIÓN SOLO SI SE CONFIRMA ---
+        # MARCAR INTERRUPCIÓN SOLO SI SE CONFIRMA
         respuesta = QMessageBox.question(
             self,
             "Confirmar interrupción",
@@ -537,7 +538,7 @@ class MainWindow(QMainWindow):
             # Restaurar estilo original del botón (no solo vaciar stylesheet)
             self.ui.pushButton_5.setStyleSheet(self.boton_color_original)
             self.timer = None
-            # --- Volver a estado inicial: requiere reinicio ---
+            # Volver a estado inicial: requiere reinicio
             self.prompt_reiniciar_on_start()
             self.ui.pushButton_2.setEnabled(True)
         else:
@@ -986,7 +987,7 @@ class MainWindow(QMainWindow):
         btn2.setEnabled(False)
         btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Genera el informe PDF del análisis')
-        # --- Interrumpir control durante workflow ---
+        # Interrumpir control durante workflow
         def on_interrupt():
             reply = QMessageBox.question(
                 self,
@@ -1024,7 +1025,7 @@ class MainWindow(QMainWindow):
         btn2.setEnabled(False)
         btn3.setEnabled(False)
         self.iluminar_btn(btn, '#FBC02D', 'Reinicia el sistema para un nuevo análisis')
-        # --- Interrumpir control durante workflow ---
+        # FIN de Interrumpir control durante workflow
         def on_interrupt():
             reply = QMessageBox.question(
                 self,
