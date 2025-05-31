@@ -2,11 +2,11 @@
 
 ## 📚 Índice
 
-1. [Introducción](#1-📖-introducción)  
-2. [Instalación y Requisitos](#2-⚙️-instalación-y-requisitos)  
-3. [Pantalla de Inicio de Sesión](#3-🔐-pantalla-de-inicio-de-sesión)  
+1. [Introducción](#1-introducción)  
+2. [Instalación y Requisitos](#2-instalación-y-requisitos)  
+3. [Pantalla de Inicio de Sesión](#3-pantalla-de-inicio-de-sesión)  
    - [3.1 Recuperación de contraseña](#31-recuperación-de-contraseña)  
-4. [Menú Principal – Control de Calidad](#4-🏠-menú-principal--control-de-calidad)  
+4. [Menú Principal – Control de Calidad](#4-menú-principal--control-de-calidad)  
    - [4.1 Ejecución paso a paso del control de calidad](#41-ejecución-paso-a-paso-del-control-de-calidad)  
    - [4.2 Guardado de resultados](#42-guardado-de-resultados)  
    - [4.3 Generación de informes PDF](#43-generación-de-informes-pdf)  
@@ -23,8 +23,8 @@
    - [6.6 Cierre de sesión](#66-cierre-de-sesión)  
 7. [Créditos y Mantenimiento](#7-créditos-y-mantenimiento)  
 8. [Preguntas Frecuentes (FAQ)](#8-preguntas-frecuentes-faq)
-9. [Funcionalidades implementadas](#9-✨-funcionalidades-implementadas)  
-10. [Estructura del repositorio](#10-📁-estructura-del-repositorio)
+9. [Funcionalidades implementadas](#9-funcionalidades-implementadas)  
+10. [Estructura del repositorio](#10-estructura-del-repositorio)
 
 ---
 
@@ -57,7 +57,7 @@ Para ejecutar la aplicación ISLI correctamente, se recomienda cumplir con los s
 
 ---
 
-### 📦 Instalación paso a paso
+### Instalación paso a paso
 
 1. **Clona el repositorio** desde GitHub o descarga el proyecto en formato `.zip`:
 
@@ -86,7 +86,7 @@ Para ejecutar la aplicación ISLI correctamente, se recomienda cumplir con los s
 
 ---
 
-### 🖥️ Ejecución del sistema
+### Ejecución del sistema
 
 La aplicación ISLI consta de dos componentes principales: un **frontend de escritorio** y un **backend REST API**. Ambos deben estar en funcionamiento para una experiencia completa.
 
@@ -114,7 +114,7 @@ La aplicación ISLI consta de dos componentes principales: un **frontend de escr
 
 ---
 
-#### 🔹 Frontend (PySide6)
+#### Frontend (PySide6)
 
 1. Abre otra terminal y accede al directorio del frontend:
 
@@ -128,11 +128,11 @@ La aplicación ISLI consta de dos componentes principales: un **frontend de escr
     python main.py
     ```
 
-> ✅ La interfaz requiere que el backend esté activo para funciones como el login, el guardado de resultados o la obtención del siguiente ID de control.
+> La interfaz requiere que el backend esté activo para funciones como el login, el guardado de resultados o la obtención del siguiente ID de control.
 
 ---
 
-### 🧩 Principales tecnologías utilizadas
+### Principales tecnologías utilizadas
 
 | Componente        | Tecnología                          |
 |-------------------|-------------------------------------|
@@ -150,7 +150,7 @@ La aplicación ISLI consta de dos componentes principales: un **frontend de escr
 
 ...
 
-## 3. 🔐 Pantalla de Inicio de Sesión
+## 3. Pantalla de Inicio de Sesión
 
 ## 3. Pantalla de Inicio de Sesión
 
@@ -167,7 +167,7 @@ Ambos campos son obligatorios. Si alguno está vacío o no coincide con las cred
 
 ---
 
-### 🔐 Validación y acceso
+### Validación y acceso
 
 - Si las credenciales son válidas, el usuario será redirigido automáticamente al **menú principal** de la aplicación tras un mensaje informativo con su rol.
 - Si no son correctas, se mostrará un mensaje de advertencia y se pedirá reintentar.
@@ -176,7 +176,7 @@ PANTALLAZO DE MENSAJE DE ERROR!!
 
 ---
 
-### 👤 Roles de usuario
+### Roles de usuario
 
 Existen distintos roles de usuario con diferentes niveles de acceso:
 
@@ -187,7 +187,7 @@ El sistema detecta el rol automáticamente tras el login y adapta la interfaz en
 
 ---
 
-### 🛠️ Consideraciones técnicas
+### Consideraciones técnicas
 
 - El login requiere conexión activa con el backend.
 - El sistema valida los datos mediante una llamada HTTP `POST` al endpoint `/login`.
@@ -197,12 +197,12 @@ El sistema detecta el rol automáticamente tras el login y adapta la interfaz en
 
 En caso de haber olvidado la contraseña, el usuario puede iniciar el proceso de restablecimiento desde la propia pantalla de inicio de sesión.
 
-#### 🔗 Acceso al formulario
+#### Acceso al formulario
 
 1. Haz clic en el enlace **"Olvidé mi contraseña"** ubicado debajo del formulario de login.
 2. Se abrirá la ventana **"Restablecer contraseña"**.
 
-#### 📝 Campos requeridos
+#### Campos requeridos
 
 - **Correo electrónico asociado a la cuenta**
 - **Nueva contraseña deseada**
@@ -212,7 +212,7 @@ El motivo permite informar al administrador del contexto de la solicitud (por ej
 
 ---
 
-#### 🔄 Proceso de aprobación
+#### Proceso de aprobación
 
 Una vez enviado el formulario:
 
@@ -226,9 +226,9 @@ Una vez enviado el formulario:
 
 ---
 
-> ⚠️ La recuperación de contraseña no es automática. Requiere la aprobación de un administrador del sistema.
+> La recuperación de contraseña no es automática. Requiere la aprobación de un administrador del sistema.
 
-## 4. 🏠 Menú Principal – Control de Calidad
+## 4. Menú Principal – Control de Calidad
 
 Una vez que el usuario inicia sesión correctamente, accede al **menú principal** de la aplicación, desde donde se pueden gestionar los análisis de calidad sobre los rollos de imágenes disponibles.
 
@@ -276,7 +276,7 @@ Una vez completado el análisis, puedes guardar los resultados:
 - El sistema calculará automáticamente si el resultado del rollo es **“APTO”** o **“NO APTO”**.
 - La información quedará registrada en la base de datos, y se generará un nuevo ID de control.
 
-> ⚠️ No podrás guardar resultados si el análisis no se ha completado.
+> No podrás guardar resultados si el análisis no se ha completado.
 
 ---
 
@@ -334,7 +334,7 @@ Desde el histórico puedes acceder al informe PDF asociado a cada control y visu
 - Solo podrán visualizarse informes de controles para los que los operarios hayan generado un informe tras completar un control de calidad.
 - Los controles que **no disponen de informe** aparecen marcados con un **signo en rojo** en la columna **"Informe"** de la tabla.
 
-> 📁 Todos los informes generados se almacenan en la carpeta designada por los administradores mediante el botón **Gestor de históricos**.
+> Todos los informes generados se almacenan en la carpeta designada por los administradores mediante el botón **Gestor de históricos**.
 
 ## 5. Panel Lateral de Navegación
 
@@ -365,8 +365,8 @@ Desde el panel lateral se puede acceder directamente a:
 - La ventana de **Histórico de Controles**
 - El **Manual de Usuario**
 
-> 🌐 Si hay conexión a Internet, se abrirá la versión online (por ejemplo, el README en GitHub).  
-> 📁 Si no hay conexión, se abrirá automáticamente una copia local en PDF (instalado con tu aplicación).
+> Si hay conexión a Internet, se abrirá la versión online (por ejemplo, el README en GitHub).  
+> Si no hay conexión, se abrirá automáticamente una copia local en PDF (instalado con tu aplicación).
 
 También se incluye el botón **Cerrar sesión**, que ofrece tres opciones al usuario:
 
@@ -374,7 +374,7 @@ También se incluye el botón **Cerrar sesión**, que ofrece tres opciones al us
 - **No**: cancela la acción
 - **Abrir nueva sesión**: permite volver a la pantalla de login sin cerrar la aplicación
 
-> ✅ Esta funcionalidad garantiza un cierre de sesión claro, seguro y personalizable.
+> Esta funcionalidad garantiza un cierre de sesión claro, seguro y personalizable.
 
 Estos botones están siempre disponibles para todos los usuarios registrados.
 
@@ -387,7 +387,7 @@ El botón **Panel de control** permite a los usuarios con rol `administrador` ac
 - Se abre en el navegador predeterminado
 - El sistema añade automáticamente el token de sesión a la URL
 
-> 🔒 Este botón aparece deshabilitado para los usuarios sin permisos administrativos.
+> Este botón aparece deshabilitado para los usuarios sin permisos administrativos.
 
 ---
 
@@ -400,9 +400,9 @@ Los botones **Gestor de almacén** y **Gestor de históricos** permiten definir 
 
 Al pulsar cualquiera de estos botones, se abre un diálogo para seleccionar la carpeta deseada. Las rutas seleccionadas se guardan en el archivo de configuración `config.json` y se conservan para futuras sesiones.
 
-> 🔒 Estas funciones también están limitadas al rol de administrador.
+> Estas funciones también están limitadas al rol de administrador.
 
-### 🧾 Resumen de accesos por rol
+### Resumen de accesos por rol
 
 | Funcionalidad                         | Operario | Administrador |
 |--------------------------------------|:--------:|:-------------:|
@@ -428,7 +428,7 @@ Al pulsar cualquiera de estos botones, se abre un diálogo para seleccionar la c
 
 Esta aplicación ha sido desarrollada como parte del proyecto final del **Ciclo Formativo de Grado Superior en Desarrollo de Aplicaciones Multiplataforma (CFGS DAM)**.
 
-### 👨‍💻 Autor
+### Autor
 
 - **Nombre**: Paco Gago  
 - **GitHub**: [@PacoG86](https://github.com/PacoG86/isli)
