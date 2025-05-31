@@ -8,9 +8,9 @@ from PySide6.QtGui import QIcon
 import os
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QProgressDialog
 from PySide6.QtCore import QTimer, Qt
-from UI.login_window import Ui_Form
-from control_calidad_menu_principal import MainWindow
-from solicitud_password_window import SolicitudPasswordWindow
+from frontend.UI.login_window import Ui_Form
+from frontend.control_calidad_menu_principal import MainWindow
+from frontend.solicitud_password_window import SolicitudPasswordWindow
 import json
 
 API_URL = "http://localhost:8000"

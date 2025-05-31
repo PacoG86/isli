@@ -2,7 +2,7 @@ import requests
 from PySide6.QtGui import QIcon
 import os
 from PySide6.QtWidgets import QDialog, QMessageBox
-from UI.solicitud_password_dialog import Ui_Dialog
+from frontend.UI.solicitud_password_dialog import Ui_Dialog
 from datetime import datetime
 
 class SolicitudPasswordWindow(QDialog):

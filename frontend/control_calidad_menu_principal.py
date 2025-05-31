@@ -19,11 +19,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap, QImage, QPainter, QFont, QColor, QBrush, QIcon
 from PySide6.QtCore import Qt, QTimer, QRectF, QEvent
-from UI.menu_principal_v2 import Ui_MainWindow
-from reportlab.lib.pagesizes import A4
-from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control, obtener_ruta_informes, guardar_config_ruta
-from historico_controles_app import HistoricoControlesWindow
-from utils_informes import generar_pdf_completo, guardar_registro_informe
+from frontend.UI.menu_principal_v2 import Ui_MainWindow
+from frontend.utils_ui import mostrar_datos_usuario, configurar_botones_comunes, mostrar_siguiente_id_control, obtener_ruta_informes, guardar_config_ruta
+from frontend.historico_controles_app import HistoricoControlesWindow
+from frontend.utils_informes import generar_pdf_completo, guardar_registro_informe
 from analisis_defectos.procesador_rollos import analizar_rollo
 
 

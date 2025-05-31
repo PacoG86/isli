@@ -5,8 +5,8 @@ import os
 from PySide6.QtWidgets import QWidget, QTableWidgetItem, QMessageBox, QHeaderView, QTableWidgetItem, QFileDialog  
 from PySide6.QtCore import QDate, QTimer, Qt, QRunnable, QThreadPool, Slot
 from datetime import datetime, time
-from UI.historico_controles import Ui_Form_historico
-from utils_ui import mostrar_datos_usuario, configurar_botones_comunes, guardar_config_ruta
+from frontend.UI.historico_controles import Ui_Form_historico
+from frontend.utils_ui import mostrar_datos_usuario, configurar_botones_comunes, guardar_config_ruta
 
 
 class HistoricoControlesWindow(QWidget):
@@ -148,7 +148,7 @@ class HistoricoControlesWindow(QWidget):
     def volver_a_menu_principal(self):
         """Cierra la ventana actual y regresa al menú principal."""
         from frontend.control_calidad_menu_principal import MainWindow
-        from main import BASE_FOLDER  # Disponible en config.json
+        from frontend.main import BASE_FOLDER  # Disponible en config.json
         self.menu_window = MainWindow(BASE_FOLDER, self.nombre_usuario, self.rol_usuario, self.token_jwt, self.id_usuario)
         self.menu_window.show()
         self.hide()
@@ -176,7 +176,7 @@ class HistoricoControlesWindow(QWidget):
                 data = response.json()
                 if data.get("existe"):
                     ruta_pdf = data["ruta_pdf"]
-                    from utils_informes import abrir_pdf
+                    from frontend.utils_informes import abrir_pdf
                     abrir_pdf(ruta_pdf)
                 else:
                     QMessageBox.information(

@@ -109,7 +109,7 @@ def logout(parent):
     incluyendo cierre, cancelación o inicio de nueva sesión.
     Al confirmar, revoca el token en el backend y abre la página de trigger en el navegador.
     """
-    from main import LoginWindow
+    from frontend.main import LoginWindow
     import requests
 
     msg_box = QMessageBox(parent)
