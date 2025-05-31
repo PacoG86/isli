@@ -76,7 +76,7 @@ border-radius:5;</string>
        </property>
        <property name="icon">
         <iconset>
-         <normaloff>logo_isli.png</normaloff>logo_isli.png</iconset>
+         <normaloff>logo_isli.ico</normaloff>logo_isli.ico</iconset>
        </property>
        <property name="iconSize">
         <size>

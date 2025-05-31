@@ -51,7 +51,7 @@ class Ui_Dialog(object):
         self.label_logo = QLabel(self.frame_3)
         self.label_logo.setObjectName(u"label_logo")
         self.label_logo.setMaximumSize(QSize(60, 60))
-        self.label_logo.setPixmap(QPixmap(u"../../logo_isli.png"))
+        self.label_logo.setPixmap(QPixmap(u"../../logo_isli.ico"))
         self.label_logo.setScaledContents(True)
 
         self.horizontalLayout_2.addWidget(self.label_logo)

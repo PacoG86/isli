@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "logo_isli_white.png")
+        ruta_icono = os.path.join(os.path.dirname(__file__), "..", "logo_isli_white.ico")
         ruta_icono = os.path.abspath(ruta_icono)
         icon = QIcon(ruta_icono)
         self.setWindowIcon(icon)
@@ -798,7 +798,7 @@ class MainWindow(QMainWindow):
             tolerancia_tamano=self.ui.doubleSpinBox.value(),
             tolerancia_cantidad=self.ui.spinBox.value(),
             ruta_destino=ruta_hist_pdf,
-            logo_path= "logo_isli.png",
+            logo_path= "logo_isli.ico",
             parent_widget=self
         )
 

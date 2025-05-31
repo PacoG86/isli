@@ -58,7 +58,7 @@ class Ui_Form_historico(object):
 "    background: transparent;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"logo_isli_white.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"logo_isli_white.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton_16.setIcon(icon)
         self.pushButton_16.setIconSize(QSize(150, 150))
         self.pushButton_16.setFlat(True)

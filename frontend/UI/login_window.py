@@ -55,7 +55,7 @@ class Ui_Form(object):
         self.pushButton.setStyleSheet(u"border:0;\n"
 "border-radius:5;")
         icon = QIcon()
-        icon.addFile(u"logo_isli.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"logo_isli.ico", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.pushButton.setIcon(icon)
         self.pushButton.setIconSize(QSize(150, 150))
         self.scrollArea = QScrollArea(self.frame)
